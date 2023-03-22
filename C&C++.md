@@ -30,7 +30,7 @@ C语言中，所有变量必须先声明才能使用。
 
 
 
-# 2.数据类型
+## 2.数据类型
 
 ![image-20230114163422975](C:\Users\52677\AppData\Roaming\Typora\typora-user-images\image-20230114163422975.png)
 
@@ -82,7 +82,7 @@ int类型被认为是计算机处理整数类时最高效的类型。
 
 
 
-# 3.字符串
+## 3.字符串
 
 
 
@@ -138,7 +138,7 @@ getchar()和putchar()不需要转换说明，因为他们**只处理字符**。
 
 
 
-# 4.表达式
+## 4.表达式
 
 
 
@@ -2440,9 +2440,9 @@ C允许把任何类型的指针赋给void*类型的指针。因此，这两个�
 
 访问权限有三种：
 
-1. **public：**成员 类内类外都可以访问
-2. **protected：**成员 **类内可以**访问  **子类可以**访问 **类外不可以**访问
-3. **private：**成员 只有**类内**可以访问 
+1. **public：**成员，类内类外都可以访问
+2. **protected：**成员，**类内可以**访问  **子类可以**访问 **类外不可以**访问
+3. **private：**成员，只有**类内**可以访问 
 
 
 
@@ -2531,6 +2531,85 @@ className(){}
 
 
 
+**普通构造函数：**
+
+```cpp
+Person(Person p)
+{
+}
+```
+
+
+
+**拷贝构造函数：**
+
+```cpp
+Person(const Person &p)
+{  
+}
+```
+
+
+
+**注：**非静态成员变量，如果已经在头文件中声明，则在源文件中不需要定义 ，可以直接赋值。
+
+
+
+
+
+#### **构造函数调用**
+
+**1.括号法：**
+
+```cpp
+Person p1;
+Person p2(10);	//有参构造函数
+Person p3(p2);	//拷贝构造函数
+//注意：调用默认构造函数时，不要加()，会被编译器当成函数的声明：Person p1();
+```
+
+**2.显式法：**
+
+```cpp
+Person p1 = Person(10);	//有参构造
+Person p2 = Person(p1);	//拷贝构造
+```
+
+**3.隐式转换法：**
+
+```cpp
+Person p4 = 10;	//相当于 Person p4 = Person(10);
+```
+
+
+
+
+
+#### **拷贝构造调用时机**
+
+1.使用一个已经创建完毕的对象来初始化一个新对象
+
+```cpp
+Person p1(20);
+Person p2(p1);
+```
+
+2.值传递的方式给函数参数传值
+
+```cpp
+Person p;
+doWork(p);
+```
+
+3.值方式返回局部对象
+
+```cpp
+Person doWork2()
+{
+    Person p1;
+	return p1; 
+}
+```
 
 
 
@@ -2538,6 +2617,199 @@ className(){}
 
 
 
+**构造函数调用规则**
+
+只要创建一个类，C++编译器会给每个类都添加至少**3个函数**
+
+**1.默认构造函数**(函数体为空)
+
+**2.默认析构函数**(函数体为空)
+
+**3.默认拷贝构造函数**(对属性进行拷贝)
+
+
+
+
+
+#### 深拷贝与浅拷贝
+
+**浅拷贝：**简单的赋值拷贝操作
+
+**深拷贝：**在堆区重新申请空间，进行拷贝操作
+
+```cpp
+~Person()
+{
+    if(m_Height!=NULL)
+    {
+        delete m_Height;
+        m_Height = NULL;
+    }
+}
+
+{
+    Person p1(18,160);
+    Person p2(p1);
+    //p1,p2都会自动调用析构函数
+}
+```
+
+如果利用编译器提供的拷贝构造函数，会做浅拷贝操作。
+
+带来的问题：**堆区的内存重复释放**。
+
+**解决方法：**自己重写一个深拷贝构造函数。
+
+```cpp
+//自己实现一个深拷贝构造函数
+Person(const Person &p)
+{
+    m_Height = p.m_Height;	//编译器的默认实现
+    //深拷贝操作
+    m_Height = new int(*p.Height);
+}
+```
+
+**总结：**如果属性有在堆区开辟的，一定要自己提供深拷贝构造函数，防止浅拷贝带来的问题
+
+
+
+
+
+#### 类对象作为成员
+
+当其他类对象作为本类成员，构造时先构造类对象，再构造自身，析构的顺序相反。
+
+
+
+
+
+### 静态成员
+
+
+
+#### 静态成员变量
+
+- 所有对象共享同一份数据
+- 在**编译阶段**分配内存
+- 类内声明，类外初始化
+
+```cpp
+//类内声明
+class Person
+{
+public:
+    static int m_A;
+};
+
+//类外初始化
+int Person::m_A = 100;
+```
+
+
+
+
+
+#### 静态成员函数
+
+- 所有对象共享同一个函数
+- 静态成员函数只能访问**静态成员变量**
+
+
+
+
+
+### 对象特性
+
+**1.成员变量和成员函数分开存储**
+
+```cpp
+Person p;
+//空对象占用内存空间为:1
+```
+
+
+
+**2.const修饰成员函数**
+
+**常函数：**
+
+- 成员函数后加const后称为常函数
+- 常函数内不可以修改成员属性
+- 成员属性声明时加关键字mutable，在常函数中依然可以修改
+
+```cpp
+void showPerson() const
+{
+    //在成员函数后加const，修饰的是this指针，让this指向的值也不可以修改。
+    //this指针的本质是指针常量：指针的指向是不可以修改的
+}
+```
+
+
+
+**常对象：**
+
+- 声明对象前加const称该对象为常对象
+- 常对象只能调用常函数
+
+```cpp
+const Person p;
+```
+
+
+
+
+
+### 友元
+
+#### 全局函数做友元
+
+在类中声明友元全局函数
+
+```cpp
+class Building
+{
+    friend void goodGay(Building *building);
+public:
+    std::string m_SittingRoom;
+private:
+    std::string m_BedRoom;
+};
+//这样就可以通过goodGay友元函数访问类的私有属性了
+void goodGay(Building *building)
+{
+    cout << "访问: "<< building->m_BedRoom <<endl;
+}
+```
+
+
+
+#### 类做友元
+
+```cpp
+class Building
+{
+    //这个类可以访问Building的私有成员
+    friend class GoodGay;
+public:
+private:
+};
+```
+
+
+
+
+
+#### 成员函数做友元
+
+```cpp
+class Building
+{
+    //告诉编译器GoodGay类下的visit成员函数可访问私有成员
+    friend void GoodGay::visit();
+};
+```
 
 
 
@@ -2545,7 +2817,135 @@ className(){}
 
 
 
+### 运算符重载
 
+对已有运算符重新定义，赋予其另一种功能，以适应不同的数据类型。
+
+**1.加号运算符重载**
+
+```cpp
+class Person
+{
+public:
+	Person operator+(Person &p)
+	{
+    Person temp;
+    temp.m_A = this->m_A + p.m_A;
+    temp.m_B = this->m_B + p.m_B;
+    return temp;
+	}
+    
+    int m_A;
+    int m_B;
+};
+```
+
+ 
+
+**2.左移运算符重载**
+
+```cpp
+//通常不会用成员函数重载左移运算符
+ostream& operator<<(ostream &cout, Person &p)
+{
+    cout << "m_A" << p.m_A << endl;
+    return cout;
+}
+```
+
+
+
+**3.递增运算符重载**
+
+**前置递增：**
+
+```cpp
+MyInteger& operator++()
+{
+    ++m_Num;
+    return *this;
+}
+```
+
+**后置递增：**
+
+```cpp
+MyInteger operator++(int)
+{
+    //先记录当时结果
+    MyInteger temp = *this;
+    //再递增
+    m_Num++;
+    //最后将记录的结果返回
+    ++m_Num;
+    return temp;
+}
+```
+
+
+
+
+
+**4.赋值运算符重载**
+
+C++编译器至少给一个类添加4个函数
+
+1.默认构造函数
+
+2.默认析构函数
+
+3.默认拷贝构造函数
+
+4.赋值运算符`operator=`对属性进行值拷贝
+
+```cpp
+Person& operator=(Person &p)
+{
+    //编译器提供的默认浅拷贝
+    //m_Age = p.m_Age;
+    //先判断是否有属性在堆区，先释放干净再深拷贝
+    if(m_Age!=NULL)
+    {
+        delete m_Age;
+        m_Age = NULL;
+    }
+    //深拷贝
+    m_Age = new int(*p.m_Age); 
+    return *this;
+}
+```
+
+
+
+
+
+**5.关系运算符重载**
+
+```cpp
+bool operator==(Person &p)
+{
+    if(this->name==p.name &&this->age==p.age)
+    {
+        return true;
+    }
+    return false;
+}
+```
+
+
+
+
+
+**6.函数调用运算符重载**
+
+由于重载后使用的方式非常像函数的调用，因此称为仿函数。
+
+```cpp
+void operator()(string test)
+{
+    cout << test << endl;
+}
+```
 
 
 
