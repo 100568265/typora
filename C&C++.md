@@ -3291,6 +3291,161 @@ void showValue(const int &val)
 
 
 
+## 创建线程方法
+
+
+
+### 函数创建线程
+
+每个程序至少有一个线程：执行main()函数的线程，其余线程有其各自的**入口函数**。
+
+C++线程库启动线程，可以归结为构造**std::thread对象：**
+
+```cpp
+void do_some_work();
+std::thread my_thread(do_some_work);
+```
+
+
+
+
+
+#### join
+
+```cpp
+std::thread myObj(myprint);	//创建了线程，线程执行起点
+myObj.join();	//程序员希望主线程阻塞，等待子线程执行完
+```
+
+**注意：**
+
+一个书写良好的程序：应该是主线程等待子线程执行完毕后，自己才能最终退出。
+
+
+
+
+
+#### detach
+
+**传统规律：**主线程有义务等待子线程结束，自己再退出。
+
+**detach：**分离，主线程不和子线程汇合，主线程不必等待子线程结束。
+
+
+
+一旦detach之后，与主线程关联的thread对象就会失去与主线程的关联，此时子线程就会**驻留在后台运行**。
+
+**主线程与子线程失去联系，交由后台管理(守护线程)**。
+
+
+
+
+
+#### joinable
+
+**判断**是否可以成功使用join()或detach()：返回true或false
+
+```cpp
+thread mytObj(myprint);
+if(mytObj.joinable())
+{
+    //可以join
+    mytObj.join(); 
+}
+else
+{
+    //不能join
+    mytObj.detach();
+}
+```
+
+
+
+
+
+### 类创建线程
+
+```cpp
+class TA
+{
+public:
+    void operator()()	//仿函数，是一种可调用对象
+    {
+        cout << "我的线程operator()开始" <<endl;
+        //...
+        cout << "我的线程operator()结束" <<endl;
+    }
+};
+```
+
+```cpp
+int main()
+{
+    TA ta;
+    thread mytobj(ta); //ta:可调用对象
+}
+```
+
+
+
+### lambda创建线程
+
+```cpp
+auto mylamthread = []{
+    cout << "我的线程3开始执行了" << endl;
+    // ...
+    cout << "我的线程3执行结束了" << endl;
+}
+thread mytobj(mylamthread);
+mytobj.join();
+cout << "I love California" << endl;
+```
+
+
+
+
+
+
+
+## 线程传参
+
+```cpp
+void myprint(const int &i,char *pmybuf)
+{
+    cout << i << endl;
+    cout << pmybuf <<endl;
+    return;
+}
+
+
+
+int main()
+{
+thread mytobj(myprint,mvar,mybuf);
+mytobj.join();
+cout << "Hello, World" << endl;
+return 0;
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
