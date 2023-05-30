@@ -413,7 +413,7 @@ test_func(lambda x, y: x+y)
 
 
 
-## 4.数据容器
+## 4.容器
 
 
 
@@ -2342,6 +2342,262 @@ np.unique(temp)
 
 
 #### 逻辑运算
+
+想要操作符合某一条件的数据，应该怎么做？
+
+```python
+stock_change = np.random.normal(loc=0,scale=1,size=(8,10))
+stock_change[stock_change>0.5]
+```
+
+
+
+**通用判断函数**
+
+```python
+np.all()	# 只要有一个False就返回False，全部是True才返回True
+np.any()	# 只要有一个True就返回True，全部是False才返回False
+
+# 判断stock_change[0:2, 0:5]这组数据是否全是上涨的
+np.all(stock_change[0:2,0:5] > 0)
+# 判断前5只股票这段期间是否有上涨的
+np.any(stock_change[:5,:] > 0)
+```
+
+
+
+**三元运算符**
+
+`where()`
+
+```python
+# 判断前四个股票前4天的涨跌幅，大于0的置为1，否则为0
+temp = stock_change[:4,:4]
+np.where(temp>0,1,0)
+```
+
+**复合逻辑**需要结合`logical_and`和`logical_or`使用
+
+```python
+# np.logical_and(temp>0.5,temp<1)
+np.where(np.logical_and(temp>0.5,temp<1))
+```
+
+
+
+
+
+
+
+#### 统计运算
+
+**统计指标函数**
+
+​	min, max, mean, median , var, std
+
+```python
+# 前四天前4只股票的每天最大涨幅
+temp.max(axis=0)
+```
+
+```python
+# 返回最大值所在的位置
+np.argmax(temp,axis=1)
+```
+
+
+
+
+
+#### 数组间运算
+
+
+
+**数组与数的运算**
+
+```python
+arr = np.array([[1,2,3,2,1,4],[5,6,1,2,3,1]])
+arr * 10	# 将整个数组中的元素都乘10 
+```
+
+
+
+**数组与数组的运算**
+
+```python
+arr1 = np.array([[1,2,3,2,1,4],[5,6,1,2,3,1]])	# shape:(2,6)
+arr2 = np.array([[1,2,3,4],[3,4,5,6]])			# shape:(2,4)
+```
+
+上面这个形状不同的两个数组可以运算吗？结果是不行！
+
+
+
+**广播机制**
+
+当操作两个数组时，numpy会逐个比较它们的shape(构成的元组tuple)，只有在下述情况下，两个数组才能够进行数组与数组的运算。
+
+- 维度相等
+- shape(其中相对应的一个地方为1)
+
+例如：
+
+```python
+Image (3d array): 256 x 256 x 3
+Scale (1d array):             3
+Result(3d array): 256 x 256 x 3
+
+A		(4d array): 9 x 1 x 7 x 1
+B		(3d array):     8 x 1 x 5
+Result	(4d array): 9 x 8 x 7 x 5
+
+A		(2d array): 5 x 4
+B 		(1d array):		1
+Result	(2d array): 5 x 4
+
+A		(3d array): 15 x 3 x 5
+B		(3d array):	15 x 1 x 1
+Result	(3d array): 15 x 3 x 5
+```
+
+
+
+
+
+#### 矩阵运算
+
+矩阵必须是2维的，但是array可以是多维的。
+
+`mat()`，将数组转换成矩阵类型。
+
+
+
+**两种方法存储矩阵：**
+
+1. ndarray
+2. matrix
+
+```python
+# ndarray存储矩阵
+# ndarray存储矩阵
+data = np.array([[80, 86],
+[82, 80],
+[85, 78],
+[90, 90],
+[86, 82],
+[82, 90],
+[78, 80],
+[92, 94]])
+# matrix存储矩阵
+data_mat = np.mat([[80, 86],
+[82, 80],
+[85, 78],
+[90, 90],
+[86, 82],
+[82, 90],
+[78, 80],
+[92, 94]])
+```
+
+
+
+**矩阵乘法运算**
+
+![image-20230530222813906](./assets/image-20230530222813906.png)
+
+**矩阵乘法api**
+
+`matmul()`
+
+`dot()`
+
+```python
+# ndarray
+weights = np.array([[0.3],[0.7]])
+np.dot(data,weights)
+# matrix
+weights_mat = np.mat([[0.3],[0.7]])
+data_mat * weights						# 两个矩阵直接用 * 
+```
+
+
+
+**注意：**数组间运算规则和矩阵运算规则是不一样的。
+
+
+
+
+
+### 合并，分割
+
+- numpy.**hstack**(tup) Stack arrays in sequence horizontally **(column wise).**
+- numpy.**vstack**(tup) Stack arrays in sequence vertically **(row wise).**
+- 
+- numpy.concatenate((a1,a2),axis=0)
+
+
+
+**示例：**
+
+np.hstack()：
+
+![image-20230530224524067](./assets/image-20230530224524067.png)
+
+
+
+np.vstack()：
+
+![image-20230530224600732](./assets/image-20230530224600732.png)
+
+
+
+np.concatenate()：
+
+![image-20230530224647880](./assets/image-20230530224647880.png)
+
+
+
+
+
+
+
+**分割**
+
+numpy.split(ary,indices_or_sections, axis=0) Split an array into multiple sub-arrays.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
