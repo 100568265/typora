@@ -2025,3 +2025,325 @@ plt.show()
 
 ### **散点图(scatter)**
 
+```python
+#需求：探求房屋面积和房屋价格的关系
+import matplotlib.plot as plt
+
+#1、准备数据
+x = [225.98,247.07,253.14,457.85,241.58,301.01,20.67,288.64,163.56,120.06,207.83,342.75,147.9,53.06,224.72,29.51,21.61,483.21,245.25,399.25,343.35]
+y = [196.63,203.88,210,75,372,74,202.41,247.61,24.9,239.34,49.64,191.74,33,1,140.32,104.15,176.84,288.23,128.79,30.74,400.02,205.35,330.64,283.45]
+
+# 2.创建画布
+plt.figure(figsize=(20,8),dpi=80)
+
+# 3.绘制图像
+plt.scatter(x,y)
+
+# 4.显示图像
+plt.show()
+```
+
+
+
+
+
+### 柱状图(bar)
+
+**应用场景：**数据的对比。
+
+```python
+# 1.准备数据
+
+# 2.创建画布
+plt.figure(figsize=(20,8),dpi=80)
+
+# 3.柱状图绘制
+plt.bar(range(len(movie_names)),tickets)
+#修改刻度
+x_ticks = range(len(movie_names))
+plt.bar(x_ticks,tickets)
+plt.xticks(x_ticks,movie_names)
+plt.title("电影票房收入对比")
+plt.grid(linestyle="--",alpha=0.5)
+# 4.显示图像
+plt.show()
+```
+
+
+
+
+
+### 直方图(histogram)
+
+**应用场景：**表示数据的分布状况。
+
+直方图的长度代表大小，宽度代表组距。
+
+**X轴：**柱状图展示的是分类数据，直方图展示的是数据区间
+
+```python
+#需求：电影时长分布状况
+
+# 1.准备数据
+time = []
+# 2.创建画布
+plt.figure(figsize=(20,8),dpi=80)
+# 3.绘制直方图
+distance = 2
+group_num = int((max(time) - min(time)) / distance)
+
+plt.hist(time,bins=group_num,density=True)
+#修改x轴刻度
+plt.xticks(range(min(time),max(time)+2,distance))
+# 4.显示图像
+plt.show()
+```
+
+
+
+### 饼图(pie)
+
+**应用场景：**显示占比
+
+```python
+movie_name = []
+place_count = []
+
+# 创建画布
+plt.figure(figsize=(20,8),dpi=80)
+
+# 绘制饼图
+plt.pie(place_count,labels=movie_name)
+plt.axis('equals')		# 保持横纵轴一致
+plt.legend()			# 显示图例
+# 显示图像
+plt.show()
+```
+
+
+
+### **总结**
+
+![image-20230530125157378](./assets/image-20230530125157378.png)
+
+
+
+
+
+
+
+## Numpy
+
+Numpy是一个高效的运算工具。
+
+**Numpy**支持常见的**数组和矩阵操作**，对于同样的数值计算任务，使用Numpy比直接使用Python要简洁的多。
+
+
+
+
+
+**ndarray的优势**
+
+**1.存储风格**
+
+list - 支持不同类型
+
+ndarray - 相同类型
+
+**2.并行化运算**
+
+ndarray支持向量化运算
+
+**3.底层语言**
+
+Numpy底层用**C语言编写**，内部解除了GIL(全局解释器锁)，其对数组的操作速度不受限于Python解释器，**效率远高于纯Python代码**。
+
+
+
+
+
+### ndarray的属性
+
+| 属性名字         | 属性解释                 |
+| ---------------- | ------------------------ |
+| ndarray.shape    | 数组维度的元组           |
+| ndarray.ndim     | 数组维度                 |
+| ndarray.size     | 数组中的元素数量         |
+| ndarray.itemsize | 一个数组元素的长度(字节) |
+| ndarray.dtype    | 数组元素的类型           |
+
+
+
+
+
+### 基本操作
+
+
+
+#### **1.生成0和1的数组**
+
+```python
+# 生成0和1
+zero = np.zeros((3,4),dtype="float32")
+one = np.ones((3,4),dtype="float32")
+```
+
+
+
+#### **2.从现有数组生成**
+
+```python
+# np.array()
+data1 = np.array(score)
+# np.asarray()
+data1 = np.asarray(score)
+# np.copy()
+data1 = np.copy(score)
+```
+
+array()和copy()是**深拷贝**
+
+asarray()是**浅拷贝**
+
+
+
+#### **3.生成固定范围的数组**
+
+```python
+np.linspace(0,10,5)		#生成5个数
+np.arange(0,10,5)		#固定步长是5
+```
+
+
+
+
+
+#### **4.生成随机数组**
+
+- 均匀分布：Uniform Distribution是概率统计中的重要分布之一。均匀，表示可能性相等的含义。均匀分布在自然情况下极为罕见。
+
+```python
+# 生成均匀分布
+np.random.uniform(low=-1,high=1,size=1000000)
+```
+
+```python
+import matplotlib.pyplot as plt
+# 创建画布
+plt.figure(figsize=(20,8),dpi=80)
+# 绘制直方图
+plt.hist(data1,1000)
+# 显示图像
+plt.show()
+```
+
+![下载](./assets/%E4%B8%8B%E8%BD%BD.png)
+
+
+
+- 正态分布
+
+正态分布是具有两个参数μ和σ的连续型随机变量的分布，第一参数μ是服从正态分布的随机变量的均值，第二个参数σ是此随机变量的方差，所以正态分布记作N(μ,σ)。
+
+μ决定了其位置，其标准差σ。决定了分布的幅度。当μ=0，σ=1时的正态分布是**标准正态分布**。
+
+<img src="./assets/image-20230530150722294.png" alt="image-20230530150722294" style="zoom:50%;" />
+
+![image-20230530150516721](./assets/image-20230530150516721.png)
+
+**方差**
+
+在概率论和统计学中衡量一组数据**离散程度**的度量。
+
+![image-20230530151046929](./assets/image-20230530151046929.png)
+
+其中M为平均值，n为数据总个数，S为标准差，S^2可以理解为一个整体方差。
+
+<img src="./assets/image-20230530152634461.png" alt="image-20230530152634461" style="zoom: 50%;" />
+
+**标准差和方差的意义**
+
+可以理解成数据的一个**离散程度**的衡量。
+
+```python
+#正态分布
+data2 = np.random.normal(loc=1.75,scale=0.1,size=1000000)
+```
+
+```python
+import matplotlib.pyplot as plt
+# 创建画布
+plt.figure(figsize=(20,8),dpi=80)
+# 绘制直方图
+plt.hist(data2,1000)
+# 显示图像
+plt.show()
+```
+
+![image-20230530153003269](./assets/image-20230530153003269.png)
+
+
+
+
+
+#### **切片索引**
+
+**例：获取第一个股票的前三个交易日的涨跌幅数据**
+
+```python
+stock_change = np.random.normal(loc=0,scale=1,size=(8,10))
+# 获取第一个股票前三个交易日的涨跌幅数据
+stock_change[0,0:3]
+```
+
+
+
+#### 形状修改
+
+```python
+# 需求：让刚才的股票行，日期列反过来，编程日期行，股票列
+stock_change.shape			#检查形状
+stock_change.reshape(10,8)	#返回新的array，原始数据没有修改
+stock_change.resize(10,8)	#对原始数据进行修改
+stock_change.T				#转置，行变列，列变行
+```
+
+
+
+#### 类型修改
+
+`astype()`
+
+```python
+stock_change.astype("int32")
+```
+
+`tostring()`
+
+```python
+stock_change.tostring()
+```
+
+
+
+#### 数组去重
+
+```python
+temp = np.array([1,2,3,4],[3,4,5,6])
+np.unique(temp)
+```
+
+
+
+
+
+### ndarray运算
+
+
+
+#### 逻辑运算
+
+
+
+
+
