@@ -2571,6 +2571,569 @@ numpy.split(ary,indices_or_sections, axis=0) Split an array into multiple sub-ar
 
 
 
+## Pandas
+
+Panel + Data + Analysis = 数据处理工具
+
+
+
+**优势：**
+
+便捷的数据处理能力
+
+读取文件方便
+
+封装了Matplotlib和Numpy的画图和计算
+
+
+
+
+
+### 核心数据结构
+
+
+
+#### DataFrame
+
+既有行索引，又有列索引的二维数组。
+
+```python
+import numpy
+import pandas
+
+stock_change = numpy.random.normal(0,1,(10,5))
+# 添加行索引
+stock = ["股票{}".format(i) for i in range(10)]
+# 添加列索引
+date = pandas.date_range(start="20180101",period=5,freq="B")
+pandas.DataFrame(stock_change,index=stock,columns=date)
+```
+
+
+
+**属性：**
+
+​	shape
+
+​	index
+
+​	columns
+
+​	values
+
+​	T
+
+
+
+**方法：**
+
+​	`head()`		返回前面n行
+
+​	`tail()`		返回后面n行
+
+
+
+
+
+**DataFrame索引的设置**
+
+1. 修改行列索引值
+2. 重设索引
+3. 设置新索引
+
+```python
+# pandas不能单独修改索引
+stock_ = ["股票_{}".format(i) for i in range(10)]
+data.index = stock_
+```
+
+```python
+# 重设索引
+data.reset_index()
+```
+
+```python
+#设置新索引
+df = pandas.DataFrame({'month':[1,4,7,10],
+                       'year':[2012,2014,2013,2014],
+                       'sale':[55,40,84,31]})
+
+# 将月份设置为新的索引
+df.set_index("month")
+```
+
+
+
+
+
+#### MultiIndex
+
+多级或分层索引对象
+
+**index属性**
+
+​	`names`：levels的名称
+
+​	`levels`：每个level的元组值
+
+```python
+df.index.names
+FrozenList(['year','month'])
+
+df.index.levels
+FrozenList([[2012,2013,2014],[1,4,7,10]])
+```
+
+
+
+
+
+#### Series
+
+带索引的一维数组。
+
+
+
+**属性**
+
+​	`index`
+
+​	`values`
+
+**方法**
+
+1. 创建Series
+
+通过已有数据创建
+
+```python
+# 指定内容，默认索引
+pandas.Series(np.arange(10))
+# 指定索引
+pandas.Series([6.7,5.6,3,10,2],index=[1,2,3,4,5])
+```
+
+通过字典数据创建
+
+```python
+pandas.Series({'red':100,'blue':200,'green':500,'yellow':1000})
+```
+
+
+
+**总结：**
+
+DataFrame是Series的容器。
+
+
+
+
+
+
+
+### 基本数据操作
+
+
+
+#### 索引操作
+
+1. 直接索引(先列后行)
+2. 按名字索引
+3. 按数字索引
+4. 组合索引
+
+```python
+# 直接索引
+# 按名字索引
+data.loc["2018-02-26"]["open"]
+# 按数字索引
+data.iloc[1,0]
+# 组合索引(获取第一天到第四天，open,close,high,low四个指标)
+data.ix[:4,['open','close','high','low']]
+```
+
+
+
+#### 排序
+
+**DateFrame排序**
+
+```python
+df.sort_values(by="high","p_change",ascending=False)
+df.sort_index()
+```
+
+**Series排序**
+
+```python
+sr=data["price_change"]
+```
+
+
+
+#### 算术运算
+
+![image-20230531105932533](./assets/image-20230531105932533.png)
+
+```python
+data["open"].add(3).head()
+data+10
+data-10
+data/10
+data*10
+data.sub(100).head()
+```
+
+
+
+#### 逻辑运算
+
+单个逻辑判断
+
+```python
+# 筛选p_change>2的日期数据：
+data['p_change']>2
+```
+
+多个逻辑判断
+
+```python
+# 筛选p_change>2丙炔low>15
+(data['p_change']>2) & (data['low']>15)
+```
+
+
+
+**逻辑运算函数**
+
+​	`query()`
+
+​	`isin()`
+
+```python
+data.query("p_change > 2 & low > 15").head()
+```
+
+```python
+# 判断turnover是否为4.19,2.39
+data["turnover"].isin([4.19,2.39])
+```
+
+
+
+#### 统计运算
+
+`describe()`：获取一些常用的统计指标
+
+```python
+data.describe()
+```
+
+sum, mean, median, min ,max, mode, abs, prod, std, var, idxmax, idxmin
+
+
+
+
+
+### 文件IO
+
+我们的数据大部分存在于文件中，pandas支持复杂的IO操作。
+
+Pandas的API**支持众多的文件格式**，如CSV, SQL, XLS, JSON, HDF5。
+
+
+
+#### csv格式
+
+```python
+# 读取csv文件-read_csv()
+pandas.read_csv("test.csv",usecols=["high","low"])
+```
+
+```python
+# 写入到csv文件
+data[:10].to_csv("test.csv",columns=["open"]，index=False,mode="a",header=False)
+```
+
+
+
+
+
+#### hdf5格式
+
+HDF5-存储三维数据的文件。
+
+HDF5文件的读取和存储时需要指定一个键，值为要存储的DataFrame
+
+​	key1 dataframe1二维数据
+
+​	key2 dataframe2二维数据
+
+```python
+day_close = pandas.read_hdf("test.h5")
+```
+
+```python
+# 写入数据时必须填写key
+day_close.to_hdf("test.h5",key="close")
+```
+
+
+
+
+
+#### JSON格式
+
+`pandas.read_json(path)`
+	`orient="records"`
+    `lines=True`				把一行作为一个样本
+
+```python
+# 读取json
+pandas.read_json("test.json",orient="records",lines=True)
+```
+
+```python
+# 写入到json
+df.to_json("test.json",orient="records",lines=True)
+```
+
+
+
+
+
+### 缺失值处理
+
+- isnull, notnull 判断是否存在缺失值
+- dropna删除numpy.nan标记的缺失值
+- fillna填充缺失值
+- replace替换具体某些值
+
+**1.如何进行缺失值处理？**
+
+第一种思路：删除缺失值的样本
+
+第二种思路：替换/插补
+
+```python
+# 1.判断数据中是否存在NaN
+pandas.isnull(df)
+pandas.notnull(df)
+# 2.删除含有缺失值的样本
+df.dropna(inplace=False)
+# 2.或者替换/插补
+df.fillna(value,inplace=False)
+```
+
+
+
+**2.缺失值处理实例**
+
+```python
+import pandas
+import numpy
+movie = pandas.read_csv("move.csv")
+numpy.any(pandas.isnull(movie)) # 返回True，说明数据中含有缺失值
+data1 = movie.dropna()
+# 方法2：替换
+movie["Revenue(Millions)"].fillna(movie["Revenue(Millions)"].mean(),inplace=True)
+```
+
+
+
+缺失值不是nan，有默认标记的
+
+```python
+# 读取数据
+path = "test.csv"
+pandas.read_csv(path)
+data_new = data.replace(to_replace='?',value=np.nan)
+```
+
+
+
+
+
+### 数据离散化
+
+连续属性的离散化就是将连续属性的值域上，**将值域划分为若干个离散的区间**，最后用不同的符号或整数值代表落在每个子区间中的属性值。
+
+
+
+one-hot编码&哑变量
+
+**为什么要实现数据的离散化？**
+
+
+
+如何实现数据的离散化？
+
+```python
+# 1.准备数据
+data = pd.Series([165,174,160,180,159,163,192,184], index=['No1:165', 'No2:174','No3:160', 'No4:180', 'No5:159', 'No6:163', 'No7:192', 'No8:184'])
+# 2.分组
+sr = pd.qcut(data,3)
+# 3.转换成one-hot编码
+pd.get_dummies(sr,prefix="height")
+```
+
+
+
+**案例：股票的涨跌幅数据离散化**
+
+```python
+# 1.读取数据
+pd.read_csv("stock_day.csv")
+p_change = stock["p_change"]
+# 2.分组
+sr = pd.qcut(p_change,10)	#把p_change分成10组
+# 3.离散化
+pd.get_dummies(sr,prefix="涨跌幅")
+```
+
+
+
+
+
+### 合并
+
+
+
+#### 按方向拼接
+
+**pandas.concat([data1,data2],axis=1)**
+
+按照行或者列进行合并，axis=0为列索引，axis=1为行索引。
+
+```python
+# 处理好的one-hot编码与原始数据合并
+pd.concat([stock,stock_change],axis=1)
+```
+
+
+
+#### 按索引拼接
+
+**pandas.merge()**
+
+```python
+pd.merge(left,right,how="inner",on=[索引])
+```
+
+左连接：以左表为准
+
+右连接：以右表为准
+
+外连接：
+
+**内连接：**
+
+
+
+
+
+### 交叉表与透视表
+
+找到，探索两个变量之间的关系。
+
+
+
+**使用交叉表(crosstab)实现**
+
+```python
+# 星期数据以及涨跌幅数据
+# pd.crosstab(星期数据列，涨跌幅数据列)
+# 准备星期数据列
+stock.index
+# 准备涨跌幅数据列
+stock["pona"] = np.where(stock["p_change"]>0,1,0)
+
+# pandas日期类型
+pd.to_datetime(stock.index)
+stock["week"] = date.weekday
+
+#交叉表
+data = pd.crosstab(stock["week"],stock["pona"])
+data.div(data.sum(axis=1),axis=0)
+```
+
+
+
+**透视表操作**
+
+可以直接展示比例的结果
+
+```python
+stock.pivot_table(["pona"],index=["week"])
+```
+
+
+
+
+
+### 分组与聚合
+
+**什么是分组与聚合？**
+
+```python
+col =pd.DataFrame({'color': ['white','red','green','red','green'], 'object': ['pen','pencil','pencil','ashtray','pen'],'price1':[5.56,4.20,1.30,0.56,2.75],'price2':[4.75,4.12,1.60,0.75,3.15]})
+
+# 进行分组，对颜色分组，price1进行聚合
+# 用dataframe的方法进行分组
+col.groupby(by="color")["price1"].max()
+```
+
+**示例：**
+
+```python
+# 按照国家分组，求出每个国家的星巴克零售店数量
+starbucks.groupby("Country").count()["brand"]
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
