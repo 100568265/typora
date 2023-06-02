@@ -3205,6 +3205,162 @@ string是C++风格的字符串，string本质上是一个类。
 
 string类内部封装了很多成员方法
 
+例如：find，copy，delete，replace，insert
+
+
+
+### 构造函数
+
+```cpp
+std::string s1;  					//默认构造
+const char* str = "hello world";	//C语言风格
+std::string s2(str);				//C风格字符串构造
+std::string s3(s2);					//拷贝构造
+std::string s4(10,'a');				//10个字符a拼接成一个字符串
+```
+
+
+
+
+
+### 赋值操作
+
+```cpp
+string str1;
+str1 = "hello world";
+string str2 = str1;
+
+//把字符串s的前n个字符赋值给当前字符串
+string str5;
+str5.assign("hello C++",5);		//str5是"hello"
+```
+
+
+
+
+
+### 字符串拼接
+
+```cpp
+string str1 = "我";
+str1 += "爱玩游戏";
+
+//append方式
+string s3 = "I";
+str3.append(" love ");
+//截取字符串然后拼接
+str3.append(str2,4,3);
+```
+
+
+
+
+
+### 查找和替换
+
+**功能描述：**
+
+- 查找：查找指定字符串是否存在
+- 替换：在指定的位置替换字符串
+
+**函数原型：**
+
+```cpp
+int find(const string& str, int pos = 0) const;			//查找str第一次出现位置,从pos开始查找
+int find(const char* s, int pos = e) const;				//查找s第一次出现位置,从pos开始查找
+int find(const char* s, int pos, int n) const;			//从pos位置查找s的前n个字符第一次位置
+int find(const char c, int pos = 0) const;				//查找字符c第一次出现位置
+int rfind(const string& str, int pos = npos) const;		//查找str最后一次位置,从pos开始查找
+int rfind(const char* s, int pos = npos) const;			//查找s最后一次出现位置,从pos开始查找//从pos查找s的前n个字符最后一次位置
+int rfind(const char* s, int pos, int n) const;			//从pos查找s的前n个字符最后一次位置
+int rfind(const char c, int pos = 0) const;				//查找字符C最后一次出现位置
+string& replace(int pos, int n, const string& str);		//替换从pos开始n个字符为字符串str
+string& replace(int pos, int n,const char* s);			//替换从pos开始的n个字符为字符串s
+```
+
+
+
+
+
+### 字符串比较
+
+**比较方式：**
+
+- 字符串比较是按字符的ASCII码进行对比，=返回0，>返回1，<返回-1
+
+**函数原型：**
+
+```cpp
+int compare(const string &S) const;		//与字符串s比较
+int compare(const char *s) const;		//与字符串s比较
+```
+
+
+
+
+
+### 字符存取
+
+1. 通过`[]`访问单个字符
+
+2. 通过`at`访问单个字符
+
+```cpp
+string str = "hello";
+//1.通过[]访问单个字符
+for(int i=0;i<str.size();i++)
+	cout << str[i] << " ";
+//2.通过at访问单个字符
+for(int i=0;i<str.size();i++)
+    cout << str.at(i) << " ";
+```
+
+
+
+
+
+### 插入和删除
+
+```cpp
+string& insert(int pos, const char* s);			//插入字符串
+string& insert(int pos, const string& str);		//插入字符串
+string& insert(int pos, int n, char c);			//在指定位置插入n个字符
+string& erase(int pos, int n = npos);			//删除从Pos开始的n个字符
+```
+
+
+
+
+
+### 字串获取
+
+```cpp
+string str = "abcedf";
+string subStr = str.substr(1,3);		//bcd
+```
+
+
+
+
+
+
+
+## vector容器
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
