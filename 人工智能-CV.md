@@ -3188,7 +3188,22 @@ std::for_each(v.begin(),v.end(), myPrint);
 
 
 
+## string容器
 
+string是C++风格的字符串，string本质上是一个类。
+
+
+
+**string和char*的区别：**
+
+- `char*`是一个指针
+- string是一个类，类内部封装了`char*`，管理这个字符串，是一个`char*`型的容器
+
+
+
+**特点：**
+
+string类内部封装了很多成员方法
 
 
 
