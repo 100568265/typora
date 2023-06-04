@@ -472,7 +472,7 @@ class Student:
 
 
 
-![image-20230523013622023](./assets/image-20230523013622023.png)
+![image-20230523013622023](C:/Users/win/Desktop/%25E5%25AD%25A6%25E4%25B9%25A0/Typora%25E7%25AC%2594%25E8%25AE%25B0%25E6%259C%25AC/assets/image-20230523013622023.png)
 
 
 
@@ -655,7 +655,7 @@ new_my_str.strip("12")		#去掉字符串1和2
 
 **方法汇总：**
 
-![image-20230523101227927](./assets/image-20230523101227927.png)
+![image-20230523101227927](C:/Users/win/Desktop/%25E5%25AD%25A6%25E4%25B9%25A0/Typora%25E7%25AC%2594%25E8%25AE%25B0%25E6%259C%25AC/assets/image-20230523101227927.png)
 
 
 
@@ -860,7 +860,7 @@ for key in my_dict:
 
 **数据容器总结**
 
-![image-20230523115615131](./assets/image-20230523115615131.png)
+![image-20230523115615131](C:/Users/win/Desktop/%25E5%25AD%25A6%25E4%25B9%25A0/Typora%25E7%25AC%2594%25E8%25AE%25B0%25E6%259C%25AC/assets/image-20230523115615131.png)
 
 
 
@@ -1900,7 +1900,7 @@ plt.show()
 
 **dpi：**图像清晰度
 
-![image-20230529154818581](./assets/image-20230529154818581.png)
+![image-20230529154818581](C:/Users/win/Desktop/%25E5%25AD%25A6%25E4%25B9%25A0/Typora%25E7%25AC%2594%25E8%25AE%25B0%25E6%259C%25AC/assets/image-20230529154818581.png)
 
 
 
@@ -2124,7 +2124,7 @@ plt.show()
 
 ### **总结**
 
-![image-20230530125157378](./assets/image-20230530125157378.png)
+![image-20230530125157378](C:/Users/win/Desktop/%25E5%25AD%25A6%25E4%25B9%25A0/Typora%25E7%25AC%2594%25E8%25AE%25B0%25E6%259C%25AC/assets/image-20230530125157378.png)
 
 
 
@@ -2237,7 +2237,7 @@ plt.hist(data1,1000)
 plt.show()
 ```
 
-![下载](./assets/%E4%B8%8B%E8%BD%BD.png)
+![下载](C:/Users/win/Desktop/%25E5%25AD%25A6%25E4%25B9%25A0/Typora%25E7%25AC%2594%25E8%25AE%25B0%25E6%259C%25AC/assets/%25E4%25B8%258B%25E8%25BD%25BD.png)
 
 
 
@@ -2247,19 +2247,19 @@ plt.show()
 
 μ决定了其位置，其标准差σ。决定了分布的幅度。当μ=0，σ=1时的正态分布是**标准正态分布**。
 
-<img src="./assets/image-20230530150722294.png" alt="image-20230530150722294" style="zoom:50%;" />
+<img src="C:/Users/win/Desktop/%25E5%25AD%25A6%25E4%25B9%25A0/Typora%25E7%25AC%2594%25E8%25AE%25B0%25E6%259C%25AC/assets/image-20230530150722294.png" alt="image-20230530150722294" style="zoom:50%;" />
 
-![image-20230530150516721](./assets/image-20230530150516721.png)
+![image-20230530150516721](C:/Users/win/Desktop/%25E5%25AD%25A6%25E4%25B9%25A0/Typora%25E7%25AC%2594%25E8%25AE%25B0%25E6%259C%25AC/assets/image-20230530150516721.png)
 
 **方差**
 
 在概率论和统计学中衡量一组数据**离散程度**的度量。
 
-![image-20230530151046929](./assets/image-20230530151046929.png)
+![image-20230530151046929](C:/Users/win/Desktop/%25E5%25AD%25A6%25E4%25B9%25A0/Typora%25E7%25AC%2594%25E8%25AE%25B0%25E6%259C%25AC/assets/image-20230530151046929.png)
 
 其中M为平均值，n为数据总个数，S为标准差，S^2可以理解为一个整体方差。
 
-<img src="./assets/image-20230530152634461.png" alt="image-20230530152634461" style="zoom: 50%;" />
+<img src="C:/Users/win/Desktop/%25E5%25AD%25A6%25E4%25B9%25A0/Typora%25E7%25AC%2594%25E8%25AE%25B0%25E6%259C%25AC/assets/image-20230530152634461.png" alt="image-20230530152634461" style="zoom: 50%;" />
 
 **标准差和方差的意义**
 
@@ -2280,7 +2280,7 @@ plt.hist(data2,1000)
 plt.show()
 ```
 
-![image-20230530153003269](./assets/image-20230530153003269.png)
+![image-20230530153003269](C:/Users/win/Desktop/%25E5%25AD%25A6%25E4%25B9%25A0/Typora%25E7%25AC%2594%25E8%25AE%25B0%25E6%259C%25AC/assets/image-20230530153003269.png)
 
 
 
@@ -2503,7 +2503,7 @@ data_mat = np.mat([[80, 86],
 
 **矩阵乘法运算**
 
-![image-20230530222813906](./assets/image-20230530222813906.png)
+![image-20230530222813906](C:/Users/win/Desktop/%25E5%25AD%25A6%25E4%25B9%25A0/Typora%25E7%25AC%2594%25E8%25AE%25B0%25E6%259C%25AC/assets/image-20230530222813906.png)
 
 **矩阵乘法api**
 
@@ -2541,19 +2541,19 @@ data_mat * weights						# 两个矩阵直接用 *
 
 np.hstack()：
 
-![image-20230530224524067](./assets/image-20230530224524067.png)
+![image-20230530224524067](C:/Users/win/Desktop/%25E5%25AD%25A6%25E4%25B9%25A0/Typora%25E7%25AC%2594%25E8%25AE%25B0%25E6%259C%25AC/assets/image-20230530224524067.png)
 
 
 
 np.vstack()：
 
-![image-20230530224600732](./assets/image-20230530224600732.png)
+![image-20230530224600732](C:/Users/win/Desktop/%25E5%25AD%25A6%25E4%25B9%25A0/Typora%25E7%25AC%2594%25E8%25AE%25B0%25E6%259C%25AC/assets/image-20230530224600732.png)
 
 
 
 np.concatenate()：
 
-![image-20230530224647880](./assets/image-20230530224647880.png)
+![image-20230530224647880](C:/Users/win/Desktop/%25E5%25AD%25A6%25E4%25B9%25A0/Typora%25E7%25AC%2594%25E8%25AE%25B0%25E6%259C%25AC/assets/image-20230530224647880.png)
 
 
 
@@ -2773,7 +2773,7 @@ sr=data["price_change"]
 
 #### 算术运算
 
-![image-20230531105932533](./assets/image-20230531105932533.png)
+![image-20230531105932533](C:/Users/win/Desktop/%25E5%25AD%25A6%25E4%25B9%25A0/Typora%25E7%25AC%2594%25E8%25AE%25B0%25E6%259C%25AC/assets/image-20230531105932533.png)
 
 ```python
 data["open"].add(3).head()
@@ -3089,279 +3089,6 @@ col.groupby(by="color")["price1"].max()
 # 按照国家分组，求出每个国家的星巴克零售店数量
 starbucks.groupby("Country").count()["brand"]
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# C++容器
-
-
-
-**STL6大组件**
-
-容器，算法，迭代器，仿函数，适配器，空间配置器
-
-
-
-
-
-容器，迭代器例子：
-
-```cpp
-//创建了一个vector容器，数组
-std::vector<int> v;
-v.push_back(10);
-v.push_back(20);
-v.push_back(30);
-v.push_back(40);
-//通过迭代器访问容器中的数据
-std::vector<int>::iterator itBegin = v.begin(); //起始迭代器
-std::vector<int>::iterator itEnd = v.end(); //指向容器中最后一个元素下一个位置
-//第一种遍历方式
-while (itBegin!=itEnd)
-{
-    std::cout << *itBegin++ << "\t";
-}
-std::cout << std::endl;
-//第二种遍历方式
-for(std::vector<int>::iterator it=v.begin();it<v.end();it++)
-{
-    std::cout << *it << "\t";
-}
-std::cout << std::endl;
-//第三种遍历方式
-std::for_each(v.begin(),v.end(), myPrint);
-```
-
-
-
-
-
-## string容器
-
-string是C++风格的字符串，string本质上是一个类。
-
-
-
-**string和char*的区别：**
-
-- `char*`是一个指针
-- string是一个类，类内部封装了`char*`，管理这个字符串，是一个`char*`型的容器
-
-
-
-**特点：**
-
-string类内部封装了很多成员方法
-
-例如：find，copy，delete，replace，insert
-
-
-
-### 构造函数
-
-```cpp
-std::string s1;  					//默认构造
-const char* str = "hello world";	//C语言风格
-std::string s2(str);				//C风格字符串构造
-std::string s3(s2);					//拷贝构造
-std::string s4(10,'a');				//10个字符a拼接成一个字符串
-```
-
-
-
-
-
-### 赋值操作
-
-```cpp
-string str1;
-str1 = "hello world";
-string str2 = str1;
-
-//把字符串s的前n个字符赋值给当前字符串
-string str5;
-str5.assign("hello C++",5);		//str5是"hello"
-```
-
-
-
-
-
-### 字符串拼接
-
-```cpp
-string str1 = "我";
-str1 += "爱玩游戏";
-
-//append方式
-string s3 = "I";
-str3.append(" love ");
-//截取字符串然后拼接
-str3.append(str2,4,3);
-```
-
-
-
-
-
-### 查找和替换
-
-**功能描述：**
-
-- 查找：查找指定字符串是否存在
-- 替换：在指定的位置替换字符串
-
-**函数原型：**
-
-```cpp
-int find(const string& str, int pos = 0) const;			//查找str第一次出现位置,从pos开始查找
-int find(const char* s, int pos = e) const;				//查找s第一次出现位置,从pos开始查找
-int find(const char* s, int pos, int n) const;			//从pos位置查找s的前n个字符第一次位置
-int find(const char c, int pos = 0) const;				//查找字符c第一次出现位置
-int rfind(const string& str, int pos = npos) const;		//查找str最后一次位置,从pos开始查找
-int rfind(const char* s, int pos = npos) const;			//查找s最后一次出现位置,从pos开始查找//从pos查找s的前n个字符最后一次位置
-int rfind(const char* s, int pos, int n) const;			//从pos查找s的前n个字符最后一次位置
-int rfind(const char c, int pos = 0) const;				//查找字符C最后一次出现位置
-string& replace(int pos, int n, const string& str);		//替换从pos开始n个字符为字符串str
-string& replace(int pos, int n,const char* s);			//替换从pos开始的n个字符为字符串s
-```
-
-
-
-
-
-### 字符串比较
-
-**比较方式：**
-
-- 字符串比较是按字符的ASCII码进行对比，=返回0，>返回1，<返回-1
-
-**函数原型：**
-
-```cpp
-int compare(const string &S) const;		//与字符串s比较
-int compare(const char *s) const;		//与字符串s比较
-```
-
-
-
-
-
-### 字符存取
-
-1. 通过`[]`访问单个字符
-
-2. 通过`at`访问单个字符
-
-```cpp
-string str = "hello";
-//1.通过[]访问单个字符
-for(int i=0;i<str.size();i++)
-	cout << str[i] << " ";
-//2.通过at访问单个字符
-for(int i=0;i<str.size();i++)
-    cout << str.at(i) << " ";
-```
-
-
-
-
-
-### 插入和删除
-
-```cpp
-string& insert(int pos, const char* s);			//插入字符串
-string& insert(int pos, const string& str);		//插入字符串
-string& insert(int pos, int n, char c);			//在指定位置插入n个字符
-string& erase(int pos, int n = npos);			//删除从Pos开始的n个字符
-```
-
-
-
-
-
-### 字串获取
-
-```cpp
-string str = "abcedf";
-string subStr = str.substr(1,3);		//bcd
-```
-
-
-
-
-
-
-
-## vector容器
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
