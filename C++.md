@@ -146,6 +146,40 @@ return 0;
 
 
 
+## 数组
+
+数组是一系列元素。
+
+数组中所有元素的类型都相同(C++)。
+
+
+
+**注意：**
+
+您可从只包含10 个元素的数组中取回索引为1001 的元素，但这样做将给程序带来安全和稳定性方面的风险。访问数组时，**确保不超越其边界是程序员的职责**。
+
+
+
+
+
+**动态数组**
+
+C++提供了`std::vector`，这是一种方便而易于使用的动态数组。
+
+```cpp
+std::vector<int> dynArray(3);   //dyn array of int
+dynArray[0] = 365;
+dynArray[1] = -421;
+dynArray[2] = 789;
+std::cout << "Number of integers in array: " << dynArray.size() << std::endl;
+std::cout << "Enter an element to insert" << std::endl;
+int newNum;
+std::cin >> newNum;
+dynArray.push_back(newNum);
+std::cout << "Number of integers in array: " << dynArray.size() << std::endl;
+std::cout << "Last element in array: ";
+std::cout << dynArray[dynArray.size() - 1] << std::endl;
+```
 
 
 
@@ -153,16 +187,116 @@ return 0;
 
 
 
+## 字符串
+
+
+
+**1.C风格字符串**
+
+```cpp
+char sayHello[] = {'H', 'e', 'l', 'l', 'o','\0'};
+```
+
+该数组的最后一个字符为空字符`'\0'`。这也被称为字符串结束字符，因为它告诉编译器，字符串到此结束。
+
+您在代码中使用**字符串字面量**时，编译器将负责在它后面添加‘\0’。
+
+在数组中间插入`'\0'`并**不会改变数组的长度**，而只会导致将该数组作为输入的字符串处理将到这个位置结束。
 
 
 
 
 
+**2.C++字符串**
+
+使用`std::string`。
+
+不同于字符数组（C 风格字符串实现），`std::string` 是动态的。
+
+
+
+`length()`：获取字符串的长度
+
+```cpp
+string greetString ("Hello std::string!");
+cout << greetString << endl;
+cout << "Enter a line of text: " << endl;
+string firstLine;
+getline(cin, firstLine);
+cout << "Enter another: " << endl;
+string secondLine;
+getline(cin, secondLine);
+cout << "Result of concatenation: " << endl;
+string concatString = firstLine + " " + secondLine;
+cout << concatString << endl;
+cout << "Copy of concatenated string: " << endl;
+string aCopy;
+aCopy = concatString;
+cout << aCopy << endl;
+cout << "Length of concat string: " << concatString.length() << endl;
+```
 
 
 
 
 
+## 左值和右值
+
+**左值通常是内存单元**。在前面的示例中，变量实际上指向一个内存单元，属于左值。
+
+另一方面，**右值可以是内存单元的内容**。
+
+因此，所有的左值都可用作右值，但并非所有的右值都可用作左值。
+
+
+
+
+
+## 按位运算符
+
+NOT(~), AND(&), OR(|), XOR(^)
+
+按位运算符返回的**并非布尔值**，而是对操作数**对应位**执行指定运算的结果。
+
+`~`：将每一位取反。
+
+`^`：对相应位执行XOR运算。
+
+
+
+这个程序使用了一种还未介绍过的数据类型—`bitset`，旨在简化二进制数据的显示。
+
+```cpp
+#include <iostream>
+#include <bitset>
+
+using namespace std;
+int main()
+{
+cout << "Enter a number (0 - 255): ";
+unsigned short inputNum = 0;
+cin >> inputNum;
+bitset<8> inputBits (inputNum);
+cout << inputNum << " in binary is " << inputBits << endl;
+
+bitset<8> bitwiseNOT = (~inputNum);
+cout << "Logical NOT ~" << endl;
+cout << "~" << inputBits << " = " << bitwiseNOT << endl;
+
+cout << "Logical AND, & with 00001111" << endl;
+bitset<8> bitwiseAND = (0x0F & inputNum);
+cout << "0001111 & " << inputBits << " = " << bitwiseAND << endl;
+cout << "Logical OR, | with 00001111" << endl;
+bitset<8> bitwiseOR = (0x0F | inputNum);
+cout << "00001111 | " << inputBits << " = " << bitwiseOR << endl;
+
+cout << "Logical XOR, ^ with 00001111" << endl;
+bitset<8> bitwiseXOR = (0x0F ^ inputNum);
+cout << "00001111 ^ " << inputBits << " = " << bitwiseXOR << endl;
+
+return 0;
+}
+```
 
 
 
