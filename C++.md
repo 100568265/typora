@@ -1,4 +1,4 @@
-# C++语法
+# C++基础
 
 
 
@@ -327,6 +327,375 @@ for (int aNum : someNums)// range based for
 for (auto anElement : elements) // range based for
     cout << "Array elements are " << anElement << endl;
 ```
+
+
+
+
+
+
+
+
+
+## 函数
+
+**函数参数：**
+
+- 引用传递：将参数的实体传给函数
+- 值传递：将参数的一份拷贝传给函数
+
+
+
+**函数调用：**
+
+函数被调用时，所有局部变量都在栈中实例化，即被压入栈中。
+
+函数执行完毕时，这些局部变量都从栈中弹出，栈指针返回到原来的地方。
+
+
+
+
+
+**内联函数**
+
+常规函数调用被转换为CALL 指令，这会导致栈操作、微处理器跳转到函数处执行等。
+
+听起来在幕后发生了很多事情，如果函数非常简单，类似于下面这样又如何呢？
+
+```cpp
+double GetPi()
+{
+return 3.14159;
+}
+```
+
+相对于实际执行`GetPi( )`所需的时间，执行函数调用的开销可能非常高。
+
+这就是C++编译器允许程序员将这样的函数声明为内联的原因。程序员使用关键字`inline` 发出请求，**要求在函数被调用时就地展开它们：**
+
+```cpp
+inline double GetPi()
+{
+return 3.14159;
+}
+```
+
+编译器通常将该关键字视为请求，请求将函数的内容直接放到调用它的地方，以**提高代码的执行速度**。
+
+
+
+将函数声明为内联的会导致代码急剧膨胀，在声明为内联的函数做了大量复杂处理时尤其如此。应尽可能少用关键字inline，仅当函数非常简单，需要降低其开销时，才应使用该关键字。
+
+
+
+
+
+
+
+## 指针和引用
+
+
+
+### 指针
+
+指针是一种指向内存空间的特殊变量。
+
+与大多数变量一样，除非对指针进行初始化，否则它包含的**值将是随机的**。
+
+因此将指针初始化为`NULL`。`NULL` 是一个可以检查的值，且不会是内存地址：
+
+```cpp
+int &pointsToInt = NULL;
+```
+
+**未初始化的指针**可能导致程序访问**非法内存单元**，进而导致程序崩溃。
+
+
+
+
+
+```cpp
+//以下代码有什么错误？
+int* pointToAnInt = new int;
+int* pNumberCopy = pointToAnInt;	//pNumberCopy和pointToAnInt指向同一块内存空间
+*pNumberCopy = 30;
+std::cout << *pointToAnInt;
+delete pNumberCopy;
+delete pointToAnInt;
+return 0;
+
+//pNumberCopy和pointToAnInt指向同一块内存空间，delete时不能重复delete
+```
+
+
+
+
+
+
+
+**（++和−−）用于指针的结果**
+
+将指针递增或递减时，其包含的地址将增加或减少指向的数据类型的`sizeof`。
+
+会指向下一个数据项的地址。
+
+
+
+### 动态分配内存
+
+使用new 和delete 动态地分配和释放内存。
+
+通常情况下，如果成功，new 将返回指向一个指针，指向分配的内存，否则将引发异常。
+
+```cpp
+int* pointToAnInt = new int; // get a pointer to an integer
+int* pointToNums = new int[10]; // pointer to a block of 10 integers
+```
+
+使用`new` 分配的内存最终都需使用对应的`delete` 进行释放：
+
+```cpp
+delete pointToAnInt;
+delete[] pointToNums;
+```
+
+
+
+
+
+**问：下面的两个声明有何不同？**
+
+```cpp
+int myNumbers[100];		//myNumbers是一个数组，指向这样的内存单元的开头
+int* myArrays[100];		//myArrays是一个包含100个元素的指针数组，其中每个指针都可指向int或int数组
+```
+
+
+
+
+
+### const
+
+const 指针有如下三种：
+
+**指针包含的地址是常量，不能修改，但可修改指针指向的数据：**
+
+```cpp
+int daysInMonth = 30;
+int* const pDaysInMonth = &daysInMonth;
+*pDaysInMonth = 31; // OK! Data pointed to can be changed
+
+int daysInLunarMonth = 28;
+pDaysInMonth = &daysInLunarMonth; // Not OK! Cannot change address!
+```
+
+
+
+**指针指向的数据值为常量，不能修改，但可以修改指针包含的地址：**
+
+```cpp
+int hoursInDay = 24;
+const int* pointsToInt = &hoursInDay;
+int monthsInYear = 12;
+pointsToInt = &monthsInYear; // OK!
+*pointsToInt = 13; // Not OK! Cannot change data being pointed to
+int* newPointer = pointsToInt; // Not OK! Cannot assign const to non-const
+```
+
+
+
+**指针包含的地址以及它指向的值都是常量：**
+
+```cpp
+int hoursInDay = 24;
+const int* const pHoursInDay = &hoursInDay;
+*pHoursInDay = 25; // Not OK! Cannot change data being pointed to
+int daysInMonth = 30;
+pHoursInDay = &daysInMonth; // Not OK! Cannot change address
+```
+
+
+
+
+
+
+
+### 引用
+
+要声明引用，可使用引用运算符（&），如下面的语句所示：
+
+```cpp
+VarType original = Value;
+VarType& RefVar = original;
+```
+
+
+
+**将关键字const 用于引用**
+可能需要禁止通过引用修改它指向的变量的值，为此可在声明引用时使用关键字const：
+
+```cpp
+int original = 30;
+const int& constRef = original;
+constRef = 40; // Not allowed: constRef can’t change value in original
+int& ref2 = constRef; // Not allowed: ref2 is not const
+const int& constRef2 = constRef; // OK
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# C++面向对象
+
+
+
+```cpp
+Human firstMan;		//Human类的一个实例
+firstMan.dateOfBirth = "1970";
+
+Human* firstWoman = new Human();
+firstWoman->dateOfBirth = "1970";
+```
+
+
+
+
+
+**声明和实现构造函数**
+
+构造函数是一种特殊的函数，它与类同名且不返回任何值。因此，Human 类的构造函数的声明类似于下面这样：
+
+```cpp
+class Human
+{
+public:
+Human(); // declaration of a constructor
+};
+```
+
+这个构造函数可在类声明中实现，也可在类声明外实现。在类声明中实现（定义）构造函数的代码类似于下面这样：
+
+```cpp
+// constructor implementation (definition)
+Human::Human()
+{
+// constructor code here
+}
+```
+
+`::`被称为作用域解析运算符
+
+
+
+
+
+**包含初始化列表的构造函数**
+
+
+
+
+
+## 封装
+
+**关键字public和private**
+
+```cpp
+class Human
+{
+private:
+// Private member data:
+int age;
+string name;
+public:
+int GetAge()
+{
+return age;
+}
+void SetAge(int humansAge)
+{
+age = humansAge;
+}
+// ...Other members and declarations
+};
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
