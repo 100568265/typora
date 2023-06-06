@@ -40,8 +40,8 @@ auto largeNumber = 2500000000000;
 
 - 字面常量
 - 使用关键字const 声明的常量
-- 使用关键字constexpr 声明的常量表达式（C++11 新增的）
-- 使用关键字enum 声明的枚举常量
+- 使用关键字`constexpr` 声明的常量表达式（C++11 新增的）
+- 使用关键字`enum` 声明的枚举常量
 - 使用#define 定义的常量（已摒弃，不推荐）
 
 ```cpp
@@ -59,7 +59,7 @@ const double pi = 22.0/7;
 
 ### constexpr
 
-通过关键字constexpr，可让常量声明像函数：
+通过关键字`constexpr`，可让常量声明像函数：
 
 ```cpp
 constexpr double GetPi() {return 22.0 / 7;}
@@ -95,7 +95,7 @@ return 0;
 
 需要定义一种变量，其可能取值由您指定。
 
-枚举由一组称为枚举量（emumerator）的常量组成。
+枚举由一组称为枚举量（emum）的常量组成。
 
 ```cpp
 enum CardinalDirections
@@ -302,11 +302,31 @@ return 0;
 
 
 
+## 基于范围的for
+
+```cpp
+for (VarType varName : sequence)
+{
+// Use varName that contains an element from sequence
+}
+```
+
+例如，给定一个整形数组someNums，可像下面这样使用基于范围的for 循环来读取其中的元素：
+
+```cpp
+int someNums[] = { 1, 101, -1, 40, 2040 };
+for (int aNum : someNums)// range based for
+    cout << "The array elements are " << aNum << endl;
+```
 
 
 
+通过使用关键字`auto` 来自动推断变量的类型，可编写一个通用的for 循环，对任何类型的数组elements 进行处理：
 
-
+```cpp
+for (auto anElement : elements) // range based for
+    cout << "Array elements are " << anElement << endl;
+```
 
 
 
