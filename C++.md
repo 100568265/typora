@@ -571,6 +571,10 @@ firstWoman->dateOfBirth = "1970";
 
 
 
+## 构造和析构
+
+
+
 **声明和实现构造函数**
 
 构造函数是一种特殊的函数，它与类同名且不返回任何值。因此，Human 类的构造函数的声明类似于下面这样：
@@ -600,6 +604,250 @@ Human::Human()
 
 
 **包含初始化列表的构造函数**
+
+初始化列表由包含在括号中的参数声明后面的冒号标识，冒号后面列出了各个成员变量及其初始
+值。
+
+```cpp
+class Human
+{
+private:
+string name;
+int age;
+public:
+// two parameters to initialize members age and name
+Human(string humansName, int humansAge)
+:name(humansName), age(humansAge)
+{
+cout << "Constructed a human called " << name;
+cout << ", " << age << " years old" << endl;
+}
+// ... other class members
+};
+```
+
+
+
+**析构函数**
+
+与构造函数一样，析构函数也是一种特殊的函数。构造函数在实例化对象时被调用，而析构函数
+**在对象销毁时自动被调用**。
+
+
+
+
+
+## **浅拷贝浅拷贝**
+
+一个指针成员buffer，它指向动态分配的内存（这些内存是在构造函数中使用new 分配的，并在析构函数中使用delete[]进行释放）。复制这个类的对象时，将复制其指针成员，但不复制指针指向的缓冲区，其结果是两个对象指向同一块动态分配的内存。销毁其中一个对象时，delete[]释放这个内存块，导致另一个对象存储的指针拷贝无效。这种复制被称为浅复制，会威胁程序的稳定性。
+
+```cpp
+#include <iostream>
+#include <string.h>
+using namespace std;
+class MyString
+{
+private:
+	char* buffer;
+public:
+	MyString(const char* initString) // Constructor
+	{
+		buffer = NULL;
+		if(initString != NULL)
+		{
+			buffer = new char[strlen(initString) + 1];
+			strcpy(buffer, initString);
+		}
+    }
+	~MyString() // Destructor
+	{
+		cout << "Invoking destructor, clearing up" << endl;
+		delete [] buffer;
+	}
+	int GetLength()
+	{ return strlen(buffer); }
+    
+	const char* GetString()
+	{ return buffer; }
+};
+
+void UseMyString(MyString str)
+{
+	cout << "String buffer in MyString is " << str.GetLength();
+	cout << " characters long" << endl;
+	cout << "buffer contains: " << str.GetString() << endl;
+	return;
+}
+
+int main()
+{
+	MyString sayHello("Hello from String Class");
+	UseMyString(sayHello);
+	return 0;
+}
+```
+
+`sayHello.buffer` 包含的指针值被复制到str 中，即`sayHello.buffer` 和`str.buffer` 指向同一个内存单元
+
+函数`UseMyString( )`返回时，变量str 不再在作用域内，因此被销毁。为此，将调用`MyString` 类的析构函数，而该析构函数使用delete[]释放分配给buffer 的内存。这将导致main( )中的对象`sayHello` 指向的内存无效。
+
+而等main( )执行完毕时，`sayHello` 将不再在作用域内，进而被销毁。但这次第22 行对不再有效的内存地址调用delete（销毁str 时释放了该内存，导致它无效）。正是这种重复调用delete 导致了程序崩溃。
+
+
+
+
+
+**使用深拷贝**
+
+为`MyString` 类声明复制构造函数的语法如下：
+
+```cpp
+class MyString
+{
+MyString(const MyString& copySource); // copy constructor
+};
+
+MyString::MyString(const MyString& copySource)
+{
+	buffer = NULL;
+	if(copySource.buffer != NULL)
+	{
+		// allocate own buffer
+		buffer = new char [strlen(copySource.buffer) + 1];
+		// deep copy from the source into local buffer
+		strcpy(buffer, copySource.buffer);
+		cout << "buffer points to: 0x" << hex;
+		cout << (unsigned int*)buffer << endl;
+	}
+}
+```
+
+这里并非浅复制（复制指针的值），而是深复制，即将指向的内容复制到给当前对象新分配的缓冲区中。
+
+
+
+**注意：**
+
+类包含原始指针成员（char *等）时，务必编写复制构造函数和复制赋值运算符。
+
+编写复制构造函数时，务必将接受源对象的参数声明为const 引用。
+
+
+
+如果您编写类时需要包含字符串成员，用于存储姓名等，应使用std::string 而不是char*。在没有使用原始指针的情况下，您都不需要编写复制构造函数。这是因为编译器添加的默认复制构造函数将调用成员对象（如std::string）的复制构造函数。
+
+
+
+
+
+**移动构造函数**
+
+C++编译器严格地调用复制构造函数反而降低了性能，如果复制的对象很大，对性能的影响将很严重。为避免这种性能瓶颈，C++11 引入了移动构造函数。移动构造函数的语法如下：
+
+```cpp
+// move constructor
+MyString(MyString&& moveSource)
+{
+	if(moveSource.buffer != NULL)
+	{
+		buffer = moveSource.buffer; // take ownership i.e. 'move'
+		moveSource.buffer = NULL; // set the move source to NULL
+	}
+}
+
+MyString sayHelloAgain(Copy(sayHello)); // invokes 1x copy, 1x move constructors
+```
+
+
+
+
+
+**创建单例类**
+
+要创建单例类，关键字`static` 必不可少。
+
+
+
+
+
+
+
+
+
+## 友元
+
+不能从外部访问类的私有数据成员和方法，但这条规则不适用于友元类和友元函数。
+
+```cpp
+class Human
+{
+private:
+	friend void DisplayAge(const Human& person);
+	string name;
+	int age;
+
+public:
+	Human(string humansName, int humansAge)
+	{
+		name = humansName;
+		age = humansAge;
+	}
+};
+
+void DisplayAge(const Human& person)
+{
+cout << person.age << endl;
+}
+
+
+int main()
+{
+	Human firstMan("Adam", 25);
+	cout << "Accessing private member age via friend function: ";
+	DisplayAge(firstMan);
+    return 0;
+}
+```
+
+函数`DisplayAge( )`是全局函数，还是Human 类的友元，因此能够访问Human 类的私有数据成员。
+
+
+
+
+
+使用关键字friend 让外部类Utility 能够访问私有数据成员。
+
+```cpp
+class Human
+{
+private:
+	friend class Utility;
+	string name;
+	int age;
+    
+public:
+	Human(string humansName, int humansAge)
+	{
+		name = humansName;
+		age = humansAge;
+	}
+};
+
+class Utility
+{
+public:
+	static void DisplayAge(const Human& person)
+	{
+		cout << person.age << endl;
+	}
+};
+```
+
+
+
+
+
+
 
 
 
