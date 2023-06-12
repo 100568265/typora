@@ -881,6 +881,103 @@ age = humansAge;
 
 
 
+## 继承
+
+C++派生语法如下：
+
+```cpp
+class Base
+{
+// ... base class members
+};
+class Derived: access-specifier Base
+{
+// ... derived class members
+};
+```
+
+其中access-specifier 可以是public（这是最常见的，表示派生类是一个基类）、private 或protected(表示派生类有一个基类）。
+
+
+
+### **私有继承**
+
+指定派生类的基类时使用关键字private：
+
+```cpp
+class Base
+{
+	// ... base class members and methods
+};
+
+class Derived: private Base // private inheritance
+{
+	// ... derived class members and methods
+};
+```
+
+私有继承意味着即便是Base 类的公有成员和方法，也只能被Derived 类使用，**而无法通过Derived 实例来使用它们**。
+
+
+
+
+
+
+
+### **保护继承**
+
+将属性声明为**protected**时，相当于允许**派生类**和**友元类**访问它，但禁止在继承层次结构外部（包括main( )）访问它。
+
+
+
+
+
+**调用基类中被覆盖的方法**
+
+```cpp
+Tuna myDinner;
+myDinner.Swim(); // will invoke Tuna::Swim()
+myDinner.Fish::Swim();
+```
+
+
+
+
+
+### **切除问题**
+
+```cpp
+Derived objDerived;
+Base objectBase = objDerived;
+
+void UseBase(Base input);
+...
+Derived objDerived;
+UseBase(objDerived); // copy of objDerived will be sliced and sent
+```
+
+编译器将只复制`objDerived` 的Base 部分，即不是整个对象。
+
+要避免切除问题，不要按值传递参数，而应以指向基类的指针或const 引用的方式传递。
+
+
+
+
+
+### final禁止继承
+
+```cpp
+class Platypus final: public Mammal, public Bird
+{
+public:
+	void Swim()
+	{
+		cout << "Platypus: Voila, I can swim!" << endl;
+	}
+};
+```
+
+除用于类外，还可将final 用于成员函数来控制多态行为.
 
 
 
@@ -890,44 +987,172 @@ age = humansAge;
 
 
 
+## 多态
+
+**使用虚函数实现多态行为**
+
+通过使用关键字`virtual`，可确保编译器调用覆盖版本。
+
+
+
+**虚函数的作用**
+
+当基类中的函数被声明为虚函数时，派生类可以通过相同的函数签名（函数名称、参数类型和返回类型相同）来**覆盖基类的虚函数**。在通过**基类指针**或引用调用虚函数时，根据实际对象的类型，会**动态地选择调用派生类中的函数**。
+
+
+
+如果一个函数没有被声明为虚函数，它就不能被子类直接覆盖。
+
+在这种情况下，子类只能通过定义一个具有相同名称但不同的函数来隐藏（隐藏）基类的函数。隐藏的函数只会在通过子类的对象调用时被执行，而不会在通过基类指针或引用调用时发生多态性。
+
+```cpp
+class Fish
+{
+public:
+	virtual void Swim()
+	{
+	cout << "Fish swims!" << endl;
+	}
+};
+
+class Tuna:public Fish
+{
+public:
+	// override Fish::Swim
+	void Swim()
+	{
+		cout << "Tuna swims!" << endl;
+	}
+};
+```
+
+将派生类对象视为基类对象，并执行派生类的Swim( )实现。
+
+
+
+将析构函数声明为虚函数，确保通过基类指针调用delete时，将调用派生类的析构函数。
+
+```cpp
+//基类Fish
+class Fish
+{
+public:
+	Fish()
+	{
+		cout << "Constructed Fish" << endl;
+	}
+	virtual ~Fish() // 虚析构
+	{
+		cout << "Destroyed Fish" << endl;
+	}
+};
+
+//派生类Tuna
+class Tuna:public Fish
+{
+public:
+	Tuna()
+	{
+		cout << "Constructed Tuna” << endl;
+	}
+	~Tuna()
+	{
+		cout << "Destroyed Tuna" << endl;
+	}
+};
+
+void DeleteFishMemory(Fish* pFish)
+{
+    delete pFish;
+}
+
+int main()
+{
+    Tuna* pTuna = new Tuna;
+    DeleteFishMemory(pTuna);
+}
+```
 
 
 
 
 
+### 抽象基类和纯虚函数
+
+**不能实例化的基类**被称为抽象基类。
+
+这样的基类只有一个用途，那就是从它派生出其他类。
+
+```cpp
+class AbstractBase
+{
+public:
+	virtual void DoSomething() = 0; // pure virtual
+};
+
+//该声明告诉编译器，AbstractBase的派生类必须实现方法DoSomething()
+
+class Derived: public AbstractBase
+{
+public:
+	void DoSomething()
+	{
+		cout << "Implemented virtual function" << endl;
+	}
+};
+```
 
 
 
+### override覆盖
+
+override 提供了一种强大的途径，让程序员能够明确地表达对基类的虚函数进行覆盖的意图，进而让编译器做**如下检查**：
+
+- 基类函数是否是虚函数？
+- 基类中相应虚函数的特征标是否与派生类中被声明为override 的函数完全相同？
+
+```cpp
+class Fish
+{
+public:
+	virtual void Swim()
+	{
+		cout << "Fish swims!" << endl;
+	}
+};	
+
+class Tuna:public Fish
+{
+public:
+    // Error: no virtual fn with this sig in Fish
+	void Swim() const override 
+	{
+		cout << "Tuna swims!" << endl;
+	}
+};
+```
 
 
 
+### final禁止覆盖
 
+被声明为final 的类不能用作基类。
 
+对于被声明为final 的虚函数，不能在派生类中进行覆盖。
 
+```cpp
+class Tuna:public Fish
+{
+public:
+	// override Fish::Swim and make this final
+	void Swim() override final
+	{
+		cout << "Tuna swims!" << endl;
+	}
+};
+```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+您可继承这个版本的Tuna 类，但不能进一步覆盖函数Swim()
 
 
 
