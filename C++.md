@@ -1164,6 +1164,258 @@ public:
 
 
 
+## 运算符重载
+
+**语法格式：**
+
+```cpp
+return_type operator operator_symbol (...parameter list...);
+```
+
+
+
+```cpp
+Date operator ++(int)
+{
+    Date copy(month,day,year);
+    ++day;
+    return copy;
+}
+```
+
+
+
+
+
+### <<运算符
+
+cout 不知道如何解读Date 实例,然而，cout 能够很好地显示const char *：
+
+```cpp
+std::cout << "Hello world"; // const char* works!
+```
+
+因此，要让cout 能够显示Date 对象，只需添加一个返回const char*的运算符：
+
+```cpp
+operator const char*()
+{
+	ostringstream formattedDate; // assists string construction
+	formattedDate << month << " / " << day << " / " << year;
+	dateInString = formattedDate.str();
+	return dateInString.c_str();
+}
+```
+
+可在`cout` 语句中直接使用Date 对象，因为`cout` 能够理解`const char*`
+
+
+
+
+
+### **==和!=运算符**
+
+```cpp
+bool operator==(const ClassType& param)
+{
+    //comparison code here, return true if equal, else false
+}
+```
+
+例如：比较日期是否相等
+
+```cpp
+bool operator== (const Date& compareTo)
+{
+	return ((day == compareTo.day)
+		&& (month == compareTo.month)
+		&& (year == compareTo.year));
+}
+```
+
+
+
+
+
+### **赋值运算符=**
+
+```cpp
+ClassType& operator=(const ClassType& copySource)
+{
+    if(this != &copySource) // protection against copy into self
+	{
+		// copy assignment operator implementation
+	}
+	return *this;
+}
+```
+
+
+
+
+
+### 函数运算符
+
+operator()让对象像函数，被称为函数运算符。
+
+```cpp
+class Display
+{
+public:
+	void operator () (string input) const
+	{
+ 		cout << input << endl;
+	}
+};
+
+int main ()
+{
+	Display displayFuncObj;
+	// equivalent to displayFuncObj.operator () ("Display this string! ");
+	displayFuncObj ("Display this string! ");
+    
+	return 0;
+}
+```
+
+
+
+
+
+
+
+## 类型转换运算符
+
+**C++类型转换运算符**
+
+4个C++类型转换运算符如下：
+
+- static_cast
+- dynamic_cast
+- reinterpret_cast
+- const_cast
+
+这4 个类型转换运算符的使用语法相同：
+
+```cpp
+destination_type result = cast_operator<destination_type> (object_to_cast);
+```
+
+
+
+
+
+### static_cast
+
+使用static_cast 可将指针向上转换为基类类型，也可向下转换为派生类型，如下面的示例代码所示：
+
+```cpp
+Base* objBase = new Derived();
+Derived* objDer = static_cast<Derived*>(objBase); //ok
+```
+
+
+
+将`Derived*`转换为`Base*`被称为向上转换，无需使用任何显式类型转换运算符就能进行这种转换：
+
+```cpp
+Derived objDerived;
+Base* objBase = &objDerived;
+```
+
+
+
+除用于向上转换和向下转换外，static_cast 还可在很多情况下将隐式类型转换为**显式类型**，以引起程序员或代码阅读者的注意：
+
+```cpp
+double pi = 3.14159265;
+int num = static_cast<int>Pi;
+```
+
+
+
+
+
+### dynamic_cast
+
+与静态类型转换相反，动态类型转换在运行阶段（即应用程序运行时）执行类型转换。
+
+**典型语法：**
+
+```cpp
+destination_type* Dest = dynamic_cast<class_type*>(Source);
+
+if(Dest) // Check for success of the casting operation
+Dest->CallFunc ();
+```
+
+例如：
+
+```cpp
+Base* objBase = new Derived();
+//perform a downcast
+Derived* objDer = dynamic_cast<Derived*>(objBase);
+
+if(objDer) //check for success
+    objDer->CallDerivedFunction();
+```
+
+
+
+
+
+
+
+### reinterpret_cast
+
+reinterpret_cast 是C++中与C 风格类型转换最接近的类型转换运算符。它让程序员能够将一种对象类型转换为另一种，**不管它们是否相关**；
+
+```cpp
+Base* objBase = new Base();
+Unrelated* notRelated = reinterpret_cast<Unrelated*>(objBase);
+// The code above compiles, but is not good programming!
+```
+
+这种类型转换实际上是强制编译器接受static_cast 通常不允许的类型转换，通常用于低级程序（如驱动程序）。
+
+**警告：**
+
+应尽量避免在应用程序中使用reinterpret_cast，因为它让编译器将类型X 视为不相关的类型Y，这看起来不像是优秀的设计或实现。
+
+
+
+
+
+### const_cast
+
+const_cast 让程序员能够关闭对象的访问修饰符const。
+
+```cpp
+void DisplayAllData (const SomeClass& object)
+{
+	SomeClass& refData = const_cast<SomeClass&>(object);
+	refData.DisplayMembers(); // Allowed!
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
