@@ -1406,6 +1406,30 @@ void DisplayAllData (const SomeClass& object)
 
 
 
+## 模板
+
+
+
+### 模板函数
+
+```cpp
+template <typename objType>
+const objType& GetMax(const objType& value1, const objType& value2)
+{
+	if (value1 > value2)
+		return value1;
+	else
+		return value2;
+}
+
+//下面是使用模板的示例
+int num1 = 25;
+int num2 = 40;
+int maxVal = GetMax <int> (num1, num2);
+double double1 = 1.1;
+double double2 = 1.001;
+double maxVal = GetMax <double>(double1, double2);
+```
 
 
 
@@ -1413,10 +1437,40 @@ void DisplayAllData (const SomeClass& object)
 
 
 
+### 模板类
+
+```cpp
+template <typename T>
+class HoldVarTypeT
+{
+private:
+	T value;
+public:
+	void SetValue (const T& newValue) 
+    { value = newValue; }
+	T& GetValue() {return value;}
+};
+
+//来看该模板类的一种用法
+HoldVarTypeT <int> holdInt; 
+holdInt.SetValue(5);
+cout << "The value stored is: " << holdInt.GetValue() << endl;
+```
 
 
 
 
+
+**参数重载模板**
+
+```cpp
+template<typename Res, typename First, typename... Rest>
+void Sum(Res& result, First val1, Rest... valN)
+{
+result = result + val1;
+return Sum(result, valN ...);
+}
+```
 
 
 
@@ -1450,7 +1504,23 @@ void DisplayAllData (const SomeClass& object)
 
 
 
+**顺序容器：**
 
+`std::vector`, `std::deque`, `std::list`, `std::forward_list`
+
+**关联容器：**
+
+`std::set`, `std::map`
+
+**容器适配器：**
+
+`std::stack`, `std::queue`, `std::priority_queue`
+
+
+
+
+
+## 迭代器
 
 容器，迭代器例子：
 
@@ -1478,6 +1548,18 @@ for(std::vector<int>::iterator it=v.begin();it<v.end();it++)
 std::cout << std::endl;
 //第三种遍历方式
 std::for_each(v.begin(),v.end(), myPrint);
+```
+
+
+
+```cpp
+vector <int>::iterator arrIterator = intArray.begin ();
+```
+
+上述迭代器类型定义看起来令人恐怖。如果您使用的是遵循C++11 的编译器，可将这行代码简化成下面这样：
+
+```cpp
+auto arrIterator = intArray.begin (); //compiler detects
 ```
 
 
@@ -1643,6 +1725,136 @@ string subStr = str.substr(1,3);		//bcd
 
 ## vector容器
 
+vector和数据结构**数组**十分类似，也称为单端数组，动态数组。
+
+
+
+### **vector构造**
+
+```cpp
+//1.默认构造
+vector<int> v1; //默认构造
+for(int i=0;i<10;i++)
+{
+    v1.push_back(i);
+}
+
+
+//2.通过区间方式进行构造
+vector<int> v2(v1.begin(),v2.end());
+
+//3.n个elem方式构造
+vector<int> v3(10,100);		//10个100
+
+//4.拷贝构造
+vector<int> v4(v3);
+```
+
+
+
+### **vector赋值**
+
+```cpp
+vector<int> v1;
+for(int i=0;i<10;i++)
+{
+	v1.push_back(i);
+}
+
+//1.等号赋值
+vector<int> v2;
+v2 = v1;
+
+//2.区间赋值
+vector<int> v3;
+v3.assign(v1.begin(),v1.end());
+
+//3.n个elem赋值
+vector<int> v4;
+v4.assign(10,100);
+```
+
+
+
+
+
+### vector容量和大小
+
+| 函数                    | 功能                                            |
+| ----------------------- | ----------------------------------------------- |
+| `empty()`               | 判断容器是否为空                                |
+| `capacity()`            | 容器的容量                                      |
+| `size()`                | 返回容器中元素的个数                            |
+| `resize(int num)`       | 重新指定容器长度为num                           |
+| `resize(int num, elem)` | 重新制定容器长度为num，以**`elem`**值填充新位置 |
+
+
+
+### vector插入和删除
+
+| 函数                                              | 功能                                  |
+| ------------------------------------------------- | ------------------------------------- |
+| `push_back(ele)`                                  | 尾部插入元素                          |
+| `pop_back()`                                      | 删除最后一个元素                      |
+| `insert(const_iterator pos, ele)`                 | 迭代器指向位置pos插入元素             |
+| `insert(const_iterator pos,int count, ele)`       | 迭代器指向位置pos插入count个元素`ele` |
+| `erase(const_iterator pos)`                       | 删除迭代器指向的元素                  |
+| `erase(const_iterator start, const_iterator end)` | 删除迭代器从start到end之间的元素      |
+| `clear()`                                         | 删除容器中所有元素                    |
+
+
+
+### vector数据存取
+
+- 利用[]方式访问数组中元素
+
+```cpp
+for(int i=0;i<v1.size();i++)
+{
+    cout << v1[i] << " ";
+}
+```
+
+- 获取第一个元素
+
+```cpp
+v1.front();
+```
+
+- 获取最后一个元素
+
+```cpp
+v1.back();
+```
+
+- 容器互换
+
+```cpp
+v1.swap(v2);
+
+//巧用swap可以收缩内存空间
+vector<int> v;
+for(int i=0;i<10000;i++)
+{
+    v.push_back(i);
+}
+
+v.resize(3);
+//巧用swap收缩内存
+vector<int>(v).swap(v);
+```
+
+
+
+
+
+### vector预留空间
+
+减少vector在动态扩展时的扩展次数
+
+```cpp
+v.reserve(100000);
+```
 
 
 
@@ -1650,20 +1862,75 @@ string subStr = str.substr(1,3);		//bcd
 
 
 
+## deque容器
+
+功能：双端数组，可以对头端进行插入删除操作。
+
+
+
+**vector和deque区别：**
+
+- vector对于头部插入删除效率较低，数据量越大，效率越低
+- deque对头部的插入删除速度比vector快
+- vector访问元素时的速度比deque快
+
+
+
+### deque构造
+
+```cpp
+//1.默认构造
+deque<int> d1;
+for (int i = 0; i < 10; i++) 
+{
+    d1.push_back(i);
+}
+
+//2.指定范围拷贝
+deque<int> d2(d1.begin(),d1.end());
+
+//3.n个elem
+deque<int> d3(10,100);	//10个100
+
+//4.拷贝构造
+deque<int> d4(d3);
+```
 
 
 
 
 
+### deque赋值
+
+```cpp
+deque<int> d1;
+for(int i=0;i<10;i++)
+{
+    d1.push_back(i);
+}
+
+//1.等号赋值
+deque<int> d2 = d1;
+
+//2.assign赋值
+deque<int> d3;
+d3.assign(d1.begin(),d1.end());
+
+//3.n个elem
+deque<int> d4;
+d4.assign(10,100);	//10个100
+```
 
 
 
 
 
+### deque大小操作
 
-
-
-
-
-
+| 函数               | 功能                                          |
+| ------------------ | --------------------------------------------- |
+| `empty()`          | 判断容器是否为空                              |
+| `size()`           | 返回容器中元素的个数                          |
+| `resize(num)`      | 重新指定容器的长度为num                       |
+| `resize(num,elem)` | 重新指定容器的长度为num，以`elem`值填充新位置 |
 
