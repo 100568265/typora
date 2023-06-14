@@ -1934,3 +1934,100 @@ d4.assign(10,100);	//10个100
 | `resize(num)`      | 重新指定容器的长度为num                       |
 | `resize(num,elem)` | 重新指定容器的长度为num，以`elem`值填充新位置 |
 
+
+
+
+
+### deque插入和删除
+
+**两端插入操作：**
+
+| 函数               | 功能                   |
+| ------------------ | ---------------------- |
+| `push_back(elem)`  | 在容器尾部添加一个元素 |
+| `push_front(elem)` | 在容器头部插入一个元素 |
+| `pop_back()`       | 删除容器最后一个元素   |
+| `pop_front()`      | 删除容器第一个元素     |
+
+
+
+**指定位置操作：**
+
+| 函数                  | 功能                                              |
+| --------------------- | ------------------------------------------------- |
+| `insert(pos,elem)`    | 在pos位置插入一个`elem`元素的拷贝，返回数据的位置 |
+| `insert(pos,n,elem)`  | 在pos位置插入n个`elem`数据，无返回值              |
+| `insert(pos,beg,end)` | 在pos位置插入[beg,end)区间的数据，无返回值        |
+| `clear()`             | 清空容器的所有数据                                |
+| `erase(beg,end)`      | 删除[beg,end)区间的数据，返回下一个数据的位置     |
+| `erase(pos)`          | 删除pos位置的数据，返回下一个数据的位置           |
+
+
+
+
+
+### deque数据存取
+
+| 函数            | 功能                       |
+| --------------- | -------------------------- |
+| `at(int index)` | 返回索引index所指的数据    |
+| `operator[]`    | 返回索引index所指的数据    |
+| `front()`       | 返回容器中第一个数据元素   |
+| `back()`        | 返回容器中最后一个数据元素 |
+
+
+
+### deque排序
+
+算法：对beg和end区间内元素进行排序
+
+`sort(iterator beg, iterator end)`
+
+```cpp
+deque<int> d;
+d.push_back(10);
+d.push_back(20);
+d.push_back(30);
+d.push_front(100);
+d.push_front(200);
+d.push_front(300);
+//升序排序d
+sort(d.begin(),d.end());
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
