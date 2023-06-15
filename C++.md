@@ -2467,6 +2467,247 @@ for (auto it=m.begin();it!=m.end();it++)
 
 
 
+## 函数对象(仿函数)
+
+**概念：**
+
+- 重载**函数调用操作符**的类，其对象常称为**函数对象**
+- **函数对象**使用重载的()时，行为类似函数调用，也叫**仿函数**
+
+**本质：**
+
+函数对象(仿函数)是一个类，不是一个函数
+
+
+
+### 函数对象调用
+
+**特点：**
+
+- 在使用时，可以像普通函数那样调用，可以有参数，可以有返回值
+- 函数对象可以有自己的状态
+- 函数对象可以作为参数传递
+
+
+```cpp
+class MyAdd
+{
+public:
+    int operator()(int v1,int v2)
+    {
+        return v1 +v1;
+    }
+};
+
+//1.函数对象在使用时，可以像普通函数那样调用，可以有参数，返回值
+MyAdd myAdd;
+cout << myAdd(10,10) << endl;
+
+//2.函数对象超出普通函数的概念，可以有自己的状态
+class MyPrint
+{
+public:
+    MyPrint()
+    {
+        this->count = 0;
+    }
+    void operator()(string test)
+    {
+        cout << test << endl;
+        this->count++;
+    }
+    int count;	//内部自己状态
+};
+
+MyPrint myPrint;
+myPrint("hello world!");
+myPrint("hello world!");
+
+cout << "myPrint调用次数为: " << myPrint.count <<endl;	
+
+//3.函数对象可以作为参数传递
+void doPrint(MyPrint &mp, string test)
+{
+    mp(test);
+}
+
+MyPrint myPrint;
+doPrint(myPrint,"Hello C++");
+```
+
+
+
+
+
+### 谓词
+
+**概念：**
+
+返回bool类型的仿函数称为谓词
+
+如果operator()接受一个参数，称为一元谓词
+
+如果operator()接受两个参数，称为二元谓词
+
+
+
+
+
+#### 一元谓词
+
+例：查找容器中有没有大于5的数字
+
+```cpp
+class GreaterFive{
+public:
+    bool operator()(int val)
+    {
+        return val > 5;
+    }
+};
+
+void test08()
+{
+    vector<int> v;
+    for (int i = 0; i < 10; ++i) {
+        v.push_back(i);
+    }
+    //查找容器中大于5的数字
+    //GreaterFive() 匿名的函数对象
+    auto it = find_if(v.begin(),v.end(),GreaterFive());
+    if(it == v.end())
+    {
+        cout << "未找到" << endl;
+    }
+    else{
+        cout << "找到了大于5的数字: " << *it << endl;
+    }
+}
+```
+
+
+
+
+
+#### 二元谓词
+
+如果operator()接受两个参数，称为二元谓词
+
+```cpp
+class MyCompare
+{
+public:
+    bool operator()(int val1, int val2)
+    {
+        return val1 > val2;
+    }
+};
+
+//二元谓词
+void test09()
+{
+    vector<int> v;
+    v.push_back(10);
+    v.push_back(40);
+    v.push_back(20);
+    v.push_back(30);
+    v.push_back(50);
+
+    //排序
+    sort(v.begin(),v.end(),MyCompare());
+    printVector(v);
+}
+```
+
+
+
+
+
+### 内建函数对象
+
+**概念：**
+
+STL内建了一些函数对象
+
+**分类：**
+
+- 算术仿函数
+- 关系仿函数
+- 逻辑仿函数
+
+**用法：**
+
+这些防函数所产生的对象，用法和一般函数完全相同
+
+使用内建函数对象，需要引入头文件`#include <functional>`
+
+
+
+
+
+#### 算术仿函数
+
+| 函数                                | 功能       |
+| ----------------------------------- | ---------- |
+| `template<class T> T plus<T>`       | 加法仿函数 |
+| `template<class T> T minus<T>`      | 减法仿函数 |
+| `template<class T> T multiplies<T>` | 乘法仿函数 |
+| `template<class T> T devides<T>`    | 除法仿函数 |
+| `template<class T> T modules<T>`    | 取模仿函数 |
+| `template<class T> T negate<T>`     | 取反仿函数 |
+
+其中negate是一元仿函数，其余都是二元仿函数
+
+
+
+
+
+```cpp
+//negate 一元仿函数 取反仿函数
+negate<int> n;
+cout << n(50) <<endl;   //-50
+
+//plus 二元仿函数 加法仿函数
+plus<int> p;
+cout << p(10,20) << endl;
+```
+
+
+
+
+
+#### 关系仿函数
+
+**功能：**
+
+实现关系对比
+
+| 仿函数原型                                | 功能     |
+| ----------------------------------------- | -------- |
+| `template<class T> bool equal_to<T>`      | 等于     |
+| `template<class T> bool not_equal_to<T>`  | 不等于   |
+| `template<class T> greater<T>`            | 大于     |
+| `template<class T> bool greater_equal<T>` | 大于等于 |
+| `template<class T> bool less<T>`          | 小于     |
+| `template<class T> bool less_equal<T>`    | 小于等于 |
+
+**示例：**
+
+```cpp
+//大于
+vector<int> v;
+v.push_back(10);
+v.push_back(30);
+v.push_back(40);
+v.push_back(20);
+v.push_back(50);
+printVector(v);
+//降序
+//greater<int>() 内建函数对象
+sort(v.begin(),v.end(),greater<int>());
+```
+
+**总结：**关系仿函数中最常用的就是greater<>()
 
 
 
@@ -2474,6 +2715,59 @@ for (auto it=m.begin();it!=m.end();it++)
 
 
 
+#### 逻辑仿函数
+
+实现逻辑运算
+
+| 函数原型                                | 功能   |
+| --------------------------------------- | ------ |
+| `template<class T> bool logical_and<T>` | 逻辑与 |
+| `template<class T> bool logical_or<T>`  | 逻辑或 |
+| `template<class T> bool logical_not<T>` | 逻辑非 |
+
+
+
+```cpp
+vector<bool> v;
+v.push_back(true);
+v.push_back(false);
+v.push_back(true);
+v.push_back(true);
+v.push_back(false);
+printVector(v);
+cout << endl;
+//利用逻辑非，将容器v搬运到容器2中，并执行取反操作
+vector<bool> v2;
+v2.resize(v.size());
+//tranform搬运容器
+transform(v.begin(),v.end(),v2.begin(),logical_not<bool>());
+printVector(v2);
+```
+
+
+
+
+
+## STL常用算法
+
+算法主要由头文件`<algoritm>`，`<functional>`，`<numeric>`组成。
+
+`<algorithm>`是所有STL头文件最大的一个，范围设计到比较，交换，查找，遍历，复制，修改等等。
+
+`<numeric>`体积很小，只包括几个在序列上面进行简单数学运算的模板函数
+
+`<functional>`定义了一些模板类，用以声明函数对象
+
+
+
+
+
+### 常用遍历算法
+
+| 函数                                                         | 功能                   |
+| ------------------------------------------------------------ | ---------------------- |
+| `for_each(iterator beg, iterator end, _func)`                | 遍历容器               |
+| `transform(iterator beg1, iterator end1, iterator beg2, _func);` | 搬运容器到另一个容器中 |
 
 
 
@@ -2481,6 +2775,95 @@ for (auto it=m.begin();it!=m.end();it++)
 
 
 
+### 常用查找算法
+
+| 算法          | 功能               |
+| ------------- | ------------------ |
+| find          | 查找元素           |
+| find_if       | 按条件查找元素     |
+| adjacent_find | 查找相邻重复元素   |
+| binary_search | 二分查找法         |
+| count         | 统计元素个数       |
+| count_if      | 按条件统计元素个数 |
+
+
+
+#### 1.find
+
+**功能描述：**
+
+查找指定元素，找到返回指定元素的迭代器，找不到返回结束迭代器end()
+
+
+
+**函数原型：**
+
+`find(iterator beg, iterator end, value);`
+
+按值查找元素，找到返回指定位置迭代器，找不到返回结束迭代器位置
+
+beg：开始迭代器
+
+end：结束迭代器
+
+value：查找的元素
+
+
+
+**示例：**
+
+```cpp
+#include <algorithm>
+
+vector<int> v;
+for (int i = 0; i < 10; ++i) 
+{
+	v.push_back(i);
+}
+
+auto it = find(v.begin(),v.end(),5);
+```
+
+利用find在容器中查找指定的元素，返回值是迭代器
+
+
+
+
+
+#### 2.find_if
+
+按条件查找元素
+
+**函数原型**
+
+`find_if(iterator beg, iterator end, _Pred);`
+
+按值查找元素，找到返回指定位置迭代器，找不到返回结束迭代器位置
+
+`beg`开始迭代器
+
+`end`结束迭代器
+
+`_Pred`函数或者谓词(返回bool类型的仿函数)
+
+
+
+**示例：**
+
+```cpp
+class GreaterFive{
+public:
+    bool operator()(int val){
+        return val > 5;
+    }
+};
+
+vector<int> v;
+for (int i = 0; i < 10; ++i) {
+	v.push_back(i);
+}
+auto it =find_if(v.begin(),v.end(),GreaterFive());
+```
 
 
 
@@ -2488,8 +2871,490 @@ for (auto it=m.begin();it!=m.end();it++)
 
 
 
+#### 3.adjacent_find
+
+查找相邻重复元素
 
 
+
+**函数原型：**
+
+`adjacent_find(iterator beg, iterator end);`
+
+//查找相邻重复元素，返回相邻元素的第一个位置的迭代器
+
+//beg开始迭代器
+
+//end结束迭代器
+
+
+
+**示例：**
+
+```cpp
+auto pos = adjacent_find(v.begin(),v.end());
+```
+
+
+
+
+
+#### 4.binary_search
+
+查找指定元素是否存在
+
+
+
+**函数原型：**
+
+`bool binary_search(iterator beg,iterator end,value);`
+
+查找指定的元素，查到返回true，否则false
+
+注意：在无序序列中不可用
+
+
+
+**示例：**
+
+```cpp
+//查找容器中是否有元素9
+binary_search(v.begin(),v.end(),9);
+```
+
+
+
+
+
+#### 5.count
+
+统计元素个数
+
+
+
+**函数原型：**
+
+`count(iterator beg, iterator end, value);`
+
+统计元素出现次数
+
+
+
+**示例：**
+
+```cpp
+//查找值为40的元素个数
+int num = count(v.begin(),v.end(),40);
+```
+
+对于自定义的数据类型，必须重载==
+
+
+
+
+
+#### 6.count_if
+
+按条件统计元素个数
+
+
+
+**函数原型：**
+
+`count_if(iterator beg, iterator end, _Pred);`
+
+按条件统计元素出现次数
+
+
+
+**示例：**
+
+```cpp
+//计算容器中大于20的元素个数
+class Greater20
+{
+public:
+    bool operator()(int val)
+    {
+        return val > 20;
+    }
+};
+
+int num = count_if(v.begin(),v.end(),Greater20());
+```
+
+
+
+
+
+
+
+### 常用排序算法
+
+**算法简介：**
+
+| 算法           | 功能                               |
+| -------------- | ---------------------------------- |
+| sort           | 对容器内元素进行排序               |
+| random_shuffle | 洗牌，指定范围内的元素随即调整次序 |
+| merge          | 容器元素合并，并存储到另一个容器中 |
+| reverse        | 反转指定范围的元素                 |
+
+
+
+#### 1.sort
+
+```cpp
+//利用sort进行升序
+sort(v.begin(),v.end());
+//改编为降序
+sort(v.begin(),v.end(),greater<int>());
+```
+
+
+
+
+
+#### 2.random_shuffle
+
+洗牌，指定范围内的元素随即调整次序
+
+`random_shuffle(iterator beg, iterator end);`
+
+
+
+**示例：**
+
+```cpp
+//利用洗牌算法打乱顺序
+random_shuffle(v.begin(),v.end());
+```
+
+
+
+
+
+#### 3.merge
+
+两个容器元素合并，并存储到另一个容器中。
+
+这两个容器必须是有序的。
+
+
+
+**函数原型：**
+
+`merge(iterator beg1, iterator end1, iterator beg2, iterator end2, iterator dest);`
+
+`dest` ：目标容器开始迭代器
+
+
+
+**示例：**
+
+```cpp
+//目标容器
+vector<int> vTarget;
+//提前给目标容器分配内存
+vTarget.resize(v1.size()+v2.size());
+
+merge(v1.begin(),v1.end(),v2.begin(),v2.end(),vTarget.begin());
+```
+
+
+
+
+
+#### 4.reverse
+
+将容器内的元素进行反转
+
+**函数原型**：
+
+`reverse(iterator beg, iterator end);`
+
+
+
+**示例：**
+
+```cpp
+reverse(v.begin(),v.end());
+```
+
+
+
+
+
+### 常用拷贝和替换算法
+
+| 算法       | 功能                                     |
+| ---------- | ---------------------------------------- |
+| copy       | 容器内指定范围的元素拷贝到另一个容器中   |
+| replace    | 将容器内指定范围的旧元素修改为新元素     |
+| replace_if | 容器内指定范围满足条件的元素替换为新元素 |
+| swap       | 互换两个容器的元素                       |
+
+
+
+
+
+#### 1.copy
+
+容器内指定范围的元素拷贝到另一个容器中
+
+`copy(iterator beg, iterator end, iterator dest);`
+
+`beg` 开始迭代器
+
+`end` 结束迭代器
+
+`dest` 目标其实迭代器
+
+
+
+**示例：**
+
+```cpp
+vector<int> v2;
+v2.resize(v1.size());
+copy(v1.begin(),v1.end(),v2.begin());
+```
+
+
+
+
+
+#### 2.replace
+
+将容器内指定范围的旧元素修改为新元素
+
+`replace(iterator beg, iterator end, oldVal, newVal);`
+
+**示例：**
+
+```cpp
+//将所有的20替换为2000
+replace(v.begin(),v,end(),20,2000);
+```
+
+replace会替换区间内满足条件的元素
+
+
+
+
+
+#### 3.replace_if
+
+容器内指定范围满足条件的元素替换为新元素
+
+`replace_if(iterator beg,iterator end,_pred,newVal);`
+
+按条件替换元素，满足条件的替换成指定元素
+
+
+
+**示例：**
+
+```cpp
+//把所有大于30的元素替换为3000
+class Greater30
+{
+public:
+    bool operator()(int val)
+    {
+        return val >= 30;
+    }
+}
+
+replace_if(v.begin(),v.end(),Greater30(),3000);
+```
+
+
+
+
+
+#### 4.swap
+
+互换两个容器的元素
+
+`swap(container c1, container c2);`
+
+**示例：**
+
+```cpp
+swap(v1,v2);
+```
+
+
+
+
+
+
+
+### 常用算术生成算法
+
+| 算法       | 功能                 |
+| ---------- | -------------------- |
+| accumulate | 计算容器元素累计总和 |
+| fill       | 向容器中添加元素     |
+
+
+
+#### **accumulate**
+
+计算容器元素累计总和
+
+`accumulate(iterator beg, iterator end, value);`
+
+`beg` 起始迭代器
+
+`end` 结束迭代器
+
+`value` 起始值
+
+**示例：**
+
+```cpp
+int total = accumulate(v.begin(),v.end(),0);
+```
+
+
+
+
+
+#### **fill**
+
+向容器中添加元素
+
+`fill(iterator beg, iterator end, value);`
+
+**示例：**
+
+```cpp
+//容器中元素全部填充为100
+vector<int> v;
+v.resize(10);
+fill(v.begin(),v.end(),100);
+```
+
+
+
+
+
+
+
+### 常用集合算法
+
+| 算法             | 功能             |
+| ---------------- | ---------------- |
+| set_intersection | 求两个容器的交集 |
+| set_union        | 求两个容器的并集 |
+| set_difference   | 求两个容器的差集 |
+
+
+
+#### set_intersection
+
+求两个容器的交集
+
+该函数返回交集容器的最后一个元素的迭代器
+
+
+
+**函数原型：**
+
+`set_intersection(v1.begin(),v1.end(),v2.begin(),v2.end(),vTarget.begin());`
+
+
+
+**示例：**
+
+```cpp
+vector<int> vTarget;
+vTarget.resize(min(v1.size(),v2.size()));
+//获取交集
+auto itEnd = set_intersection(v1.begin(),v1.end(),v2.begin(),v2.end(),vTarget.begin());
+
+for_each(vTarget.begin(),itEnd,myPrint);
+```
+
+**总结：**
+
+求交集的两个集合必须是有序序列
+
+目标容器开辟空间需要从两个容器中取较小值
+
+sec_intersection返回值是交集最后一个元素的位置
+
+
+
+
+
+#### set_union
+
+求两个集合的并集
+
+**函数原型：**
+
+`set_union(iterator beg1, iterator end1, iterator beg2, iterator end2, iterator dest);`
+
+`dest` 目标容器开始迭代器
+
+
+
+**示例：**
+
+```cpp
+//最特殊情况：两个容器没有交集，并集就是两个容器size相加
+vector<int> vTarget;
+vTarget.resize(v1.size()+v2.size());
+
+set_union(v1.begin(),v1.end(),v2.begin(),v2.end(),vTarget.begin());
+```
+
+**总结：**
+
+求并集的两个集合必须是有序序列
+
+目标容器开辟空间需要两个容器size相加
+
+set_union返回值是并集最后一个元素的位置
+
+
+
+
+
+#### set_difference
+
+求两个容器的差集
+
+
+
+**分两种情况：**
+
+V1和V2容器的差集
+
+V2和V1容器的差集
+
+
+
+**函数原型：**
+
+`set_difference(iteartor beg1, iterator end1, iterator beg2, iterator end2, iterator dest);`
+
+**示例：**
+
+```cpp
+//最特殊的情况是两个容器没有交集，取第一个容器的size作为开辟空间
+vTarget.resize(v1.size());
+set_difference(v1.begin(),v1.end(),v2.begin(),v2.end(),vTarget.begin());
+```
+
+**总结：**
+
+求差集的两个集合必须是有序序列
+
+set_difference返回值是差集最后一个元素的位置
 
 
 
