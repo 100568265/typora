@@ -3362,6 +3362,243 @@ set_difference返回值是差集最后一个元素的位置
 
 
 
+# C++高级
+
+
+
+
+
+## lambda表达式
+
+lambda表达式是一种定义匿名函数对象的简洁方式，C++11的新特性。
+
+
+
+```cpp
+// struct that behaves as a unary function
+template <typename elementType>
+struct DisplayElement
+{
+	void operator()(const elementType& ele)const
+	{
+		cout << element << ' ';
+	}
+};
+```
+
+这个函数对象使用`cout` 将element 显示到屏幕上，通常用于std::for_each()等算法中：
+
+```cpp
+// Display every integer contained in a vector
+for_each (numsInVec.cbegin(),numsInVec.cend(), 
+DisplayElement <int> ());
+```
+
+
+
+如果使用lambda表达式，可将上述代码简化为下述三行：
+
+```cpp
+// Display every integer contained in a vector using lambda exp.
+for_each (numsInVec.cbegin(), numsInVec.cend(), [](const int& element) {cout << element << ' '; } );
+```
+
+编译器见到下述lambda表达式时：
+
+```cpp
+[](const int& element){cout << element << " ";}
+```
+
+自动将其展开为类似于结构`DisplayElement<int>`的表示：
+
+```cpp
+struct NoName
+{
+	void operator () (const int& element) const
+	{
+	cout << element << ' ';
+	}
+};
+```
+
+
+
+
+
+
+
+### 定义lambda表达式
+
+- lambda 表达式的定义必须以方括号`[]`打头。
+- 方括号的后面是一个参数列表，该参数列表与不使用lambda 表达式时提供给operator( )的参数列表相同。
+
+
+
+
+
+### 一元函数对应的表达式
+
+`[](Type paramName){//lambda expression code here;}`
+
+请注意，如果您愿意，也可按引用传递参数：
+
+`[](Type& paramName){//lambda expression code here;}`
+
+
+
+**示例：**
+
+```cpp
+//在算法for_each()中使用lambda 表达式
+vector<int> v{101,-4,500,21,42,-1};
+
+//使用lambda表达式来遍历vector
+for_each(v.begin(),v.end(),[](const int& element){cout << element << " ";});
+```
+
+
+
+
+
+### 一元谓词对应的表达式
+
+谓词可帮助您做出决策。一元谓词是返回bool 类型（true 或false）的一元表达式。lambda 表达式也可返回值，例如，下面的lambda 表达式在num 为偶数时返回true：
+
+```cpp
+[](int& num){return ((num%2)==0);}
+```
+
+在这里，返回值的性质让编译器知道该lambda 表达式的返回类型为bool。
+
+
+
+在算法中，可将lambda 表达式用作一元谓词。例如，可在std::find_if( )中使用上述lambda 表达式找出集合中的偶数：
+
+```cpp
+vector<int> numsInVec{ 25, 101, 2017, -50 };
+auto evenNum = 
+    find_if(numsInVec.cbegin(),
+            numsInVec.cend(),
+            [](const int& num){return ((num % 2) == 0);});
+```
+
+算法find_if( )对指定范围内的每个元素调用该一元谓词；如果该谓词返回true,find_if( )将返回一个指向相应元素的迭代`evenNum`，指出找到了一个满足条件的元素
+
+
+
+
+
+
+
+### 二元函数对应的表达式
+
+二元函数接受两个参数，还可返回一个值。与之等价的lambda 表达式如下：
+
+```cpp
+[...](Type1& param1Name, Type2& param2Name) { // lambda code here; }
+```
+
+
+
+**示例：**
+
+```cpp
+//在std::transform()中使用它将两个等长的vector中对应的元素相乘，再将结果存储到第三个vector 中。
+vector <int> vecMultiplicand{ 0, 1, 2, 3, 4 };
+vector <int> vecMultiplier{ 100, 101, 102, 103, 104 };
+vector<int> vecResult;
+vecResult.resize(max(vecMultiplicand.size(),vecMultiplier.size()));
+//开始转换
+transform(vecMultiplicand.begin(),
+          vecMultiplicand.end(),
+          vecMultiplier.begin(),
+          vecResult.begin(),
+          [](int a, int b){return a*b;});
+//遍历vector
+for_each(vecResult.begin(),vecResult.end(),[](const int &val){cout << val << " ";});
+```
+
+
+
+
+
+
+
+### 二元谓词对应的表达式
+
+返回true 或false、可帮助决策的二元函数被称为二元谓词。
+
+这种谓词可用于std::sort( )等排序算法中，这些算法对容器中的两个值调用二元谓词，以确定将哪个放在前面。
+
+与二元谓词等价的lambda 表达式的通用语法如下：
+
+```cpp
+[...](Type1& param1Name, Type2& param2Name) { // return bool expression; }
+```
+
+
+
+**示例：**
+
+忽略大小写，给一个vector做排序
+
+```cpp
+vector <string> namesInVec{ "jim", "Jack", "Sam", "Anna" };
+cout << "大小写敏感的排序: " << endl;
+sort(namesInVec.begin(), namesInVec.end());
+DisplayContents(namesInVec);
+cout << "忽略大小写的排序:" << endl;
+sort(namesInVec.begin(), namesInVec.end(),
+     [](const string& str1, const string& str2) -> bool
+     {
+         string str1LC; // LC = lowercase
+         // Assign space
+         str1LC.resize (str1.size ());
+         // Convert every character to lower case
+         transform(str1.begin(), str1.end(), str1LC.begin(),::tolower);
+         string str2LC;
+         str2LC.resize (str2.size ());
+         transform(str2.begin(), str2.end(), str2LC.begin(),::tolower);
+         return (str1LC < str2LC);
+     });
+```
+
+
+
+**总结：**
+
+别忘了，lambda 表达式是实现了operator( )的匿名类（或结构）。
+
+编写lambda 表达式时，别忘了使用const 对参数进行限定。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
