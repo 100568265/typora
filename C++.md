@@ -1999,6 +1999,39 @@ sort(d.begin(),d.end());
 
 
 
+## stack容器
+
+栈不允许有遍历行为
+
+
+
+**stack常用接口**
+
+**构造函数**
+
+| 函数                       | 功能     |
+| -------------------------- | -------- |
+| `stack<T> stk;`            | 默认构造 |
+| `stack(const stack &stk);` | 拷贝构造 |
+
+
+
+**数据存取**
+
+| 函数          | 功能                 |
+| ------------- | -------------------- |
+| `push(elem);` | 向栈顶添加元素       |
+| `pop();`      | 从栈顶移除第一个元素 |
+| `top();`      | 返回栈顶元素         |
+
+
+
+**大小操作**
+
+```cpp
+empty();	//判断栈是否为空
+size();		//返回栈的大小
+```
 
 
 
@@ -2008,6 +2041,154 @@ sort(d.begin(),d.end());
 
 
 
+## queue容器
+
+**队列**是一种先进先出的数据结构，它有**两个出口**。
+
+只有队头(front)和队尾(back)能被外界访问，因此不允许有遍历行为。
+
+
+
+**构造函数**
+
+```cpp
+queue<T> que;				//默认构造
+queue(const queue &que);	//拷贝构造
+```
+
+
+
+**数据存取**
+
+```cpp
+push(elem);		//往队尾添加元素
+pop();			//从队头移除第一个元素
+back();			//返回最后一个元素
+front();		//返回第一个元素
+```
+
+
+
+**大小操作**
+
+```cpp
+empty();	//判断是否为空	
+size();		//队列大小
+```
+
+
+
+
+
+
+
+## list容器
+
+STL中的链表是一个**双向循环链表**
+
+
+
+### list构造函数
+
+| 函数原型                 | 功能                                       |
+| ------------------------ | ------------------------------------------ |
+| `list<T> lst;`           | 默认构造                                   |
+| `list(beg, end);`        | 构造函数将[beg, end)区间中的元素拷贝给本身 |
+| `list(n,elem);`          | 构造函数将n个`elem`拷贝给本身              |
+| `list(const list &lst);` | 拷贝构造函数                               |
+
+
+
+
+
+### list赋值和交换
+
+| 函数原型                             | 功能                                   |
+| ------------------------------------ | -------------------------------------- |
+| `assign(beg,end);`                   | 将[beg, end)区间中的数据拷贝赋值给本身 |
+| `assign(n,elem);`                    | 将n个`elem`拷贝赋值给本身              |
+| `list& operator=(const list &list);` | 重载等号操作符                         |
+| `swap(lst);`                         | 将`lst`与本身的元素互换                |
+
+
+
+
+
+### list大小操作
+
+| 函数原型            | 功能                                        |
+| ------------------- | ------------------------------------------- |
+| `size();`           | 返回容器中元素的个数                        |
+| `empty();`          | 判断容器是否为空                            |
+| `resize(num);`      | 重新指定容器的长度为num，以默认值填充新位置 |
+| `resize(num,elem);` | 重新指定容器的长度为num，以`elem`填充新位置 |
+
+
+
+
+
+### list插入和删除
+
+| 函数原型               | 功能                                            |
+| ---------------------- | ----------------------------------------------- |
+| `push_back(elem);`     | 在容器尾部插入一个元素                          |
+| `pop_back();`          | 删除容器中的最后一个元素                        |
+| `push_front(elem);`    | 在容器头部插入一个元素                          |
+| `pop_front();`         | 删除容器中的第一个元素                          |
+| `insert(pos,elem);`    | 在pos位置插入元素`elem`的拷贝，返回新数据的位置 |
+| `insert(pos,n,elem);`  | 在pos位置插入n个`elem`的数据，无返回值          |
+| `insert(pos,beg,end);` | 在pos位置插入[beg,end)区间的数据，无返回值      |
+| `clear();`             | 移除容器的所有数据                              |
+| `erase(beg,end);`      | 删除[beg,end)区间的数据，返回下一个数据的位置   |
+| `erase(pos);`          | 删除pos位置的数据，返回下一个数据的位置         |
+| `remove(elem);`        | 删除容器中所有和`elem`值匹配的元素              |
+
+
+
+
+
+### list数据存取
+
+list是链表，迭代器是不支持随机访问的。
+
+```cpp
+front();	//返回第一个元素
+back();		//返回最后一个元素
+```
+
+
+
+
+
+### list反转和排序
+
+```cpp
+reverse();	//反转链表
+sort();		//给链表排序
+```
+
+**注意：**
+
+所有不支持随机访问迭代器的容器，不可以用标准算法。
+
+不支持随机访问迭代器的容器，内部会提供对应的一些算法。
+
+```cpp
+List<int> L1;
+L1.sort();		//升序排序
+```
+
+
+
+**指定排序规则**
+
+```cpp
+bool compareRule(Person &p1,Person &p2)
+{
+    return p1.age < p2.age;		//按照年龄升序
+}
+L.sort(compareRule);
+```
 
 
 
@@ -2017,9 +2198,1163 @@ sort(d.begin(),d.end());
 
 
 
+## set容器
+
+**简介：**
+
+所有元素都会在插入时自动被排序
 
 
 
+**本质：**
+
+set/multiset属于关联式容器，底层结构是二叉树实现。
+
+
+
+**set和multiset区别：**
+
+set不允许容器中有重复的元素
+
+multiset允许容器中有重复的元素
+
+
+
+
+
+### set构造和赋值
+
+**构造：**
+
+```cpp
+set<T> st;			//默认构造
+set<T>st(const set &st);	//拷贝构造
+```
+
+**赋值：**
+
+```cpp
+set& operator=(const set &st);	//重载等号操作符
+```
+
+**总结：**
+
+set容器插入时用insert
+
+
+
+
+
+### set大小和交换
+
+```cpp
+size();		//返回容器中元素个数
+empty();	//判断容器是否为空
+swap(st);	//交换两个集合容器
+```
+
+
+
+
+
+
+
+### set插入和删除
+
+| 函数原型          | 功能                                                |
+| ----------------- | --------------------------------------------------- |
+| `insert(elem);`   | 在容器中插入元素                                    |
+| `clear();`        | 清除所有元素                                        |
+| `erase(pos);`     | 删除pos迭代器所指的元素，返回下一个元素的迭代器     |
+| `erase(beg,end);` | 删除区间[pos,end)的所有元素，返回下一个元素的迭代器 |
+| `erase(elem);`    | 删除容器中值为`elem`的元素                          |
+
+
+
+
+
+
+
+### set查找和统计
+
+| 函数原型      | 功能                                                         |
+| ------------- | ------------------------------------------------------------ |
+| `find(key);`  | 查找key是否存在，如果存在则返回该键的元素的迭代器。如果不存在，返回`set.end()` |
+| `count(key);` | 统计key的元素个数                                            |
+
+
+
+
+
+
+
+### set排序
+
+set容器默认排序规则为从小到大，掌握如何改变排序规则
+
+**技术点：**
+
+利用仿函数，可以改变排序规则
+
+```cpp
+#include <set>
+
+class MyCompare{
+public:
+    bool operator()(int v1, int v2)
+    {
+        return v1 > v2;
+    }
+};
+
+//指定排序规则为从小到大
+set<int,MyCompare>s2;
+```
+
+
+
+
+
+
+
+
+
+## map容器
+
+
+
+ **map基本概念**
+
+所有元素都会根据元素的键值自动排序。
+
+map/multimap属于**关联式容器**，底层结构是用**二叉树**实现。
+
+
+
+**优点：**可以根据key值快速的找到value值
+
+
+
+**map和multimap的区别：**
+
+- map不允许容器中有重复key值元素
+- multimap允许容器中有重复key值元素
+
+
+
+
+
+
+
+### map构造和赋值
+
+```cpp
+map<int,int> m;			//默认构造
+map<int,int> m2(m);		//拷贝构造
+
+//赋值操作
+map<int,int>m3;
+m3 = m2;
+```
+
+
+
+
+
+
+
+### map大小和交换
+
+| 函数原型    | 功能               |
+| ----------- | ------------------ |
+| `size();`   | 返回容器中元素个数 |
+| `empty();`  | 判断容器是否为空   |
+| `swap(mp);` | 交换两个集合容器   |
+
+
+
+
+
+
+
+### map插入和删除
+
+| 函数原型          | 功能                                                |
+| ----------------- | --------------------------------------------------- |
+| `insert(elem);`   | 在容器中插入元素                                    |
+| `clear();`        | 清除所有元素                                        |
+| `erase(pos);`     | 删除pos迭代器所指的元素，返回下一个元素的迭代器     |
+| `erase(beg,end);` | 删除区间[beg,end)的所有元素，返回下一个元素的迭代器 |
+| `erase(key);`     | 删除容器中值为key的元素                             |
+
+
+
+**三种插入方式：**
+
+```cpp
+map<int,int> m;
+//第一种
+m.insert(pair<int,int>(1,10));
+//第二种
+m.insert(make_pair(2,20));
+//第三种(不建议使用)
+m[4] = 40;
+```
+
+
+
+
+
+**删除**
+
+```cpp
+m.erase(m.begin());
+
+m.erase(3);					//按照key删除
+
+m.erase(m.begin(),m.end());	//按照区间删除
+```
+
+
+
+
+
+### map查找和统计
+
+```cpp
+find(key);	//查找key是否存在，若存在，返回该键的元素的迭代器；若不存在，返回map.end();
+count(key);	//统计key的元素个数
+```
+
+
+
+
+
+### map排序
+
+map容器默认排序规则为：按照key值进行，从小到大排序
+
+
+
+**主要技术点：**
+
+利用仿函数，可以改变排序规则
+
+```cpp
+class MyCompare
+{
+public:
+    bool operator()(int v1,int v2)
+    {
+        //降序
+        return v1 > v2;
+    }
+};
+
+map<int,int,MyCompare> m;
+m.make_pair(1,10);
+m.make_pair(2,20);
+m.make_pair(3,30);
+m.make_pair(4,40);
+
+for (auto it=m.begin();it!=m.end();it++)
+{
+	cout << "key = " << (*it).first << " value = " << (*it).second << endl;
+}
+```
+
+
+
+
+
+## 函数对象(仿函数)
+
+**概念：**
+
+- 重载**函数调用操作符**的类，其对象常称为**函数对象**
+- **函数对象**使用重载的()时，行为类似函数调用，也叫**仿函数**
+
+**本质：**
+
+函数对象(仿函数)是一个类，不是一个函数
+
+
+
+### 函数对象调用
+
+**特点：**
+
+- 在使用时，可以像普通函数那样调用，可以有参数，可以有返回值
+- 函数对象可以有自己的状态
+- 函数对象可以作为参数传递
+
+
+```cpp
+class MyAdd
+{
+public:
+    int operator()(int v1,int v2)
+    {
+        return v1 +v1;
+    }
+};
+
+//1.函数对象在使用时，可以像普通函数那样调用，可以有参数，返回值
+MyAdd myAdd;
+cout << myAdd(10,10) << endl;
+
+//2.函数对象超出普通函数的概念，可以有自己的状态
+class MyPrint
+{
+public:
+    MyPrint()
+    {
+        this->count = 0;
+    }
+    void operator()(string test)
+    {
+        cout << test << endl;
+        this->count++;
+    }
+    int count;	//内部自己状态
+};
+
+MyPrint myPrint;
+myPrint("hello world!");
+myPrint("hello world!");
+
+cout << "myPrint调用次数为: " << myPrint.count <<endl;	
+
+//3.函数对象可以作为参数传递
+void doPrint(MyPrint &mp, string test)
+{
+    mp(test);
+}
+
+MyPrint myPrint;
+doPrint(myPrint,"Hello C++");
+```
+
+
+
+
+
+### 谓词
+
+**概念：**
+
+返回bool类型的仿函数称为谓词
+
+如果operator()接受一个参数，称为一元谓词
+
+如果operator()接受两个参数，称为二元谓词
+
+
+
+
+
+#### 一元谓词
+
+例：查找容器中有没有大于5的数字
+
+```cpp
+class GreaterFive{
+public:
+    bool operator()(int val)
+    {
+        return val > 5;
+    }
+};
+
+void test08()
+{
+    vector<int> v;
+    for (int i = 0; i < 10; ++i) {
+        v.push_back(i);
+    }
+    //查找容器中大于5的数字
+    //GreaterFive() 匿名的函数对象
+    auto it = find_if(v.begin(),v.end(),GreaterFive());
+    if(it == v.end())
+    {
+        cout << "未找到" << endl;
+    }
+    else{
+        cout << "找到了大于5的数字: " << *it << endl;
+    }
+}
+```
+
+
+
+
+
+#### 二元谓词
+
+如果operator()接受两个参数，称为二元谓词
+
+```cpp
+class MyCompare
+{
+public:
+    bool operator()(int val1, int val2)
+    {
+        return val1 > val2;
+    }
+};
+
+//二元谓词
+void test09()
+{
+    vector<int> v;
+    v.push_back(10);
+    v.push_back(40);
+    v.push_back(20);
+    v.push_back(30);
+    v.push_back(50);
+
+    //排序
+    sort(v.begin(),v.end(),MyCompare());
+    printVector(v);
+}
+```
+
+
+
+
+
+### 内建函数对象
+
+**概念：**
+
+STL内建了一些函数对象
+
+**分类：**
+
+- 算术仿函数
+- 关系仿函数
+- 逻辑仿函数
+
+**用法：**
+
+这些防函数所产生的对象，用法和一般函数完全相同
+
+使用内建函数对象，需要引入头文件`#include <functional>`
+
+
+
+
+
+#### 算术仿函数
+
+| 函数                                | 功能       |
+| ----------------------------------- | ---------- |
+| `template<class T> T plus<T>`       | 加法仿函数 |
+| `template<class T> T minus<T>`      | 减法仿函数 |
+| `template<class T> T multiplies<T>` | 乘法仿函数 |
+| `template<class T> T devides<T>`    | 除法仿函数 |
+| `template<class T> T modules<T>`    | 取模仿函数 |
+| `template<class T> T negate<T>`     | 取反仿函数 |
+
+其中negate是一元仿函数，其余都是二元仿函数
+
+
+
+
+
+```cpp
+//negate 一元仿函数 取反仿函数
+negate<int> n;
+cout << n(50) <<endl;   //-50
+
+//plus 二元仿函数 加法仿函数
+plus<int> p;
+cout << p(10,20) << endl;
+```
+
+
+
+
+
+#### 关系仿函数
+
+**功能：**
+
+实现关系对比
+
+| 仿函数原型                                | 功能     |
+| ----------------------------------------- | -------- |
+| `template<class T> bool equal_to<T>`      | 等于     |
+| `template<class T> bool not_equal_to<T>`  | 不等于   |
+| `template<class T> greater<T>`            | 大于     |
+| `template<class T> bool greater_equal<T>` | 大于等于 |
+| `template<class T> bool less<T>`          | 小于     |
+| `template<class T> bool less_equal<T>`    | 小于等于 |
+
+**示例：**
+
+```cpp
+//大于
+vector<int> v;
+v.push_back(10);
+v.push_back(30);
+v.push_back(40);
+v.push_back(20);
+v.push_back(50);
+printVector(v);
+//降序
+//greater<int>() 内建函数对象
+sort(v.begin(),v.end(),greater<int>());
+```
+
+**总结：**关系仿函数中最常用的就是greater<>()
+
+
+
+
+
+
+
+#### 逻辑仿函数
+
+实现逻辑运算
+
+| 函数原型                                | 功能   |
+| --------------------------------------- | ------ |
+| `template<class T> bool logical_and<T>` | 逻辑与 |
+| `template<class T> bool logical_or<T>`  | 逻辑或 |
+| `template<class T> bool logical_not<T>` | 逻辑非 |
+
+
+
+```cpp
+vector<bool> v;
+v.push_back(true);
+v.push_back(false);
+v.push_back(true);
+v.push_back(true);
+v.push_back(false);
+printVector(v);
+cout << endl;
+//利用逻辑非，将容器v搬运到容器2中，并执行取反操作
+vector<bool> v2;
+v2.resize(v.size());
+//tranform搬运容器
+transform(v.begin(),v.end(),v2.begin(),logical_not<bool>());
+printVector(v2);
+```
+
+
+
+
+
+## STL常用算法
+
+算法主要由头文件`<algoritm>`，`<functional>`，`<numeric>`组成。
+
+`<algorithm>`是所有STL头文件最大的一个，范围设计到比较，交换，查找，遍历，复制，修改等等。
+
+`<numeric>`体积很小，只包括几个在序列上面进行简单数学运算的模板函数
+
+`<functional>`定义了一些模板类，用以声明函数对象
+
+
+
+
+
+### 常用遍历算法
+
+| 函数                                                         | 功能                   |
+| ------------------------------------------------------------ | ---------------------- |
+| `for_each(iterator beg, iterator end, _func)`                | 遍历容器               |
+| `transform(iterator beg1, iterator end1, iterator beg2, _func);` | 搬运容器到另一个容器中 |
+
+
+
+
+
+
+
+### 常用查找算法
+
+| 算法          | 功能               |
+| ------------- | ------------------ |
+| find          | 查找元素           |
+| find_if       | 按条件查找元素     |
+| adjacent_find | 查找相邻重复元素   |
+| binary_search | 二分查找法         |
+| count         | 统计元素个数       |
+| count_if      | 按条件统计元素个数 |
+
+
+
+#### 1.find
+
+**功能描述：**
+
+查找指定元素，找到返回指定元素的迭代器，找不到返回结束迭代器end()
+
+
+
+**函数原型：**
+
+`find(iterator beg, iterator end, value);`
+
+按值查找元素，找到返回指定位置迭代器，找不到返回结束迭代器位置
+
+beg：开始迭代器
+
+end：结束迭代器
+
+value：查找的元素
+
+
+
+**示例：**
+
+```cpp
+#include <algorithm>
+
+vector<int> v;
+for (int i = 0; i < 10; ++i) 
+{
+	v.push_back(i);
+}
+
+auto it = find(v.begin(),v.end(),5);
+```
+
+利用find在容器中查找指定的元素，返回值是迭代器
+
+
+
+
+
+#### 2.find_if
+
+按条件查找元素
+
+**函数原型**
+
+`find_if(iterator beg, iterator end, _Pred);`
+
+按值查找元素，找到返回指定位置迭代器，找不到返回结束迭代器位置
+
+`beg`开始迭代器
+
+`end`结束迭代器
+
+`_Pred`函数或者谓词(返回bool类型的仿函数)
+
+
+
+**示例：**
+
+```cpp
+class GreaterFive{
+public:
+    bool operator()(int val){
+        return val > 5;
+    }
+};
+
+vector<int> v;
+for (int i = 0; i < 10; ++i) {
+	v.push_back(i);
+}
+auto it =find_if(v.begin(),v.end(),GreaterFive());
+```
+
+
+
+
+
+
+
+#### 3.adjacent_find
+
+查找相邻重复元素
+
+
+
+**函数原型：**
+
+`adjacent_find(iterator beg, iterator end);`
+
+//查找相邻重复元素，返回相邻元素的第一个位置的迭代器
+
+//beg开始迭代器
+
+//end结束迭代器
+
+
+
+**示例：**
+
+```cpp
+auto pos = adjacent_find(v.begin(),v.end());
+```
+
+
+
+
+
+#### 4.binary_search
+
+查找指定元素是否存在
+
+
+
+**函数原型：**
+
+`bool binary_search(iterator beg,iterator end,value);`
+
+查找指定的元素，查到返回true，否则false
+
+注意：在无序序列中不可用
+
+
+
+**示例：**
+
+```cpp
+//查找容器中是否有元素9
+binary_search(v.begin(),v.end(),9);
+```
+
+
+
+
+
+#### 5.count
+
+统计元素个数
+
+
+
+**函数原型：**
+
+`count(iterator beg, iterator end, value);`
+
+统计元素出现次数
+
+
+
+**示例：**
+
+```cpp
+//查找值为40的元素个数
+int num = count(v.begin(),v.end(),40);
+```
+
+对于自定义的数据类型，必须重载==
+
+
+
+
+
+#### 6.count_if
+
+按条件统计元素个数
+
+
+
+**函数原型：**
+
+`count_if(iterator beg, iterator end, _Pred);`
+
+按条件统计元素出现次数
+
+
+
+**示例：**
+
+```cpp
+//计算容器中大于20的元素个数
+class Greater20
+{
+public:
+    bool operator()(int val)
+    {
+        return val > 20;
+    }
+};
+
+int num = count_if(v.begin(),v.end(),Greater20());
+```
+
+
+
+
+
+
+
+### 常用排序算法
+
+**算法简介：**
+
+| 算法           | 功能                               |
+| -------------- | ---------------------------------- |
+| sort           | 对容器内元素进行排序               |
+| random_shuffle | 洗牌，指定范围内的元素随即调整次序 |
+| merge          | 容器元素合并，并存储到另一个容器中 |
+| reverse        | 反转指定范围的元素                 |
+
+
+
+#### 1.sort
+
+```cpp
+//利用sort进行升序
+sort(v.begin(),v.end());
+//改编为降序
+sort(v.begin(),v.end(),greater<int>());
+```
+
+
+
+
+
+#### 2.random_shuffle
+
+洗牌，指定范围内的元素随即调整次序
+
+`random_shuffle(iterator beg, iterator end);`
+
+
+
+**示例：**
+
+```cpp
+//利用洗牌算法打乱顺序
+random_shuffle(v.begin(),v.end());
+```
+
+
+
+
+
+#### 3.merge
+
+两个容器元素合并，并存储到另一个容器中。
+
+这两个容器必须是有序的。
+
+
+
+**函数原型：**
+
+`merge(iterator beg1, iterator end1, iterator beg2, iterator end2, iterator dest);`
+
+`dest` ：目标容器开始迭代器
+
+
+
+**示例：**
+
+```cpp
+//目标容器
+vector<int> vTarget;
+//提前给目标容器分配内存
+vTarget.resize(v1.size()+v2.size());
+
+merge(v1.begin(),v1.end(),v2.begin(),v2.end(),vTarget.begin());
+```
+
+
+
+
+
+#### 4.reverse
+
+将容器内的元素进行反转
+
+**函数原型**：
+
+`reverse(iterator beg, iterator end);`
+
+
+
+**示例：**
+
+```cpp
+reverse(v.begin(),v.end());
+```
+
+
+
+
+
+### 常用拷贝和替换算法
+
+| 算法       | 功能                                     |
+| ---------- | ---------------------------------------- |
+| copy       | 容器内指定范围的元素拷贝到另一个容器中   |
+| replace    | 将容器内指定范围的旧元素修改为新元素     |
+| replace_if | 容器内指定范围满足条件的元素替换为新元素 |
+| swap       | 互换两个容器的元素                       |
+
+
+
+
+
+#### 1.copy
+
+容器内指定范围的元素拷贝到另一个容器中
+
+`copy(iterator beg, iterator end, iterator dest);`
+
+`beg` 开始迭代器
+
+`end` 结束迭代器
+
+`dest` 目标其实迭代器
+
+
+
+**示例：**
+
+```cpp
+vector<int> v2;
+v2.resize(v1.size());
+copy(v1.begin(),v1.end(),v2.begin());
+```
+
+
+
+
+
+#### 2.replace
+
+将容器内指定范围的旧元素修改为新元素
+
+`replace(iterator beg, iterator end, oldVal, newVal);`
+
+**示例：**
+
+```cpp
+//将所有的20替换为2000
+replace(v.begin(),v,end(),20,2000);
+```
+
+replace会替换区间内满足条件的元素
+
+
+
+
+
+#### 3.replace_if
+
+容器内指定范围满足条件的元素替换为新元素
+
+`replace_if(iterator beg,iterator end,_pred,newVal);`
+
+按条件替换元素，满足条件的替换成指定元素
+
+
+
+**示例：**
+
+```cpp
+//把所有大于30的元素替换为3000
+class Greater30
+{
+public:
+    bool operator()(int val)
+    {
+        return val >= 30;
+    }
+}
+
+replace_if(v.begin(),v.end(),Greater30(),3000);
+```
+
+
+
+
+
+#### 4.swap
+
+互换两个容器的元素
+
+`swap(container c1, container c2);`
+
+**示例：**
+
+```cpp
+swap(v1,v2);
+```
+
+
+
+
+
+
+
+### 常用算术生成算法
+
+| 算法       | 功能                 |
+| ---------- | -------------------- |
+| accumulate | 计算容器元素累计总和 |
+| fill       | 向容器中添加元素     |
+
+
+
+#### **accumulate**
+
+计算容器元素累计总和
+
+`accumulate(iterator beg, iterator end, value);`
+
+`beg` 起始迭代器
+
+`end` 结束迭代器
+
+`value` 起始值
+
+**示例：**
+
+```cpp
+int total = accumulate(v.begin(),v.end(),0);
+```
+
+
+
+
+
+#### **fill**
+
+向容器中添加元素
+
+`fill(iterator beg, iterator end, value);`
+
+**示例：**
+
+```cpp
+//容器中元素全部填充为100
+vector<int> v;
+v.resize(10);
+fill(v.begin(),v.end(),100);
+```
+
+
+
+
+
+
+
+### 常用集合算法
+
+| 算法             | 功能             |
+| ---------------- | ---------------- |
+| set_intersection | 求两个容器的交集 |
+| set_union        | 求两个容器的并集 |
+| set_difference   | 求两个容器的差集 |
+
+
+
+#### set_intersection
+
+求两个容器的交集
+
+该函数返回交集容器的最后一个元素的迭代器
+
+
+
+**函数原型：**
+
+`set_intersection(v1.begin(),v1.end(),v2.begin(),v2.end(),vTarget.begin());`
+
+
+
+**示例：**
+
+```cpp
+vector<int> vTarget;
+vTarget.resize(min(v1.size(),v2.size()));
+//获取交集
+auto itEnd = set_intersection(v1.begin(),v1.end(),v2.begin(),v2.end(),vTarget.begin());
+
+for_each(vTarget.begin(),itEnd,myPrint);
+```
+
+**总结：**
+
+求交集的两个集合必须是有序序列
+
+目标容器开辟空间需要从两个容器中取较小值
+
+sec_intersection返回值是交集最后一个元素的位置
+
+
+
+
+
+#### set_union
+
+求两个集合的并集
+
+**函数原型：**
+
+`set_union(iterator beg1, iterator end1, iterator beg2, iterator end2, iterator dest);`
+
+`dest` 目标容器开始迭代器
+
+
+
+**示例：**
+
+```cpp
+//最特殊情况：两个容器没有交集，并集就是两个容器size相加
+vector<int> vTarget;
+vTarget.resize(v1.size()+v2.size());
+
+set_union(v1.begin(),v1.end(),v2.begin(),v2.end(),vTarget.begin());
+```
+
+**总结：**
+
+求并集的两个集合必须是有序序列
+
+目标容器开辟空间需要两个容器size相加
+
+set_union返回值是并集最后一个元素的位置
+
+
+
+
+
+#### set_difference
+
+求两个容器的差集
+
+
+
+**分两种情况：**
+
+V1和V2容器的差集
+
+V2和V1容器的差集
+
+
+
+**函数原型：**
+
+`set_difference(iteartor beg1, iterator end1, iterator beg2, iterator end2, iterator dest);`
+
+**示例：**
+
+```cpp
+//最特殊的情况是两个容器没有交集，取第一个容器的size作为开辟空间
+vTarget.resize(v1.size());
+set_difference(v1.begin(),v1.end(),v2.begin(),v2.end(),vTarget.begin());
+```
+
+**总结：**
+
+求差集的两个集合必须是有序序列
+
+set_difference返回值是差集最后一个元素的位置
 
 
 
