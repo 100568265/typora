@@ -3570,6 +3570,7 @@ sort(namesInVec.begin(), namesInVec.end(),
 别忘了，lambda 表达式是实现了operator( )的匿名类（或结构）。
 
 编写lambda 表达式时，别忘了使用const 对参数进行限定。
+<<<<<<< HEAD
 
 
 
@@ -3586,6 +3587,8 @@ sort(namesInVec.begin(), namesInVec.end(),
 
 
 
+=======
+>>>>>>> 2a07586acd0f0edfddb12d0f0b030bda1e64c525
 
 
 
