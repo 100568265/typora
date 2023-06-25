@@ -655,7 +655,7 @@ new_my_str.strip("12")		#去掉字符串1和2
 
 **方法汇总：**
 
-![image-20230523101227927](C:/Users/win/Desktop/%25E5%25AD%25A6%25E4%25B9%25A0/Typora%25E7%25AC%2594%25E8%25AE%25B0%25E6%259C%25AC/assets/image-20230523101227927.png)
+![image-20230523101227927](assets/image-20230523101227927.png)
 
 
 
@@ -860,7 +860,7 @@ for key in my_dict:
 
 **数据容器总结**
 
-![image-20230523115615131](C:/Users/win/Desktop/%25E5%25AD%25A6%25E4%25B9%25A0/Typora%25E7%25AC%2594%25E8%25AE%25B0%25E6%259C%25AC/assets/image-20230523115615131.png)
+![image-20230523115615131](assets/image-20230523115615131.png)
 
 
 
