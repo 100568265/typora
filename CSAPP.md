@@ -18,3 +18,8 @@ gcc -o hello hello.c
 
 ![image-20230703174223730](./assets/image-20230703174223730.png)
 
+
+
+**操作系统负责管理硬件：**
+
+neither program access the **keyboard**, **display**, or **main memory** directly.
