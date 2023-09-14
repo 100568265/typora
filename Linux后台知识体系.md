@@ -121,6 +121,60 @@ inline函数的定义只能放在头文件中。
 
 
 
+### 输入输出流
+
+
+
+**流中都有缓冲区**
+
+1.全缓冲区：只有当缓冲区满的时候，才会执行刷新操作
+
+2.行缓冲区：碰到换行符的时候，进行刷新
+
+3.非缓冲区：不带缓冲区
+
+
+
+
+
+### 文件IO
+
+1.文件输入流		`ifstream`
+
+2.文件输出流		`ofstream`
+
+3.文件输入输出流	`fstream`
+
+
+
+文件输入流
+
+```cpp
+ifstream filename("log.txt");	//读取文件
+```
+
+
+
+文件输出流
+
+```cpp
+ofstream filename;	
+filename.open("log.txt");
+ofs << "这是写入到文件的文本内容。" << std::endl;
+ofs.close();
+```
+
+| 常量   | 解释                   |
+| ------ | ---------------------- |
+| app    | 每次写入前寻位到流结尾 |
+| in     | 为读打开               |
+| out    | 为写打开               |
+| trunc  | 在打开时舍弃流的内容   |
+| ate    | 打开后立即寻位到流结尾 |
+| binary | 以二进制模式打开       |
+
+
+
 
 
 
@@ -192,13 +246,92 @@ Point pt4 = pt;	//完成了对象pt的复制，得到新对象pt4
 
 
 
+### 友元
+
+**1.全局函数做友元：**此函数可以访问目标类里面的所有成员
+
+```cpp
+class Point{
+  friend void display(const Point &pt);
+ public:
+ protected:
+ private:
+    int _ix;
+    int _iy;
+};
+
+Point pt;
+
+void display(const Point &pt){
+    pt._ix = 100;
+}
+```
+
+**2.成员函数做友元**
+
+
+
+**3.类做友元：**
+
+```cpp
+class A{
+  friend class B;
+};
+```
+
+友元是单向的，不能被继承
 
 
 
 
 
+### 运算符重载
+
+形式：
+
+```cpp
+//函数返回类型 operator运算符(参数列表){
+//    
+//}
+
+int add(int x, int y){}
+
+Complex operator+(const Complex &lhs, const Complex &rhs){}
+```
+
+为了防止用户对标准类型进行运算符重载，C++规定重载的运算符的操作对象至少有一个是**自定义类型**或枚举类型。
 
 
+
+**三种重载形式**
+
+1.以普通函数的形式
+
+2.以成员函数的形式
+
+3.以友元函数的形式
+
+
+
+**重载函数调用运算符**
+
+必须是成员函数
+
+```cpp
+class FunctionObject{
+public:
+    int operator()(int x,int y){
+        return x + y;
+    }
+}
+
+int main(){
+    int a = 3, b = 4;
+    //重载了函数调用运算符的类创建的对象称为函数对象
+    FunctionObject fo;
+    fo(a,b);
+}
+```
 
 
 
