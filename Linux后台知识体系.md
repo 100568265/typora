@@ -1,4 +1,372 @@
-# 1.C++
+# 1.Linux
+
+Linux内核架构图
+
+<img src="./assets/image-20230915095431760.png" alt="image-20230915095431760"  />
+
+**内核：**
+
+1.管理硬件资源：CPU，内存，外设
+
+文件管理，内存管理，进程调度，网络通信，硬件驱动
+
+2.为上层应用软件提供运行环境
+
+
+
+**系统调用：**内核对上层应用程序提供的接口
+
+**库函数：**对系统调用进行包装，方便程序使用
+
+**shell：**命令解析器，本质是一个程序，用来解析命令，执行命令
+
+
+
+
+
+## 用户子系统
+
+**特权用户：**root，拥有最高的权限
+
+**普通用户：**
+
+1.sudoers，临时拥有特权用户的权限
+
+2.其他用户
+
+
+
+查看所有的用户：
+
+```shell
+cat /etc/passwd
+```
+
+添加用户：
+
+```shell
+sudo useradd -m -s /bin/bash 用户名
+# -m 指定家目录
+# -s /bin/bash 指定bash为默认的shell
+```
+
+删除用户：
+
+```shell
+sudo userdel 用户名
+```
+
+切换用户：
+
+```shell
+su 用户名
+```
+
+更改密码：
+
+```shell
+sudo passwd 用户名
+```
+
+
+
+
+
+## 文件子系统
+
+虚拟文件系统(VFS)
+
+
+
+**bin**(binary)：可执行程序
+
+**dev**(device)：设备文件
+
+**home**：普通用户家目录的根目录
+
+**root**：root用户的家目录
+
+**sbin**(system binary)：和系统相关的可执行程序
+
+**var**(variable)：一般放经常变化的文件，比如日志文件
+
+**etc**：配置文件
+
+**lib**：库文件
+
+**proc**(process)：进程映射文件
+
+
+
+打印当前工作目录：
+
+```shell
+pwd
+```
+
+切换目录：
+
+```shell
+cd /	#切换到根目录
+cd ~	#切换到家目录
+cd ..
+cd -	#回到上一次的目录
+```
+
+查看环境变量：
+
+```shell
+env
+```
+
+
+
+### 查看文件 ls -l
+
+```shell
+ls -l
+```
+
+`drwxr-xr-x  19 root root  3940 Sep 15 09:17 dev/`
+
+文件权限|硬链接个数|用户名|用户所属组名|文件大小|修改时间|文件名
+
+**d**：directory
+
+**r**：read
+
+**w**：write
+
+**x**：execute
+
+**-**：没有对应权限
+
+注意：rwx-r-xr-x三组权限，user-group-others
+
+
+
+**-**：file
+
+**l**：symbolic link(软链接)
+
+**c**：字符设备
+
+**b**：块设备(硬盘)
+
+**p**：管道文件(进程间通信)
+
+**s**：套接字文件
+
+
+
+
+
+### 通配符
+
+*****：可以匹配任意多个字符
+
+**?**：可以匹配任意一个字符
+
+**集合：**
+
+[characters]：匹配集合内的任意一个字符	[abc]
+
+[!characters]：匹配集合外的任意一个字符	[!abc]
+
+**类：**
+
+[0-9]：数字
+
+[a-z]：小写字母
+
+[A-Za-z]：字母
+
+
+
+### 链接
+
+ln - make links between files
+
+**硬链接**：硬链接是在文件系统中创建一个额外的索引节点（inode），该索引节点与原始文件的索引节点相同。这意味着硬链接与原始文件实际上位于相同的物理位置，它们共享相同的数据块。
+
+**软链接：**是一种特殊类型的文件，它包含对另一个文件或目录的路径的引用。
+
+创建软链接：
+
+```shell
+ln -s /home/photos/a.jpg /home/documents/b.jpg
+```
+
+请注意，软链接不会复制文件或目录的内容，它只是一个路径的引用。
+
+
+
+
+
+### 查找文件
+
+**locate**	-find files by name
+
+```shell
+locate studio.h
+```
+
+
+
+**which**	-locate a command(只能查找一个可执行程序)
+
+```shell
+which sshd
+```
+
+
+
+**find**	-search for files in a directory hierachy
+
+1.根据名字查找：
+
+-name "pattern"	
+
+```shell
+find / -name "stdio.h"
+```
+
+-a(and)	-o(or)	!(逻辑取反)
+
+```shell
+#查找linux内核文件夹下所有.c和.h文件
+find linux-5.16.12/ -name "*.c" -o -name "*.h"
+```
+
+2.根据类型查找：
+
+-type 类型
+
+```shell
+#查找当前目录下的所有普通文件
+find . -type f
+#查找当前目录下名字含有soft并且类型是符号链接的文件
+find . -name "*soft*" -a -type l
+```
+
+3.根据权限查找：
+
+-perm
+
+```shell
+#查找当前目录下权限为664的文件
+find . -perm 664
+```
+
+
+
+
+
+### 命令的组合
+
+```shell
+mkdir dir4; cd dir4
+#把找到的文件依次执行ls -l命令
+find /usr/include -name "stdio.h" -exec ls -l {}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 2.C++
 
 
 
