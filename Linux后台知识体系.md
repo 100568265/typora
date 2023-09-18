@@ -487,6 +487,31 @@ ret		#函数返回
 
 
 
+### 生成静态库
+
+1.生成目标文件
+
+```shell
+gcc -c add.c -o add.o
+```
+
+2.打包成静态库文件
+
+```shell
+ar crsv libadd.a add.o
+```
+
+3.移动到系统库目录
+
+```shell
+sudo cp libadd.a /usr/lib
+```
+
+4.加上链接
+
+```shell
+gcc test.o -o test -ladd
+```
 
 
 
@@ -496,6 +521,31 @@ ret		#函数返回
 
 
 
+### 生成动态库
+
+1.编译成目标文件，加上`-fPIC`(相对地址→位置无关代码)
+
+```shell
+gcc add.c -o add.o -fPIC
+```
+
+2.打包
+
+```shell
+gcc -shared add.o -o libadd.so
+```
+
+3.移动到系统库目录
+
+```shell
+sudo cp libadd.so /usr/lib
+```
+
+4.加上链接
+
+```shell
+gcc test.o -o test -ladd
+```
 
 
 
@@ -503,11 +553,39 @@ ret		#函数返回
 
 
 
+### gcc其他选项
+
+-D：相当于#define DEBUG
+
+```shell
+gcc test.c -D DEBUG
+```
+
+-I：增加头文件搜索路径
+
+```shell
+gcc src/test.c -I include/
+```
+
+-O：编译优化
+
+-Wall：开启警告
+
+```shell
+gcc src/test.c -I include/ -Wall
+```
 
 
 
 
 
+
+
+### gdb
+
+1.用gdb的时候不要开优化，加上`-O0`
+
+2.汇编指令里没有变量的名字，需要补充调试信息`-g`
 
 
 
