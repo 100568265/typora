@@ -274,6 +274,119 @@ find /usr/include -name "stdio.h" -exec ls -l {}
 
 
 
+### 权限
+
+chmod	- change file mode bits
+
+
+
+**(1)文字设定法**
+
+`chmod [ugoa][+=-][rwx] file/dir`
+
+```shell
+chmod a+x hello.py			#所有类型的用户添加可执行权限
+chmod u=r,g=rw,o=r a.txt	
+```
+
+
+
+
+
+### 查看文件
+
+**cat**	- concatenate files and print the standard output
+
+| 文件描述符 |              |        | 文件描述符 |
+| ---------- | ------------ | ------ | ---------- |
+| stdin      | 标准输入     | 键盘   | 0          |
+| stdout     | 标准输出     | 显示器 | 1          |
+| stderr     | 标准错误输出 | 显示器 | 2          |
+
+
+
+```shell
+cat > d.txt		#可在d.txt输入
+```
+
+**echo**	- display a line a text
+
+
+
+**head/tail**	- 显示头或尾的信息
+
+```shell
+tail -n 10 d.txt	#显示最后10行的信息
+```
+
+
+
+
+
+**file**	- determine file type
+
+```shell
+file d.txt	#查看文件详细信息
+```
+
+
+
+
+
+**iconv**	- convert text from one character to another
+
+```shell
+iconv -f gbk -t utf-8 d.txt 	#从gbk改为utf8编码
+```
+
+
+
+**grep**	- searches  for  PATTERNS  in  each  FILE.
+
+-E	--正则表达式--
+
+-i	 --忽略项--
+
+-n	--line-number
+
+```shell
+#搜索以t开头，以n结尾的单词
+grep -nE "\<t[^ ]*e\>" The_Holy_Bible.txt
+```
+
+
+
+
+
+## git
+
+
+
+### 生成公钥
+
+```shell
+cd ~		#1.退出到用户主目录
+cd .ssh/	#2.进入ssh隐藏文件夹
+ssh-keygen	#3.生成ssh公钥
+```
+
+#4.把公钥添加到github里
+
+
+
+### 上传代码
+
+1.修改本地仓库
+
+2.add(将修改添加到缓存，stage)
+
+3.commit(确实修改，将修改的东西更新到本地仓库)
+
+4.pull(把远程仓库的代码拉取下来)
+
+5.解决冲突(ctrl+X)
+
+6.push(上传到远程仓库)
 
 
 
@@ -281,6 +394,46 @@ find /usr/include -name "stdio.h" -exec ls -l {}
 
 
 
+## vim
+
+
+
+**vim有三种模式：**
+
+1.普通模式
+
+2.编辑模式
+
+3.视图模式
+
+
+
+### 命令模式
+
+**光标移动：**
+
+```shell
+ctrl + f:	上一页 forward
+ctrl + b:	下一页 backward
+H:			页首
+L:			页的最后一行
+```
+
+
+
+**命令模式下编辑文本：**
+
+```shell
+#删除
+dd:		删除一行
+dnd:	删除n行
+D:		删除到行位(比如可以删掉注释)
+u:		撤销操作
+#拷贝
+yy:		拷贝一行
+#查找和替换
+/regex
+```
 
 
 
@@ -288,35 +441,45 @@ find /usr/include -name "stdio.h" -exec ls -l {}
 
 
 
+## 编译链
+
+![](./assets/2018111314312371.png)
+
+```shell
+gcc hello.c -o hello	# -o:给目标文件起名
+```
+
+生成汇编代码：
+
+```shell
+gcc -E hello.c -o hello.i	#预处理后的文件
+gcc -S hello.i -o hello.s	#汇编文件
+# 或者直接生成汇编代码
+gcc -S hello.c -o hello.s
+```
 
 
 
+**汇编常用命令**
 
+```assembly
+push	#入栈
+pop		#出栈
+mov		#移动(赋值)
+lea		#(load effective address)加载有效地址
+call	#函数调用
+ret		#函数返回
 
+%rbp	#base pointer 栈帧基址寄存器
+%rsp	#stack pointer 栈顶寄存器
+%eax	#返回值
+```
 
+注意：
 
+以%开头的都是表示**寄存器**
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+一个栈帧的大小 = %rbp - %rsp
 
 
 
