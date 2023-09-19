@@ -589,6 +589,240 @@ gcc src/test.c -I include/ -Wall
 
 
 
+**gdb的命令**					 
+
+| 命令                               | 描述               |
+| ---------------------------------- | ------------------ |
+| `list/l [文件名:][行号]|[函数名]`  | 看文件内容         |
+| `run/r`                            | 运行程序           |
+| `break/b [文件名:][行号]|[函数名]` | 打断点             |
+| `continue/c`                       | 继续运行           |
+| `step/s`                           | 单步调试           |
+| `next/n`                           | 单步调试(跳过函数) |
+| `finish`                           | 跳出本次函数调用   |
+| `info break/ib`                    | 查看断点信息       |
+| `delete [num]`                     | 删除断点           |
+| `ignore [num] [count]`             | 忽略num断点count次 |
+
+
+
+**在gdb中查看监视**
+
+| 命令            | 描述             |
+| --------------- | ---------------- |
+| print/p 表达式  | 打印表达式的信息 |
+| display 表达式  | 打印表达式的信息 |
+| info display    | 展示display信息  |
+| undisplay [num] | 取消监视         |
+
+
+
+**检查崩溃的程序**
+
+黑匣子：**core文件**(程序崩溃时刻内存的堆栈)
+
+```shell
+ulimit -c unlimited
+./error1
+```
+
+如果显示不出来core文件：
+
+```shell
+su root		#切换到root用户
+echo core > /proc/sys/kernel/core_pattern
+gdb error1 core.1417038
+```
+
+
+
+空指针导致的崩溃：
+
+![image-20230919095132494](./assets/image-20230919095132494.png)
+
+栈溢出导致的崩溃：
+
+![image-20230919095327244](./assets/image-20230919095327244.png)
+
+
+
+
+
+### makefile
+
+makefile增量编译生成代码。
+
+一种"目标-依赖"，只有目标不存在/目标比依赖旧，才会执行命令。
+
+
+
+1.名字必须是Makefile/makefile
+
+2.规则的集合：依赖文件(0-n个)→目标文件(1个)，每个命令前必须写个<tab>键
+
+3.把最终生成的文件作为第一个规则的目标
+
+
+
+**makefile基本使用**
+
+```makefile
+main:main.o add.o
+	gcc main.o add.o -o main
+main.o:main.c
+	gcc -c main.c -o main.o
+add.o:add.c
+	gcc -c add.c -o add.o
+.PHONY:clean rebuild
+clean:
+	rm -f main.o add.o main
+rebuild:clean main
+```
+
+
+
+**变量**
+
+**1.自定义变量**：变量名:=值	所有值都是字符串类型
+
+**2.预定义变量**	
+
+**3.自动变量**：同一个变量名，值会随着规则变化而变化
+
+```makefile
+OUT:=main
+OBJS:=main.o add.o
+CC:=gcc
+$(OUT):$(OBJS)
+	$(cc) $^ -o $@
+main.o:main.c
+	$(cc) -c $^ -o $@
+add.o:add.c
+	$(cc) -c $^ -o $@
+.PHONY:clean rebuild
+clean:
+	$(RM) $(OUT) $(OBJS)
+rebuild:clean main
+```
+
+
+
+**用百分号字符管理格式关系**
+
+%：用在第二个规则中，按格式从第一个规则的依赖来匹配
+
+
+
+
+
+
+
+
+
+
+
+## 系统编程-文件
+
+狭义：存储在外部存储介质上的数据集合
+
+广义：速度慢，容量大，持久存储
+
+
+
+**文件类型：**
+
+普通文件，目录文件，软链接
+
+字符设备文件	鼠标
+
+块设备文件	    磁盘	
+
+管道文件		通信
+
+socket	            网络通信
+
+
+
+
+
+### **fopen**
+
+`FILE *fopen(const char *pathname, const char *mode);`
+
+| 模式 | 描述                         |
+| ---- | ---------------------------- |
+| "a"  | append，只写追加             |
+| "a+" | 读写追加，打开时处于文件开始 |
+
+
+
+### **改变文件权限**
+
+chmod, fchmod, fchmodat - change permissions of a file
+
+`int chmod(const char *pathname, mode_t mode);`
+
+```c
+mode_t mode;
+sscanf(argv[1],"%o",&mode);
+int ret = chmod(argv[2],mode);
+```
+
+
+
+### **获取工作目录**
+
+getcwd, getwd, get_current_dir_name - get current working directory
+
+`#include <unistd.h>`
+
+`char *getcwd(char *buf, size_t size);`
+
+
+
+### **改变工作目录**
+
+chdir, fchdir - change working directory
+
+`#include <unistd.h>`
+
+`int chdir(const char *path);`
+
+
+
+### **目录流**
+
+目录流（Directory Stream）是一个计算机编程术语，通常用于操作系统和文件系统编程中。它是一个与文件目录相关的数据结构，用于表示一个目录中的所有文件和子目录的信息。目录流允许程序员以一种有序的方式访问目录中的内容，并执行各种文件和目录操作，如查找、创建、删除文件和目录等。
+
+
+
+**打开目录**
+
+opendir, fdopendir - open a directory
+
+`#include <sys/types.h>`
+`#include <dirent.h>`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
