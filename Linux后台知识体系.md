@@ -803,35 +803,90 @@ opendir, fdopendir - open a directory
 `#include <sys/types.h>`
 `#include <dirent.h>`
 
+`DIR *opendir(const char *name);`
+
+
+
+**目录项**
+
+```c
+struct dirent {
+ino_t d_ino;       /* Inode number 磁盘*/
+off_t d_off;       /*next指针*/
+unsigned short d_reclen;    /*本结构体的大小*/
+unsigned char  d_type;      /*文件类型 */
+char d_name[256]; /*文件的名字*/
+};
+```
+
+readdir - read a directory
+
+`struct dirent *readdir(DIR *dirp);`
 
 
 
 
 
+### **无缓冲文件IO**
+
+不带用户态缓冲，但是有内核文件缓冲区
+
+![image-20230920112603393](./assets/image-20230920112603393.png)
+
+文件描述符**fd**
+
+
+
+**open**
+
+open, openat, creat - open and possibly create a file
+
+```c
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+int open(const char *pathname, int flags);
+int open(const char *pathname, int flags, mode_t mode);
+```
+
+
+
+**read**
+
+`#include <unistd.h>`
+
+`ssize_t read(int fildes, void *buf, size_t nbyte);`
+
+
+
+**write**
+
+pwrite, write — write on a file
+
+`#include <unistd.h>`
+
+`ssize_t write(int fildes, const void *buf, size_t nbyte);`
 
 
 
 
 
+### 性能问题
+
+linux系统文件函数和c语言库函数的性能上的区别：
 
 
 
+使用文件流：
 
+优势：零碎的写入，也可以保证少量的系统调用
 
+劣势：拷贝次数更多
 
+<img src="./assets/image-20230920175237562.png" alt="image-20230920175237562" style="zoom:50%;" />
 
-
-
-
-
-
-
-
-
-
-
-
-
+buf越大越好，减少状态切换的次数。
 
 
 
