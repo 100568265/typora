@@ -892,6 +892,116 @@ buf越大越好，减少状态切换的次数。
 
 
 
+### 内存映射
+
+![image-20230921091724120](./assets/image-20230921091724120.png)
+
+mmap
+
+在**用户态空间**分配一片内存，该内存直接和外部设备建立映射。
+
+使用*或[]读写内存，**等价于读写文件**。
+
+
+
+**内存映射的限制：**
+
+1.文件大小固定(ftruncate)
+
+2.只能是磁盘文件
+
+3.建立映射之前要先open
+
+
+
+**函数定义：**
+
+mmap, munmap - map or unmap files or devices into memory
+
+```c
+#include <sys/mman.h>
+void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
+int munmap(void *addr, size_t length);
+```
+
+
+
+
+
+
+
+### **IO多路复用**
+
+**管道**
+
+named pipe/FIFO
+
+是**进程间通信机制**在文件系统的映射。
+
+`mkfifo`
+
+一个管道的建立需要两个资源，一边开读端，一边开写端。
+
+
+
+**两根管道不合适的打开顺序，可能会导致死锁：**
+
+A先打开管道1的读端，B先打开管道2的读端，会发生死锁。
+
+因为A在等待B打开管道1的写端，B在等待A打开管道2的写端。
+
+这是一个循环等待的过程，死锁。
+
+
+
+**select函数**
+
+```c
+#include <sys/select.h>
+
+int select(int nfds, fd_set *readfds, fd_set *writefds,
+fd_set *exceptfds, struct timeval *timeout);
+
+void FD_CLR(int fd, fd_set *set);
+int  FD_ISSET(int fd, fd_set *set);	//询问操作
+void FD_SET(int fd, fd_set *set);	//加入监听
+void FD_ZERO(fd_set *set);			//清空集合
+```
+
+**fd_set：**监听集合，整个数组大小1024bytes(1024个文件)，位图。
+
+**轮询：**polling
+
+**回调：**callback
+
+
+
+1.创建fd_set
+
+2.设置合适的监听
+
+3.调用select函数，会让进程阻塞
+
+4.当监听的fd中有任何一个就绪时，则select就绪
+
+5.轮流询问所有监听的fd是否就绪(FD_ISSET询问操作)
+
+
+
+**select的劣势**
+
+![image-20230925173154404](./assets/image-20230925173154404.png)
+
+
+
+
+
+
+
+
+
+
+
 
 
 
