@@ -1090,6 +1090,12 @@ kill -9 pid 杀死后台进程
 
 
 
+后台到前台：fg
+
+前台到后台：ctrl + z
+
+后台暂停到后台运行：bg
+
 
 
 #### crontab
@@ -1102,6 +1108,135 @@ kill -9 pid 杀死后台进程
 
 
 
+### system
+
+system - execute a shell command
+
+```c
+#include <stdlib.h>
+int system(const char *command);
+```
+
+虽然system是跨平台的，但是它需要创建三个进程。
+
+
+
+### fork
+
+fork - create a child process
+
+fork() ：creates  a  new process by duplicating the calling process.
+
+```c
+#include <sys/types.h>
+#include <unistd.h>
+
+pid_t fork(void);
+```
+
+可以通过fork的返回值来走向不同的父子进程分支。
+
+```c
+int main(){
+    pid_t = pid;
+    pid = fork();
+    if(pid==0){
+        printf("I am child, pid=%d\n",getpid());
+    }
+    else{
+        printf("I am parent	, pid=%d\n",getpid());
+        sleep(1);
+    }
+}
+```
+
+
+
+
+
+### wait
+
+进程的退出，资源由其父进程回收。
+
+如果子进程终止的时候，父进程一直不调用wait，会导致僵尸进程。
+
+僵尸进程：终止了但资源未回收。
+
+
+
+
+
+### 日志系统
+
+closelog, openlog, syslog, vsyslog - send messages to the system logger
+
+**注意：**syslog和printf的使用方式是一样的，除了多了一个优先级。
+
+```c
+#include <syslog.h>
+
+void openlog(const char *ident, int option, int facility);
+void syslog(int priority, const char *format, ...);
+void closelog(void);
+
+void vsyslog(int priority, const char *format, va_list ap);
+```
+
+**日志系统的优先级：**
+
+| 变量名      | 描述                               |
+| ----------- | ---------------------------------- |
+| LOG_EMERG   | system is unusable                 |
+| LOG_ALERT   | action must be taken immediately   |
+| LOG_CRIT    | critical conditions                |
+| LOG_ERR     | error conditions                   |
+| LOG_WARNING | warning conditions                 |
+| LOG_NOTICE  | normal, but significant, condition |
+| LOG_INFO    | informational message              |
+| LOG_DEBUG   | debug-level message                |
+
+
+
+
+
+### 守护进程
+
+daemon
+
+即使是会话关闭了，进程依然能够持续运行。
+
+**以d结尾：**sshd→守护进程
+
+
+
+**守护进程的特点：**
+
+1.创建新会话
+
+2.重置掉cwd和umask
+
+3.关闭所有的文件描述符
+
+```c
+void Daemon(){
+    //1.创建新会话
+    if(fork()!=0){
+        exit(0);
+    }
+    setsid();
+    //2.关闭所有的文件描述符
+    for(int i = 0; i < 2; ++i){
+        close(i);
+    }
+    //3.重置掉cwd和umask
+    chdir("/");
+    umask(0);
+}
+
+int main(){
+    Daemon();
+}
+```
 
 
 
@@ -1109,12 +1244,49 @@ kill -9 pid 杀死后台进程
 
 
 
+### **进程间通信**
+
+Inter Process Comminication→IPC
+
+打破进程之间的隔离，从而进程可以共享数据。
 
 
 
+**IPC方式**
+
+管道
+
+信号
+
+共享内存
+
+信号量
+
+消息队列
 
 
 
+#### 管道
+
+**有名管道：**在文件系统中存在一个管道文件
+
+**匿名管道：**在文件系统中不存在，只用于父子进程间
+
+
+
+popen, pclose - pipe stream to or from a process
+
+```c
+#include <stdio.h>
+
+FILE *popen(const char *command, const char *type);//"w""r"
+
+int pclose(FILE *stream);
+```
+
+"w"：父进程可写入FILE内，子进程把自己的stdin重定向为管道
+
+"r"：父进程可读取FILE，子进程把自己的stdout重定向为管道
 
 
 
