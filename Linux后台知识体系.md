@@ -1292,6 +1292,227 @@ int pclose(FILE *stream);
 
 
 
+#### 信号
+
+一种**软件层面**的异步事件机制。
+
+![image-20231006051300606](./assets/image-20231006051300606.png)
+
+
+
+**信号的默认行为**
+
+![image-20231006052429108](./assets/image-20231006052429108.png)
+
+
+
+**当信号产生时**
+
+信号产生会修改目标进程的**task_struct**(目标认为所有的信号都来自内核)
+
+```c
+//回调函数
+void sigFunc(int num){
+    printf("num = %d\n",num);
+}
+int main(){
+    void (*ret)(int);
+    ret = signal(SIGINT,sigFunc);
+    while(1){
+        
+    }
+}
+```
+
+
+
+**阻塞：**让产生的信号不能马上递送，而是处于未决状态。
+
+**未决：**已产生但未递送的信号。
+
+
+
+**低速系统调用：**可能陷入永久等待的系统调用
+
+
+
+
+
+
+
+
+
+## 线程
+
+
+
+**进程的问题：**
+
+1.cpu寄存器要切换
+
+2.虚拟地址和物理地址的映射慢
+
+3.进程间通信很麻烦
+
+
+
+**线程：**
+
+轻量级的进程。
+
+是一个正在执行的程序。
+
+同一个进程存在多个线程共享内存资源。
+
+![image-20231006223415822](./assets/image-20231006223415822.png)
+
+**用户级线程：**cpu调度由进程处理
+
+**内核级线程：**调度由os处理
+
+
+
+**线程的优点：**
+
+1.减少了上下文切换的代价
+
+2.不需要页表切换
+
+3.线程之间通信简单(共享内存)
+
+
+
+### 创建子线程
+
+pthread_create - create a new thread
+
+```c
+#include <pthread.h>
+
+int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine) (void *), void *arg);
+//线程ID，线程属性，线程启动函数，start_routine的参数
+```
+
+
+
+**代码示例：**
+
+主线程终止，整个进程终止
+
+```c
+#include <pthread.h>
+#include <stdio.h>
+#include <unistd.h>
+
+//此函数相当于子线程的main函数
+void *threadFunc(void *arg){
+    printf("I am child thread, tid = %lu\n",pthread_self());
+}
+
+int main(){
+    printf("I am main thread, tid = %lu\n",pthread_self());
+    pthread_t tid;
+    //创建子线程
+    pthread_create(&tid,NULL,threadFunc,NULL);
+    //sleep(1);
+    return 0;
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1634,6 +1855,8 @@ int main(){
     fo(a,b);
 }
 ```
+
+
 
 
 
