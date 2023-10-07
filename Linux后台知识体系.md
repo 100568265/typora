@@ -1684,7 +1684,107 @@ int pthread_mutex_trylock(pthread_mutex_t *mutex);
 //已加锁，trylock会立刻返回
 ```
 
-下策：
+
+
+
+
+### 条件变量
+
+**同步：**事件的执行顺序是固定的(利用mutex实现同步)
+
+
+
+![image-20231007225449175](./assets/image-20231007225449175.png)
+
+1.设计一个条件，决定本线程是否要等待
+
+2.如果不满足，调用**wait**使本线程陷入等待
+
+3.此时，另外的线程会运行，直到将条件改成满足，通知(**signal**)阻塞的线程恢复就绪
+
+
+
+
+
+**条件变量的接口**
+
+![image-20231007234347707](./assets/image-20231007234347707.png)
+
+
+
+ ```c
+ #include <pthread.h>
+ #include <stdio.h>
+ #include <unistd.h>
+ #include <stdlib.h>
+ 
+ typedef struct shareRes_s{
+     int flag;
+     pthread_cond_t cond;
+     pthread_mutex_t mutex;
+ }shareRes_t;
+ 
+ void* threadFunc(void *arg){
+     shareRes_t* pShareRes = (shareRes_t*)arg;
+     
+     //先加锁
+     pthread_mutex_lock(&pShareRes->mutex);
+     //只有在加锁的状态下才能够使用wait
+     if(pShareRes->flag == 0){
+         pthread_cond_wait(&pShareRes->cond,&pShareRes->mutex);
+     }
+     //从wait中唤醒的话，说明前面的事件已经完成了
+     puts("world");
+     //记得解锁
+     pthread_mutex_unlock(&pShareRes->mutex);
+     pthread_exit(NULL);
+ }
+ 
+ int main(){
+     //初始化锁和条件变量
+     shareRes_t shareRes;
+     pthread_mutex_init(&shareRes.mutex,NULL);
+     pthread_cond_init(&shareRes.cond,NULL);
+     shareRes.flag = 0;
+ 
+     //创建子线程
+     pthread_t tid;
+     pthread_create(&tid,NULL,threadFunc,(void*)&shareRes);
+ 
+     sleep(1);
+     //先执行一个事件，然后唤醒等待在条件变量上的某个线程
+     puts("Hello");
+     shareRes.flag = 1;
+     pthread_cond_signal(&shareRes.cond);
+ 
+     //收尾工作，等待子线程的终止，销毁锁和条件变量
+     pthread_join(tid,NULL);
+     pthread_cond_destroy(&shareRes.cond);
+     pthread_mutex_destroy(&shareRes.mutex);
+ }
+ ```
+
+
+
+**pthread_cond_wait的内部实现**
+
+前一半：
+
+1.判断有没有加锁
+
+2.把自己加入唤醒队列
+
+3.解锁并陷入等待
+
+
+
+后一半(收到signal之后)：
+
+1.使自己处于就绪状态
+
+2.醒来之后加锁
+
+3.持有锁之后再继续运行
 
 
 
@@ -1692,29 +1792,19 @@ int pthread_mutex_trylock(pthread_mutex_t *mutex);
 
 
 
+## 网络编程
+
+![image-20231008012240219](./assets/image-20231008012240219.png)
 
 
 
+**内核协议栈**
 
+传输层	TCP/UDP
 
+网络层	IP
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+接口层	
 
 
 
