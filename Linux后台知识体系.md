@@ -1419,6 +1419,167 @@ int main(){
 }
 ```
 
+多线程想共享就用指针，想传递就用long。
+
+
+
+
+
+### **线程的终止**
+
+一个进程任一个线程：
+
+1.main return
+
+2.exit
+
+3._exit
+
+4.abort
+
+5.收到信号
+
+整个进程终止，其中的所有线程也终止了
+
+
+
+**子线程如何只终止自己？**
+
+从任何位置调用pthread_exit
+
+pthread_exit - terminate calling thread
+
+```c
+#include <pthread.h>
+void pthread_exit(void *retval);
+//子线程的返回值
+```
+
+
+
+回收线程的资源：pthread_join - join with a terminated thread
+
+```c
+#include <pthread.h>
+int pthread_join(pthread_t thread, void **retval);
+```
+
+`void** retval`：拷贝子线程的终止状态，主调函数申请`void*`的内存，join试图修改主调函数的`void*`(传递地址)
+
+
+
+**join和exit的例子**
+
+```c
+void *threadFunc(void *arg){
+	printf("child thread, tid = %lu\n",pthread_self());
+	pthread_exit((void*)23456);
+}
+int main(){
+    printf("main thread, tid = %lu\n",pthread_self());
+    pthread_t tid;
+    //创建子线程
+    pthread_create(&tid,NULL,threadFunc,NULL);
+    void* retval;	//申请了8个字节
+    pthread_join(tid,&retval);	//阻塞线程直到tid线程结束
+    printf("retval = %ld\n",(long)retval);
+```
+
+
+
+
+
+### 线程的取消
+
+给另一个线程发送取消**请求**
+
+```c
+int pthread_cancel(pthread_t thread);
+```
+
+pthread_cancel不是立刻中止另一个线程
+
+1.cancel会立刻修改目标线程的取消标志位
+
+2.目标线程运行到一些特殊的**取消点**
+
+3.取消点函数调用完成前会终止线程
+
+
+
+例子：
+
+```c
+void *threadFunc(void *arg){
+    printf("child thread, tid = %lu\n",pthread_self());
+    pthread_exit((void*)0);
+}
+
+int main(){
+    printf("main thread, tid = %lu\n",pthread_self());
+    pthread_t tid;
+    //创建子线程
+    pthread_create(&tid,NULL,threadFunc,NULL);
+    //给子线程发送一个取消信号
+    pthread_cancel(tid);
+    void* retval;
+    //如果tid是被cancel掉的，retval就是-1
+    pthread_join(tid,&retval);
+    printf("child return value = %ld\n",(long)retval);
+    return 0;
+}
+```
+
+
+
+
+
+### 线程资源清理
+
+push和pop必须成对出现
+
+```c
+void pthread_cleanup_push(void (*routine)(void *), void *arg);
+void pthread_cleanup_pop(int execute);
+```
+
+代码示例：
+
+```c
+#include <pthread.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+void clean1(void* arg){
+    printf("I am clean1\n");
+    free(arg);
+}
+void clean2(void* arg){
+    printf("I am clean2\n");
+    free(arg);
+}
+
+void *threadFunc(void *arg){
+    printf("child thread, tid = %lu\n",pthread_self());
+    int* p1 = malloc(4);    //申请资源后马上将对应清理行为压栈
+    pthread_cleanup_push(clean1,p1);
+    int* p2 = malloc(4);
+    pthread_cleanup_push(clean2,p2);
+    pthread_exit(NULL);
+    pthread_cleanup_pop(1);
+    pthread_cleanup_pop(1);
+}
+
+int main(){
+    printf("main thread, tid = %lu\n",pthread_self());
+    pthread_t tid;
+    //创建子线程
+    pthread_create(&tid,NULL,threadFunc,NULL);
+    pthread_join(tid,NULL);
+    return 0;
+}
+```
 
 
 
@@ -1426,14 +1587,104 @@ int main(){
 
 
 
+### 互斥锁
+
+一个线程可以做加锁操作：
+
+1.若已有任何线程持有锁，加锁的线程会阻塞
+
+2.若未加锁，则加锁，线程继续运行
+
+
+
+```c
+int pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t, *mutexattr);	//动态初始化
+
+int pthread_mutex_lock(pthread_mutex_t *mutex);	//加锁
+
+int pthread_mutex_unlock(pthread_mutex_t *mutex);//解锁
+```
+
+
+
+代码示例：
+
+1.封装共享资源(包括锁)
+
+2.所有共享资源的访问要放入**临界区**
+
+```c
+#include <pthread.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#define NUM 10000000
+
+typedef struct shareRes{
+    pthread_mutex_t mutex;
+    int count;
+}shareRes_t;
+
+void* threadFunc(void* arg){
+    shareRes_t* pShareRes = (shareRes_t*)arg;
+    for(int i = 0;i < NUM; ++i){
+        pthread_mutex_lock(&pShareRes->mutex);  //加锁
+        ++pShareRes->count;
+        pthread_mutex_unlock(&pShareRes->mutex);  //解锁
+    }
+}
+int main(){
+    shareRes_t shareRes;
+    shareRes.count = 0;
+    pthread_mutex_init(&shareRes.mutex,NULL);
+    pthread_t tid;
+    int ret = pthread_create(&tid,NULL,threadFunc,(void*)&shareRes);
+    for(int i = 0;i < NUM; ++i){
+        pthread_mutex_lock(&shareRes.mutex);  //加锁
+        ++shareRes.count;
+        pthread_mutex_unlock(&shareRes.mutex);  //解锁
+    }
+    pthread_join(tid,NULL);
+    printf("count = %d\n",shareRes.count);
+    pthread_mutex_destroy(&shareRes.mutex);
+}
+```
 
 
 
 
 
+### 死锁
+
+线程阻塞，等待永远不可能为真的条件成立。
 
 
 
+**死锁的情况：**
+
+**1.持有锁的线程终止了：**
+
+在线程终止的任何分支都要解锁。
+
+如果线程可能被cancel，在加锁之后立刻pthread_cleanup_push
+
+
+
+**2.一个线程对同一把锁加锁两次**
+
+解决方法：
+
+上策：不写这种代码
+
+中策：非阻塞加锁
+
+```c
+int pthread_mutex_trylock(pthread_mutex_t *mutex);
+//未加锁状态，会加锁
+//已加锁，trylock会立刻返回
+```
+
+下策：
 
 
 
