@@ -1808,6 +1808,35 @@ int pthread_mutex_trylock(pthread_mutex_t *mutex);
 
 
 
+**交换机：**L2，扩展广播域
+
+**路由器：**L3，跨越局域网
+
+**IP地址：**定位不同的主机
+
+**MAC地址：**物理地址
+
+**端口号：**定位主机中的进程
+
+
+
+**路由器工作原理：**
+
+根据包的目的IP地址，做转发操作。
+
+- 目的IP按位与genmask
+- 和desination匹配
+- 选择最长匹配进行转发gateway
+
+
+
+
+
+**NAT技术：**
+
+Network Address Translation，网络地址转换。
+
+IP，端口转换。将内部网络的**私有IP地址**转换为外部网络的**公共IP地址**，这使得多个设备可以使用相同的公共IP地址，缓解IPv4地址枯竭问题。
 
 
 
@@ -1815,24 +1844,39 @@ int pthread_mutex_trylock(pthread_mutex_t *mutex);
 
 
 
+### TCP
+
+面向连接的协议，可靠，全双工，端到端。
+
+**可靠**
+
+1.确认机制ACK
+
+2.缓冲区，保存已发送未确认的数据
+
+3.定时器
+
+4.序号，为了避免接收端收到重复包
+
+5.ACK包括SEQ的信息
 
 
 
 
 
+**TCP建立连接**
+
+三次握手的过程中，确认了四个信息
+
+![img](./assets/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B.png)
 
 
 
 
 
+**TCP断开连接**
 
-
-
-
-
-
-
-
+![image-20231008162302481](./assets/image-20231008162302481.png)
 
 
 
