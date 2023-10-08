@@ -1884,6 +1884,198 @@ IP，端口转换。将内部网络的**私有IP地址**转换为外部网络的
 
 
 
+### socket编程
+
+
+
+**socket系统调用**
+
+socket - create an endpoint for communication
+
+```c
+#include <sys/types.h>
+#include <sys/socket.h>
+
+int socket(int domain, int type, int protocol);
+//domain: AF_INET	type:SOCK_STREAM SOCK_DGRAM 	protocol:0
+```
+
+
+
+**connect函数**
+
+connect - initiate a connection on a socket
+
+```c
+#include <sys/types.h>
+#include <sys/socket.h>
+
+int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+```
+
+
+
+
+
+**bind函数**
+
+bind - bind a name to a socket
+
+```c
+#include <sys/types.h>          
+#include <sys/socket.h>
+
+int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+```
+
+bind一般是给服务端用的。
+
+对于bind而言，addr一定是本地地址。
+
+
+
+
+
+**listen函数**
+
+listen是说明让socket当做服务端来使用。
+
+listen清空socket的文件对象，建立了半连接队列和全连接队列。
+
+
+
+listen - listen for connections on a socket
+
+```c
+#include <sys/types.h>        
+#include <sys/socket.h>
+
+int listen(int sockfd, int backlog);
+```
+
+
+
+
+
+**accept函数**
+
+从全连接队列中取出一个连接，构建一个新的已连接socket。
+
+accept的本质是一个read，全连接队列若为空，accept就会阻塞。
+
+<img src="./assets/image-20231009012209259.png" alt="image-20231009012209259" style="zoom:50%;" />
+
+accept, accept4 - accept a connection on a socket
+
+```c
+#include <sys/types.h>          /* See NOTES */
+#include <sys/socket.h>
+
+int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+//addr填本地地址/null
+//后两个参数可以都填NULL，这样就不会获取客户端的信息了
+```
+
+
+
+
+
+**send函数**
+
+send, sendto, sendmsg - send a message on a socket
+
+send和write是拷贝数据到发送缓冲区，之后的事情由内核协议栈处理
+
+```c
+#include <sys/types.h>
+#include <sys/socket.h>
+
+ssize_t send(int sockfd, const void *buf, size_t len, int flags);
+```
+
+
+
+
+
+**recv函数**
+
+recv, recvfrom, recvmsg - receive a message from a socket
+
+```c
+#include <sys/types.h>
+#include <sys/socket.h>
+
+ssize_t recv(int sockfd, void *buf, size_t len, int flags);
+```
+
+
+
+TCP协议是一种字节流协议，消息之间没有边界。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
