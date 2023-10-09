@@ -2016,25 +2016,72 @@ TCP协议是一种字节流协议，消息之间没有边界。
 
 
 
+### **epoll**
+
+
+
+**select的缺陷**
+
+1.fd_set的本质是一个位图，容量固定1024。(可以扩容，要重新编译内核)
+
+2.监听和就绪用的是同一个数据结构(使用困难)
+
+3.存在多次大量从用户态到内核态的拷贝
+
+4.采用轮询找到就绪的FD→在海量连接，少量就绪的情况下有极大的性能损耗
+
+
+
+**IO多路复用 高性能**
+
+1.**所有监听数据放内核态**，看成一个文件对象(避免了拷贝问题)
+
+2.监听和就绪分离
+
+![image-20231009154917689](./assets/image-20231009154917689.png)
 
 
 
 
 
+**epoll函数**-创建文件描述符
+
+epoll_create, epoll_create1 - open an epoll file descriptor
+
+```c
+#include <sys/epoll.h>
+
+int epoll_create(int size);
+```
 
 
 
 
 
+**设置监听**
+
+epoll_ctl - control interface for an epoll file descriptor
+
+```c
+#include <sys/epoll.h>
+
+int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
+```
 
 
 
 
 
+**陷入阻塞**
 
+epoll_wait - wait for an I/O event on an epoll file descriptor
 
+```c
+#include <sys/epoll.h>
 
-
+int epoll_wait(int epfd, struct epoll_event *events,int maxevents, int timeout);
+//epoll_wait的返回值是就绪事件的个数
+```
 
 
 
