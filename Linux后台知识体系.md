@@ -2087,6 +2087,35 @@ int epoll_wait(int epfd, struct epoll_event *events,int maxevents, int timeout);
 
 
 
+给已经打开的fd加上非阻塞属性
+
+```c
+#include <unistd.h>
+#include <fcntl.h>
+
+int fcntl(int fd, int cmd, ... /* arg */ );
+```
+
+
+
+
+
+**epoll的触发方式**
+
+![image-20231010120651373](./assets/image-20231010120651373.png)
+
+
+
+**设置socket的属性**
+
+```c
+#include <sys/types.h>          
+#include <sys/socket.h>
+
+int getsockopt(int sockfd, int level, int optname, void *optval, socklen_t *optlen);
+
+int setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen);
+```
 
 
 
@@ -2094,12 +2123,52 @@ int epoll_wait(int epfd, struct epoll_event *events,int maxevents, int timeout);
 
 
 
+### 进程池
+
+进程池/线程池的设计思路：
+
+1.提前创建好若干个进程
+
+2.每当有任务到来，分配一个进程
+
+3.任务完成后归还进程
+
+4.整个进程池关闭的时候再销毁
+
+![image-20231010153129788](./assets/image-20231010153129788.png)
 
 
 
 
 
+**1.创建子进程**
 
+![image-20231010160903894](./assets/image-20231010160903894.png)
+
+
+
+**2.初始化tcp连接**
+
+![image-20231010162940736](./assets/image-20231010162940736.png)
+
+
+
+**3.父子进程移交连接**
+
+在两个进程之间传递文件对象。
+
+```c
+#include <sys/types.h>
+#include <sys/socket.h>
+
+ssize_t sendmsg(int sockfd, const struct msghdr *msg, int flags);
+```
+
+除了可以传递文本内容，还可以传递控制信息
+
+
+
+1.申请内存(堆)
 
 
 
