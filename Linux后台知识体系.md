@@ -2176,7 +2176,113 @@ ssize_t sendmsg(int sockfd, const struct msghdr *msg, int flags);
 
 
 
+### 线程池
 
+进程池(Nginx，Chrome多进程)
+
+**优点：**一个子进程崩溃，不影响其他子进程
+
+**缺点：**进程间通信太过困难。消耗较多的资源
+
+
+
+
+
+**线程池的架构**
+
+![image-20231011090901850](./assets/image-20231011090901850.png)
+
+```c
+//threadPool.h
+typedef struct task_s{
+    int netFd;	//传递文件描述符
+    struct task_s *pNext;
+}task_t;
+
+typedef struct taskQueue_s{
+    task_t *pFront;	//队首指针
+    task *pRear;	//队尾指针
+    int size;		//队列现在的长度
+    pthread_mutex_t mutex;
+    pthread_cond_t cond;
+}taskQueue_t;
+
+typedef struct threadPool_s{
+    pthread_t *tid;	//子线程的数组
+    int threadNum;	//子线程的个数
+    taskQueue_t taskQueue;
+}threadPool_t;
+int taskEnqueue(taskQueue_t *pTaskQueue, int netFd);	//入队声明
+int taskDeQueue(taskQueue_t *pTaskQueue);
+int threadPoolInit(threadPool_t *pThreadPool, int workerNum);	//初始化线程池
+```
+
+```c
+//taskQueue.c
+#include "threadPool.h"
+int taskEnqueue(taskQueue_t *pTaskQueue, int netFd){
+    task_t *pTask = (task_t*)calloc(1,sizeof(task_t));
+    pTask->netFd = netFd;
+    if(pTaskQueue->size == 0){
+        pTaskQueue->pFront = pTask;
+        pTaskQueue->pRear = pTask;
+    }
+    else{
+        pTaskQueue->pRear->pNext = pTask;
+        pTaskQueue->pRrear = pTask;
+    }
+    ++pTaskQueue->size;
+    return 0;
+}
+
+int taskDeQueue(taskQueue_t *pTaskQueue){
+    task_t *pCur = pTaskQueue->pFront;
+    pTaskQueue->pFront = pCur->pNext;
+    free(pCur);
+    --pTaskQueue->size;
+    return 0;
+}
+
+int threadPoolInit(threadPool_t *pThreadPool, int workerNum){
+    pThreadPool->threadNum = workerNum;
+    pThread->tid = (pthread_t*)calloc(workerNum,sizeof(pthread_t));
+    pThreadPool->taskQueue.pFront = NULL;
+    pThreadPool->taskQueue.pRear = NULL;
+    pThreadPool->taskQueue.size = 0;
+    pThread_mutex-init(&pThreadPool->taskQueue.mutex,NULL);
+    pthread_cond_init(&pThreadPool->taskQueue.cond,NULL);
+}
+```
+
+```c
+//worker.c
+#include "threadPool.h"
+
+void* handleEvent(void *arg){
+    
+}
+int makeWorker(threadPool_t *pThreadPool){
+    for(int i = 0; i < pThreadPool->threadNum; ++i){
+        pthread_create(&pThreadPool->tid[i],NULL,handleEvent,(void*)pthreadPool);
+    }
+}
+```
+
+```c
+//main.c
+#include "threadPool.h"
+
+int main(int argc, char *argv[]){
+    int workerNum = atoi(argv[3]);
+    threadPool_t threadPool;
+    threadPoolInit(&threadPool,workerNum);
+    makeWorker(&threadPool);
+    int sockFd;
+    tcpInit(&sockFd,argv[1],argv[2]);	//初始化tcp连接
+    int epfd = epoll_create(1);
+    epollAdd(sockFd,epfd);	//把sockFd给epoll监听
+}
+```
 
 
 
