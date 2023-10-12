@@ -2659,7 +2659,198 @@ int main(){
 
 
 
+# 3.数据库
+
+没有数据库时，数据可以写入到文件里。
+
+有了数据库，数据的组织方面会更加方便。
 
 
 
+**数据库的分类**
+
+关系型数据库
+
+
+
+非关系型数据库
+
+
+
+
+
+## mysql数据类型
+
+数值类型，文本/二进制类型，时间日期
+
+![image-20231012150249236](./assets/image-20231012150249236.png)
+
+
+
+
+
+## 结构化查询语言
+
+
+
+### DDL
+
+数据定义语言。
+
+
+
+**1.创建数据库**
+
+```sql
+CREATE DATABASE [IF NOT EXISTS] db_name;
+```
+
+**2.删除数据库**
+
+```sql
+DROP DATABASE [IF EXISTS] db_name;
+```
+
+**3.使用数据库**
+
+```sql
+USE db_name;
+show tables;
+```
+
+**4.修改数据库**
+
+```sql
+#修改数据库默认字符集编码
+ALTER DATABASE db_name DEFAULT CHARACTER SET gbk;
+```
+
+**5.创建表**
+
+```sql
+CREATE TABLE tab_name(
+    field1 datatype,
+    field2 datatype,
+    field3 datatype
+)[character set 字符集 collate 校对规则]
+```
+
+**6.修改表结构**
+
+```sql
+#添加字段
+alter table tb_name add 字段名 datatype;
+#删除一个字段
+alter table tb_name drop 字段名;
+#对字段名进行修改
+alter table tb_name change field1 field2 datatype;
+#对字段的类型进行修改
+alter table tb_name modify 字段名 datatype;
+#删除表
+drop table tb_name;
+```
+
+
+
+
+
+### DML
+
+Data Manipulation Language
+
+1.在表中插入记录(INSERT)
+
+2.修改某些列的数据(UPDATE)	
+
+3.删除某一些数据(DELETE)
+
+
+
+```sql
+#对指定列进行数据的添加
+insert into person(id,name,chinese,english) 
+values(1,'jingliu',100,100);
+
+#update语句修改表中数据
+update tb_name set field1 = xxx [where ...]
+update person set Physics = 100 where name = '镜流';
+
+#复制表结构
+create table newTName like oldTName;
+
+#复制表结构+数据
+create table newTName select * from oldTName;
+
+#删除表中的数据
+delete from TName [where condition];
+```
+
+
+
+
+
+### **DQL**
+
+Data Query Language
+
+```sql
+SELECT [DISTINCT] [* ] |{column1, column2 ,..}
+	FROM tb_name [where ..];
+```
+
+
+
+
+
+**枚举查询in**
+
+```sql
+select * from person where chinese in(88,70,90,66);
+```
+
+
+
+**模糊查询like**
+
+通配符 _ ：下划线代表任意一个字符
+
+通配符 %：百分号代表0-n个字符
+
+```sql
+select * from person where name like 'z%';
+```
+
+
+
+**排序操作---order by**
+
+```sql
+select * from person order by English desc;
+```
+
+
+
+**分页查询**
+
+limit m,n
+
+
+
+
+
+## 数据的完整性
+
+
+
+**1.实体完整性：**表中的每一行数据是唯一的，不能重复出现的。通过主键来实现
+
+```sql
+create table student(
+    id int primary key, 
+    name varchar(20),
+	Chinese int not null,
+    Math int not null,
+    English int not null,
+);
+```
 
