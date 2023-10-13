@@ -2836,13 +2836,36 @@ limit m,n
 
 
 
+**连接查询**
+
+针对多张表。
+
+左外连接，右外连接。LEFT JOIN
+
+内连接。	INNER JOIN
+
+交叉连接。    JOIN
+
+![image-20231013115817178](./assets/image-20231013115817178.png)
+
+```sql
+select * from person 
+inner join sorder on person.id = sorder.s_id; 
+```
+
+
+
+
+
 
 
 ## 数据的完整性
 
 
 
-**1.实体完整性：**表中的每一行数据是唯一的，不能重复出现的。通过主键来实现
+### **1.实体完整性**
+
+表中的每一行数据是唯一的，不能重复出现的。通过主键来实现
 
 ```sql
 create table student(
@@ -2854,3 +2877,61 @@ create table student(
 );
 ```
 
+**删除主键约束：**
+
+```sql
+#1.去掉自增约束
+ALTER TABLE tb_name MODIFY field1 datatype;
+#2.删除主键
+ALTER TABLE tb_name DROP PRIMARY KEY;	
+```
+
+
+
+### **2.域完整性**
+
+field(字段，列)
+
+每一列必须要符合某种特定的数据类型或约束
+
+**非空约束** NOT NULL 该字段不能为空
+
+**唯一约束** UNIQUE 该字段不允许重复
+
+
+
+
+
+### 3.参照完整性
+
+外键约束 FOREIGN KEY，**外键**是另一张表的主键
+
+```sql
+ALTER tb_name 
+ADD CONSTRAINT fkey FOREIGN KEY(s_id) 
+REFERENCES student(id);
+```
+
+
+
+
+
+### 数据库备份/恢复
+
+**备份：**
+
+在终端之下 $mysqldump -u root -p 43th>43th.sql
+
+
+
+**恢复(复制)：**
+
+先mysql服务器上创建一个空的数据库43th
+
+1.在命令行下：$ mysql -uroot -p 43th>43th.sql
+
+2.进入mysql后：
+
+​	mysql > use 43th;
+
+​	mysql > source 43th.sql;
