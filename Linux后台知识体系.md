@@ -2499,6 +2499,16 @@ ofs.close();
 
 
 
+### valgrind
+
+内存泄露的检测工具
+
+```shell
+valgrind --tool=memcheck --leak-check=full ./a.out
+```
+
+
+
 
 
 ## 面向对象
@@ -2659,37 +2669,57 @@ int main(){
 
 
 
+### 继承
 
+```cpp
+class 子类类名 : public 父类类名
+{
+    
+};
+```
 
-### 类作用域
+**1.子类在创建过程中的三个步骤：**
 
-1.全局作用域
+1.吸收父类的成员
 
+2.改变父类的成员
 
-
-2.类作用域
-
-
-
-3.块作用域
-
-
-
-
-
-
+3.新增成员
 
 
 
+**2.继承的局限性：**
+
+1.友元关系不能被继承
+
+2.构造函数和析构函数不能被继承
+
+3.operator new和operator delete，opeartor=不能被继承
 
 
 
 
 
+**3.子类对父类成员的访问权限**
 
+三种继承方式：public，protected，private
 
+![image-20231017173410571](./assets/image-20231017173410571.png)
 
-
+```cpp
+class Point3D : public Point
+{
+public:
+    Point3D(int ix = 0, int iy = 0, int iz = 0)
+    : Point(ix,iy)//调用父类构造函数，完成父类数据成员的初始化
+    ,_iz(iz)
+    {
+        
+    }
+private:
+    int _iz;
+}
+```
 
 
 
