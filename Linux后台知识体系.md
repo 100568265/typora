@@ -2,7 +2,7 @@
 
 
 
-## make的工作方式
+**make的工作方式**
 
 GNU的make工作时的执行步骤如下：（想来其它的make也是类似）
 
@@ -18,90 +18,48 @@ GNU的make工作时的执行步骤如下：（想来其它的make也是类似）
 
 
 
-## 书写规则
+## 宏
 
-规则包含两个部分，一个是**依赖关系**，一个是**生成目标的方法**。
+**$@**	表示目标文件
 
+**$?**	表示比目标还要新的依赖文件列表
 
+**$<**	表示第一个依赖文件
 
-**规则举例**
-
-```makefile
-foo.o : foo.c defs.h	#foo模块	
-	cc -c -g foo.c
-```
-
-**1.文件的依赖关系：**foo.o依赖于foo.c和defs.h，如果foo.c和defs.h的文件日期比foo.o文件日期新，或者foo.o不存在，那么依赖关系发生。
-
-2.生成或更新 `foo.o` 文件，就是那个cc命令。它说明了如何生成 `foo.o` 这个文件。（当然，foo.c文件include了defs.h文件）
-
-
-
-**规则的语法**
+**$***	表示目标模式中%以及之前的部分
 
 ```makefile
-targets : prerequisites
-    command
-    ...
+hello : main.cpp hello.cpp factorial.cpp
+	$(CC) $(CFLAGS) $@.cpp $(LDFLAGS) -o $@
 ```
 
 
 
-**通配符**
-
-make支持三个通配符，`*` ， `?` 和 `~` 。
-
-波浪号（ `~` ）字符在文件名中也有比较特殊的用途。如果是 `~/test` ，这就表示当前用户的 `$HOME` 目录下的test目录。而 `~hchen/test` 则表示用户hchen的宿主目录下的test 目录。
 
 
-
-1.列出一确定文件夹中的所有 `.c` 文件。
+## 定义依赖性
 
 ```makefile
-objects := $(wildcard *.c)
+hello : main.o factorial.o hello.o
+	$(CC) main.o factorial.o hello.o -o hello
 ```
 
-2.列出(1)中所有文件对应的 `.o` 文件，在（3）中我们可以看到它是由make自动编译出的:
+在这里，我们告诉hello依赖main.o，factorial.o，hello.o，所以每当有任何变化，这些目标文件将采取行动。
+
+
+
+同时我们会告诉如何准备.o文件，所以以下依赖也必须定义：
 
 ```makefile
-$(patsubst %.c,%.o,$(wildcard *.c))
+main.o : main.cpp functions.h
+	$(CC) -c main.cpp
+	
+factorial.o : factorial.cpp functions.h
+	$(CC) -c factorial.cpp
+
+hello.o : hello.cpp functions.h
+	$(CC) -c hello.cpp
 ```
-
-3.由(1)(2)两步，可写出编译并链接所有 `.c` 和 `.o` 文件
-
-```makefile
-objects := $(patsubst %.c,%.o,$(wildcard *.c))
-foo : $(objects)
-    cc -o foo $(objects)
-```
-
-
-
-**文件搜寻**
-
-**VPATH**
-
-把一个路径告诉make，让make在自动去找。Makefile文件中的特殊变量 `VPATH` 就是完成这个功能的。
-
-```makefile
-VPATH = src:../headers
-```
-
-上面的定义指定两个目录，“src”和“../headers”，make会按照这个顺序进行搜索。目录由“冒号”分隔。
-
-
-
-```
-vpath <pattern> <directories>
-```
-
-为符合模式<pattern>的文件指定搜索目录<directories>。
-
-
-
-**嵌套执行make**
-
-
 
 
 
