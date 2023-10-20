@@ -63,6 +63,202 @@ hello.o : hello.cpp functions.h
 
 
 
+**利用特殊宏对makefile进行优化：**
+
+```makefile
+LDFLAGS = -lstdc++
+
+hello : main.o factorial.o hello.o
+	$(CC) $? $(LDFLAGS) -o $@
+
+main.o :  main.cpp functions.h
+	$(CC) -c main.cpp
+
+factorial.o : factorial.cpp functions.h
+	$(CC) -c factorial.cpp
+
+hello.o : hello.cpp functions.h
+	$(CC) -c hello.cpp
+```
+
+
+
+**makefile的隐含规则：**
+
+main.o会默认依赖main.cpp，所以以上的makefile文件可以继续简化：
+
+```makefile
+LDFLAGS = -lstdc++
+
+hello: main.o factorial.o hello.o
+	$(CC) $^ $(LDFLAGS) -o $@
+
+main.o: functions.h
+	$(CC) -c main.cpp
+
+factorial.o: functions.h
+	$(CC) -c factorial.cpp
+
+hello.o: functions.h
+	$(CC) -c hello.cpp
+```
+
+
+
+
+
+## 条件指令
+
+
+
+`ifeq`：相等则执行指令。
+
+`ifneq`：不相等则执行指令。
+
+`ifdef`：定义则执行指令。
+
+`ifndef`：未定义则执行指令。
+
+`else`
+
+`endif`：指令结束条件。每一个条件必须于endif结束。
+
+
+
+**用条件指令执行跨平台编译：**
+
+```makefile
+libs_for_gcc = -lgnu
+normal_libs = 
+
+foo: $(objects)
+
+ifeq ($(CC),gcc)
+	$(CC) -o foo $(objects) $(libs_for_gcc)
+else
+	$(CC) -o foo $(objects) $(normal_libs)
+endif
+```
+
+
+
+
+
+
+
+## 赋值指令
+
+`=`	直接赋值
+
+`+=`	追加和修改
+
+`:=`	忽略之前的赋值
+
+`?=`	如果前面没有定义，则定义生效
+
+
+
+
+
+## 文件重新编译
+
+当依赖项比目标新的时候，会触发重新编译。
+
+
+
+有些业务场景需要避免重新编译，可以使用
+
+```shell
+make -t
+```
+
+
+
+
+
+## make递归使用
+
+假设，你有一个子目录，子目录都有其自己的makefile，并且您希望所在目录的makefile中运行make子目录：
+
+```makefile
+subsystem:
+	cd subdir && $(MAKE)
+	
+或者
+
+subsystem:
+	$(MAKE) -C subdir
+```
+
+
+
+
+
+**通信变量到子make**
+
+导出特定变量的到子make：
+
+```makefile
+export variable...
+```
+
+
+
+阻止导出：
+
+```makefile
+unexport variable...
+```
+
+
+
+
+
+## 头文件在不同目录
+
+声明头文件的路径
+
+```makefile
+INCLUDES = -I "/home/zjs/header"
+CC = gcc
+LIBS = -lm
+CFLAGS = -g -Wall
+OBJ = main.o factorial.o hello.o
+
+hello: $(OBJ)
+	${CC} ${CFLAGS} ${INCLUDES} -o $@ ${OBJ} ${LIBS}
+.o.cpp
+	${CC} ${CFLAGS} ${INCLUDES} -c $<
+```
+
+
+
+
+
+## 例子
+
+```makefile
+OBJS = main.o factorial.o hello.o
+CFLAGS = -Wall -g
+INCLUDES = -I .
+LIBS = -lstdc++
+
+hello: ${OBJS}
+	${CC} ${CFLAGS} -o $@ $^ ${LIBS}
+
+.o:.cpp
+	${CC} ${CFLAGS} ${INCLUDES} -c $<
+
+clean:
+	@rm -f *.o hello
+```
+
+
+
+
+
+
+
 
 
 
