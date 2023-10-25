@@ -2808,6 +2808,43 @@ private:
 
 
 
+**菱形继承的解决方案**
+
+问题：数据成员的存储二义性
+
+解决方法：使用虚拟继承
+
+```cpp
+class A{
+public:
+    void setNumber(long number){
+        _number = number;
+    }
+private:
+    long _number;    
+};
+
+class B:virtual public A{
+    
+};
+
+class C:virtual public A{
+    
+};
+
+class D
+: public B
+,public C
+{
+    
+}; 
+
+int main(){
+    D d;
+    d.setNumber(10);
+    return 0;
+}
+```
 
 
 
@@ -2815,6 +2852,30 @@ private:
 
 
 
+**基类与派生类对象的转换**
+
+1.可以将派生类对象赋值给基类对象
+
+```cpp
+Base base(10);
+Derived derived(1111,2222);
+
+base = derived;
+```
+
+2.将基类的引用绑定到派生类对象
+
+```cpp
+Base &ref = derived;
+```
+
+3.基类的指针可以指向派生类的对象
+
+```cpp
+Base *pbase = &derived;
+```
+
+派生类对象可以赋值给基类对象，反之不行。
 
 
 
