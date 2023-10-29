@@ -3155,6 +3155,200 @@ Base *pbase = &derived;
 
 
 
+# 3.STL
+
+
+
+
+
+
+
+## set
+
+collection of unique keys，sorted by keys
+
+
+
+**set的基本特征：**
+
+1.set中的元素是唯一的，不能重复
+
+2.默认情况下，set中元素会按照升序排列
+
+3.set底层实现是红黑树
+
+4.set不支持修改
+
+
+
+### **初始化**
+
+```cpp
+//1.直接初始化
+std::set<int> number = {1,2,3,6,9,2,10,56};
+
+//2.从别的容器中提取，初始化
+int arr[10] = {1,8,7,5,6,3,4,4,3,9};
+set<int> number(arr,arr+10);
+```
+
+
+
+### **遍历**
+
+```cpp
+//1.遍历
+std::set<int>::iterator it;
+for(it = number.begin();it!=number.end();++it)
+{
+    std::cout << *it << std::endl;
+}
+
+//2.遍历(C++11方式)
+for(auto &elem:number)	//auto可以进行自动类型推导。
+{
+    std::cout << elem << " ";
+}
+```
+
+
+
+### **查找**
+
+```cpp
+std::set<int> number = {1,2,3,6,9,2,10,56};
+size_t cnt1 = number.count(10);	//查找10的出现次数
+```
+
+
+
+`iterator find(const Key& key);`
+
+按key查找一个值，并返回它的迭代器
+
+```cpp
+auto it2 = number.find(10);
+if(it2 == number.end()){
+    std::cout << "该元素不存在set中"  << std::endl;
+}
+else{
+    std::cout << "该元素存在set中"  << *it2 << std::endl;
+}
+```
+
+
+
+### **插入**
+
+`std::pair<iterator, bool> insert(const value_type& value);`
+
+```cpp
+pair<set<int>::iterator,bool> ret = number.insert(2);
+if(ret.second){
+    std::cout << "插入成功" << *ret.first << std::endl; 
+}
+else{
+    std::cout << "插入失败，该值已存在于set中" << std::endl;
+}
+```
+
+
+
+ 
+
+## map
+
+collection of key-value pairs, sorted by keys, keys are unique
+
+
+
+**map的特性**
+
+1.元素的key值是唯一的，不能重复，但是value可以相同
+
+2.默认情况下，按照key值升序排列
+
+3.map的底层实现也是红黑树
+
+
+
+
+
+### **初始化**
+
+```cpp
+std::map<int,std::string> number = {
+	{1,"武汉"},
+	{2,"北京"},
+	{3,"武汉"},
+	{4,"上海"},
+std::pair<int,std::string>(5,"深圳")
+};
+```
+
+
+
+### **遍历**
+
+```cpp
+//遍历
+for(auto &elem:number)
+{
+	std::cout << elem.first << " " <<elem.second << std::endl;
+}
+std::cout << std::endl;
+```
+
+
+
+### **查找**
+
+```cpp
+map<string,string>::iterator it = number.find("0755");
+if(it == number.end()){
+    cout << "查找失败，该值不在map中" << endl;
+}
+else{
+    cout << it->first << " " << it->second << endl;
+}
+```
+
+
+
+**map的下标访问**
+
+map的下标访问具有**查找，插入，修改**功能
+
+```cpp
+//根据key找到value
+cout << number["999"] << endl;
+number["022"] = "东京";
+```
+
+
+
+### **插入**
+
+```cpp
+pair<map<string,string>::iterator,bool> ret = number.insert(pair<string,string>("999","taiwan"));
+
+//打印刚才插入的值
+if(ret.second){
+    cout << ret.first->first << " " 
+        << ret.first->second << endl;
+}
+else{
+    cout <<"插入失败，该值存在于map中" << endl;
+}
+```
+
+
+
+改进版：
+
+```cpp
+auto ret = number.insert({"999","taiwan"});
+```
 
 
 
@@ -3180,12 +3374,7 @@ Base *pbase = &derived;
 
 
 
-
-
-
-
-
-# 3.数据库
+# 4.数据库
 
 没有数据库时，数据可以写入到文件里。
 
