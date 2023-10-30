@@ -3081,6 +3081,52 @@ Base *pbase = &derived;
 
 
 
+### 多态
+
+对于同一种指令，针对不同的对象，产生不一样的行为。
+
+
+
+
+
+#### **多态的类型**
+
+**1.静态多态：**发生时机在编译的时，包括函数重载，运算符重载，模板。
+
+```cpp
+int add(int,int);
+double add(double,double);
+string add(string,string);
+
+string operator+(string,string);
+Point operator+(Point,Point);
+Complex operator+(Complex,Complex);
+```
+
+
+
+**2.动态多态：**发生的时机在运行时。虚函数。
+
+
+
+
+
+#### **虚函数的概念**
+
+当子类继承父类的时候，父类的虚函数会被子类继承，在子类中仍然是虚函数。
+
+
+
+子类中如果想重写父类的虚函数，格式上有以下要求：
+
+1.函数名字要相同
+
+2.函数的参数列表要完全相同(参数个数，参数类型，参数顺序)
+
+3.函数的返回类型要相同
+
+
+
 
 
 
