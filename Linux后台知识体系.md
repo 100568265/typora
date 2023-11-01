@@ -3252,7 +3252,11 @@ int main(){
 
 
 
-## 移动语义
+## C++高级
+
+
+
+### 移动语义
 
 
 
@@ -3272,11 +3276,7 @@ int &&ref = 10;
 
 
 
-
-
-移动构造函数
-
-移动赋值运算符函数
+`std::move()`可以把左值转换为右值，作用：表明不想再使用该左值。
 
 
 
@@ -3284,6 +3284,84 @@ int &&ref = 10;
 
 
 
+### 智能指针
+
+
+
+**RAII**
+
+Resource Acquisition Is Initialization
+
+这是一种利用栈对象生命周期管理程序资源(包括内存，文件句柄，锁等)的技术。
+
+
+
+使用RAII时，一般在资源获取的同时构建对象；
+
+在对象生存期间，资源一直保持有效；
+
+对象析构时，资源被释放。
+
+
+
+**RAII的特征：**
+
+1.在构造函数中初始化资源
+
+2.在析构函数中释放资源
+
+3.提供若干访问资源的方法
+
+4.不允许复制与赋值(对象语义)
+
+
+
+实现方法：
+
+将拷贝构造函数与赋值运算符函数删除或设置为私有
+
+
+
+
+
+#### auto_ptr
+
+在构造时获取某个对象的所有权，在析构时释放该对象
+
+表面上执行的是拷贝操作，但是底层已经发生了所有权的转移，并将ap的数据成员置为空了，该智能指针存在缺陷
+
+```cpp
+int *pInt = new int(10);        //原生的裸指针
+std::auto_ptr<int> ap(pInt);    //智能指针
+cout << "pInt = " << pInt << endl;
+cout << "ap.get() = " << ap.get() << endl;
+cout << "*ap = " << *ap << en
+cout << endl;
+std::auto_ptr<int> ap2(ap);  //可以进行复制
+cout << "*ap2 = " << *ap2 << endl;
+cout << "*ap = " << *ap << endl;
+```
+
+
+
+
+
+#### unique_ptr
+
+这是一个独享所有权的智能指针，它提供了一种严格意义上的所有权，包括：
+
+1. 拥有它所指向的对象
+2. 无法进行复制或者赋值
+3. 保存指向某个对象的指针，当它本身被删除释放的时候，会使用给定的删除器删除释放它指向的对象
+4. unique_ptr具有移动语义，可以作为容器的元素
+
+
+
+
+
+#### shared_ptr
+
+这是一个引用计数智能指针，用于共享对象的所有权
 
 
 
@@ -3298,7 +3376,6 @@ int &&ref = 10;
 
 
 
-# 3.STL
 
 
 
@@ -3306,7 +3383,13 @@ int &&ref = 10;
 
 
 
-## set
+
+
+## STL
+
+
+
+### set
 
 collection of unique keys，sorted by keys
 
@@ -3324,7 +3407,7 @@ collection of unique keys，sorted by keys
 
 
 
-### **初始化**
+#### **初始化**
 
 ```cpp
 //1.直接初始化
@@ -3337,7 +3420,7 @@ set<int> number(arr,arr+10);
 
 
 
-### **遍历**
+#### **遍历**
 
 ```cpp
 //1.遍历
@@ -3356,7 +3439,7 @@ for(auto &elem:number)	//auto可以进行自动类型推导。
 
 
 
-### **查找**
+#### **查找**
 
 ```cpp
 std::set<int> number = {1,2,3,6,9,2,10,56};
@@ -3381,7 +3464,7 @@ else{
 
 
 
-### **插入**
+#### **插入**
 
 `std::pair<iterator, bool> insert(const value_type& value);`
 
@@ -3399,7 +3482,7 @@ else{
 
  
 
-## map
+### map
 
 collection of key-value pairs, sorted by keys, keys are unique
 
@@ -3417,7 +3500,7 @@ collection of key-value pairs, sorted by keys, keys are unique
 
 
 
-### **初始化**
+#### **初始化**
 
 ```cpp
 std::map<int,std::string> number = {
@@ -3431,7 +3514,7 @@ std::pair<int,std::string>(5,"深圳")
 
 
 
-### **遍历**
+#### **遍历**
 
 ```cpp
 //遍历
@@ -3444,7 +3527,7 @@ std::cout << std::endl;
 
 
 
-### **查找**
+#### **查找**
 
 ```cpp
 map<string,string>::iterator it = number.find("0755");
@@ -3470,7 +3553,7 @@ number["022"] = "东京";
 
 
 
-### **插入**
+#### **插入**
 
 ```cpp
 pair<map<string,string>::iterator,bool> ret = number.insert(pair<string,string>("999","taiwan"));
