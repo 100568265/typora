@@ -3451,9 +3451,113 @@ private:
 
 ## STL
 
+STL包含六大基本组件
+
+1.容器
+
+2.迭代器
+
+3.算法
+
+4.适配器
+
+5.函数对象
+
+6.空间配置器
 
 
-### set
+
+
+
+
+
+### 容器
+
+序列式容器：vector，list
+
+关联式容器：set，map
+
+无序关联式容器：unordered_set，unordered_map
+
+
+
+
+
+#### vector
+
+
+
+**初始化方式**
+
+```cpp
+//1.传10个4
+vector<int> number(10,4);
+
+//2.迭代器范围
+int arr[10] = {1,2,3,4,5,6,7,8,9,10};
+vector<int> number(arr,+arr+10);
+
+//3.大括号的范围
+vector<int> number = {1,2,3,4,5};
+```
+
+
+
+**遍历**
+
+```cpp
+//1.for循环遍历
+for(size_t index = 0;index != number.size();++index){
+    cout << number[index] << " ";
+}
+
+//2.迭代器遍历
+vector<int>::iterator it;
+for(it = number.begin(); it != number.end();++it){
+    cout << *it << " ";
+}
+
+//3.增强for遍历
+for(auto &elem : number){
+    cout << elem << " ";
+}
+```
+
+
+
+
+
+#### deque
+
+
+
+
+
+#### list
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### set
 
 collection of unique keys，sorted by keys
 
@@ -3471,7 +3575,7 @@ collection of unique keys，sorted by keys
 
 
 
-#### **初始化**
+**初始化**
 
 ```cpp
 //1.直接初始化
@@ -3484,7 +3588,7 @@ set<int> number(arr,arr+10);
 
 
 
-#### **遍历**
+**遍历**
 
 ```cpp
 //1.遍历
@@ -3503,7 +3607,7 @@ for(auto &elem:number)	//auto可以进行自动类型推导。
 
 
 
-#### **查找**
+**查找**
 
 ```cpp
 std::set<int> number = {1,2,3,6,9,2,10,56};
@@ -3528,7 +3632,7 @@ else{
 
 
 
-#### **插入**
+**插入**
 
 `std::pair<iterator, bool> insert(const value_type& value);`
 
@@ -3546,7 +3650,7 @@ else{
 
  
 
-### map
+#### map
 
 collection of key-value pairs, sorted by keys, keys are unique
 
@@ -3564,7 +3668,7 @@ collection of key-value pairs, sorted by keys, keys are unique
 
 
 
-#### **初始化**
+**初始化**
 
 ```cpp
 std::map<int,std::string> number = {
@@ -3578,7 +3682,7 @@ std::pair<int,std::string>(5,"深圳")
 
 
 
-#### **遍历**
+**遍历**
 
 ```cpp
 //遍历
@@ -3591,7 +3695,7 @@ std::cout << std::endl;
 
 
 
-#### **查找**
+**查找**
 
 ```cpp
 map<string,string>::iterator it = number.find("0755");
@@ -3617,7 +3721,7 @@ number["022"] = "东京";
 
 
 
-#### **插入**
+**插入**
 
 ```cpp
 pair<map<string,string>::iterator,bool> ret = number.insert(pair<string,string>("999","taiwan"));
