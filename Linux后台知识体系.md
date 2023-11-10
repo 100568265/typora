@@ -3481,9 +3481,15 @@ STL包含六大基本组件
 
 
 
+#### 序列式容器
 
+![image-20231110171424549](./assets/image-20231110171424549.png)
 
 #### vector
+
+vector向量，是一个动态数组。
+
+为了控制时间复杂度，不支持在头部进行插入和删除。
 
 
 
@@ -3525,11 +3531,23 @@ for(auto &elem : number){
 
 
 
+**插入与删除**
+
+```cpp
+vector<int> number = {1,3,5,7,9,4,8,6};
+number.push_back(100);
+number.push_back(200);
+
+number.pop_back();
+```
+
+
+
 
 
 #### deque
 
-
+双向队列deque。
 
 
 
