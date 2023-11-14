@@ -3485,7 +3485,7 @@ STL包含六大基本组件
 
 ![image-20231110171424549](./assets/image-20231110171424549.png)
 
-#### vector
+##### **vector**
 
 vector向量，是一个动态数组。
 
@@ -3543,31 +3543,58 @@ number.pop_back();
 
 
 
+**vector迭代器失效**
+
+1.插入元素
+
+在进行insert操作时，底层已经发生了扩容，因此会导致原迭代器失效。
+
+解决方案：每次进行insert之后，将迭代器重新置位。
+
+```cpp
+it = number.insert(it,30,200);
+```
+
+2.删除元素
+
+```cpp
+//在删除元素时，后面的元素会往前移，但指针会往后移，可能会导致删不干净的情况
+vector<int> number = {1,3,5,7,6,6,9,4,8};
+for(auto it = number.begin();it != number.end();){
+    if(6==*it){
+        it = number.erase(it);
+    }
+    else{
+        ++it;
+    }
+}
+```
 
 
-#### deque
+
+
+
+
+
+##### deque
 
 双向队列deque。
 
 
 
-#### list
+##### list
+
+list是双向链表，不支持下标。
 
 
 
+*insert函数*
 
-
-
-
-
-
-
-
-
-
-
-
-
+```cpp
+//api
+//(插入位置，插入的值)
+iterator insert(iterator pos, const T& value);
+```
 
 
 
