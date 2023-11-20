@@ -3602,7 +3602,9 @@ iterator insert(iterator pos, const T& value);
 
 
 
-#### set
+#### 关联式容器
+
+##### set
 
 collection of unique keys，sorted by keys
 
@@ -3612,11 +3614,13 @@ collection of unique keys，sorted by keys
 
 1.set中的元素是唯一的，不能重复
 
-2.默认情况下，set中元素会按照升序排列
+2.set是有序的，默认升序
 
 3.set底层实现是红黑树
 
 4.set不支持修改
+
+5.set不支持下标
 
 
 
@@ -3695,7 +3699,7 @@ else{
 
  
 
-#### map
+##### map
 
 collection of key-value pairs, sorted by keys, keys are unique
 
@@ -3793,9 +3797,37 @@ auto ret = number.insert({"999","taiwan"});
 
 
 
+#### 无序关联容器
+
+底层实现是哈希表
 
 
 
+**1.哈希函数**
+
+通过key值，可以找到key值对应的位置值(value)
+
+
+
+**2.哈希函数的类型**
+
+1.直接定址法
+
+2.平方取中法
+
+3.数字分析法
+
+4.除留取余法
+
+
+
+**3.哈希冲突**
+
+对于不同的key值，可能得到相同的value值
+
+
+
+**4.装载因子**
 
 
 
