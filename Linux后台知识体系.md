@@ -3837,17 +3837,152 @@ auto ret = number.insert({"999","taiwan"});
 
 
 
+## 多线程
+
+
+
+### C++11标准
+
+
+
+#### 1.创建线程
+
+**join()：**主线程阻塞，等待子线程执行完毕
+
+```cpp
+#include <iostream>
+#include <thread>
+
+void task1(){
+    for(int i = 0; i < 1000000; i++){
+        globalVariable++;
+        globalVariable--;
+    }
+}
+
+int main() {
+    std::thread t1(task1);
+    std::thread t2(task1);
+
+    t1.join();
+    t2.join();
+
+    std::cout << "current value is" << globalVariable;
+
+    return 0;
+}
+```
+
+
+
+#### 2.互斥量
+
+给可能出现线程不安全的位置加上锁，执行完后解锁
+
+```cpp
+#include <thread>
+#include <mutex>
+
+void task1(){
+    for(int i = 0; i < 1000000; i++){
+        mtx.lock();
+        globalVariable++;
+        globalVariable--;
+        mtx.unlock();
+    }
+}
+```
 
 
 
 
 
+#### 3.死锁
+
+什么是死锁：上锁了，但没解锁。
+
+
+
+比如下面这个场景：
+
+```cpp
+void task1(){
+    for(int i = 0; i < 1000000; i++){
+        mtx.lock();
+        globalVariable++;
+        globalVariable--;
+        
+        //callAFunc();	//throw
+        //if(1==1) returnl;
+        
+        mtx.unlock();
+    }
+}
+```
+
+这时候上锁了，但因为函数返回了，没有解锁。
+
+
+
+此问题的解决方案：
+
+使用lock_guard：它在创建的时候接收一个互斥量进行上锁，在它**被析构**的时候对它进行**解锁**。
+
+这种做法是C++常见的**RAII(Resource Aquisition Is Initialization)**
+
+```cpp
+std::mutex mtx;
+int globalVariable = 0;
+
+void task1(){
+    for(int i = 0; i < 1000000; i++){
+        std::lock_guard<std::mutex> lock(mtx);
+       
+        globalVariable++;
+        globalVariable--;
+    }
+}
+```
+
+
+
+lock_guard只有在对象被析构的时候才会解锁，使用unique_lock，可以在对象超出作用域之前就解锁：
+
+```cpp
+void task1(){
+    for(int i = 0; i < 1000000; i++){
+        std::unique_lock<std::mutex> lock(mtx);
+        lock.unlock;
+        
+        globalVariable++;
+        globalVariable--;
+    }
+}
+```
 
 
 
 
 
+#### **4.原子量**
 
+可以使用atomic对存在资源竞争的变量进行改造
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <mutex>
+#include <atomic>
+
+std::atomic<int> globalVariable(0);
+
+void task1(){
+    for(int i = 0; i < 1000000; i++){
+        globalVariable++;
+        globalVariable--;
+    }
+}
+```
 
 
 
