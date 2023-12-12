@@ -4533,6 +4533,10 @@ http	/0.9
 
 3XX	重定向
 
+4XX	客户端错误
+
+5XX	服务端错误
+
 
 
 
@@ -4606,3 +4610,40 @@ SSL：(secure socket layer)	-> TLS
 传输阶段：用的是对称加密
 
 ![image-20231211183936722](./assets/image-20231211183936722.png)
+
+
+
+
+
+
+
+
+
+## Nginx
+
+是一个产品，HTTP服务端(C语言)
+
+
+
+**事件驱动模型和基于线程模型**
+
+性能方面而言：事件驱动模型更优
+
+
+
+**Nginx一般的功能**
+
+![image-20231212125446834](./assets/image-20231212125446834.png)
+
+
+
+### Nginx的配置
+
+1.先安装依赖
+
+```shell
+sudo apt install libz-dev		#安装zlib库 	处理压缩
+sudo apt install libcre3-dev 	#安装pcre库 	处理正则表达式
+sudo apt install libssl-dev		#安装openssl库 处理SSL连接	
+```
+
