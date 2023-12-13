@@ -4647,3 +4647,30 @@ sudo apt install libcre3-dev 	#安装pcre库 	处理正则表达式
 sudo apt install libssl-dev		#安装openssl库 处理SSL连接	
 ```
 
+
+
+
+
+![image-20231213095523143](./assets/image-20231213095523143.png)
+
+
+
+### 启动nginx
+
+1.在`/usr/local/nginx/sbin`下启动`nginx`
+
+2.在浏览器访问服务器的ip
+
+![image-20231213100120369](./assets/image-20231213100120369.png)
+
+
+
+**sbin/nginx**
+
+-v/-V	显示版本信息
+
+-s	     发信号
+
+-c	     指定配置文件(conf/nginx.conf)
+
+-t	      检查配置文件的语法错误
