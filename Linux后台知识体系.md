@@ -4377,11 +4377,70 @@ move key值 数据库编号
 
 #查看某个key值是否存在
 exists key值
+
+#查看某个变量的类型
+type key值
+
+#给某个变量设置过期时间
+expire key值 时间(秒)
+expire k1 10
+
+#查看过期时间(-2：已经过期了， -1：永不过期)
+ttl key值
 ```
 
 
 
 
+
+## Redis常用数据类型
+
+Redis支持5种数据类型：string(字符串)，hash(哈希)，list(列表)，set(集合)，zset(有序集合)。
+
+
+
+![image-20231222033428422](./assets/image-20231222033428422.png)
+
+
+
+
+
+### 1.string
+
+二进制安全的，可以存任何数据
+
+```sql
+#设置命令
+set k1 100
+#获取命令
+get k1
+#获取子串
+getrange k1 0 -1	#从0下标开始，获取到最后一个
+#设置子串
+setrange k3 0 wu
+#设置值并加上过期时间
+setex key值 过期时间 值
+setex k1 20 600
+#给值加1
+incr k1
+#每次可以增加指定的值
+incrby key + 值
+incrby k1 20
+```
+
+
+
+
+
+
+
+### 2.list
+
+双向链表。
+
+list是支持下标的。
+
+![image-20231222035314442](./assets/image-20231222035314442.png)
 
 
 
