@@ -4399,9 +4399,7 @@ Redis支持5种数据类型：string(字符串)，hash(哈希)，list(列表)，
 
 
 
-![image-20231222033428422](./assets/image-20231222033428422.png)
-
-
+![image-20231222163534799](./assets/image-20231222163534799.png)
 
 
 
@@ -4440,7 +4438,90 @@ incrby k1 20
 
 list是支持下标的。
 
-![image-20231222035314442](./assets/image-20231222035314442.png)
+<img src="./assets/image-20231222163620579.png" alt="image-20231222163620579" style="zoom: 67%;" />
+
+
+
+### 3.set
+
+集合，元素是唯一的，没有顺序的，底层使用**哈希**
+
+![image-20231222165007620](./assets/image-20231222165007620.png)
+
+```sql
+#添加元素使用sadd
+sadd myset1 1 2 3 1 2 3 4 6 8
+#查看元素的个数
+scard myset1
+#遍历set
+smembers myset1
+#随机获取3个数据
+srandmember myset1 3
+#随机移除2个数据
+spop myset2 2
+#求差集
+sdiff key1 key2
+#取交集
+sinter key1 key2
+#取并集
+sunion key1 key2
+```
+
+
+
+
+
+### 4.zset
+
+sorted set数据类型。
+
+将每个元素的前面设置一个double分数(权重)。
+
+Redis有序集合和集合一样也是string类型元素的集合，且不允许重复的成员。
+
++
+
+![image-20231222171741120](./assets/image-20231222171741120.png)
+
+```sql
+#添加元素并设置分数
+zadd zset1 10 str1 20 str2 30 str2 40 str4
+#获取集合的成员数
+zcard zset1
+#计算集合中指定区间的成员数(10-40)
+zcount zset1 10 40
+#通过索引区间返回集合内指定成员(所有成员)
+zrange zset1 0 -1
+```
+
+
+
+
+
+
+
+### 5.hash
+
+Redis的hash是一个string类型的field和value的映射表，hash特别适合用于存储对象。
+
+
+
+key-value模式不变，但value是一个键值对：`map<key,map<kay1,value>>`
+
+string类型可以看成是key-value类型，但是hash是key-(key2-value)
+
+![image-20231225081144642](./assets/image-20231225081144642.png)
+
+```sql
+#添加一个对象到哈希表
+hmset people age 27 gender men
+#获取给定字段的值
+hmget people age gender
+#获取对象的keys
+hkeys people
+#获取对象的值
+hvals people
+```
 
 
 
@@ -4450,6 +4531,132 @@ list是支持下标的。
 
 
 
+## Redis配置文件
+
+redis配置文件路径：`/etc/redis/6379.conf`
+
+
+
+**启动redis服务器**
+
+`redis-server /etc/redis/redis.conf`，会以守护进程的方式开启
+
+`./redis-server` 不带配置文件开启redis服务器
+
+
+
+
+
+
+
+## Redis持久化※
+
+Redis持久化分为**RDB**持久化和**AOF**持久化。
+
+
+
+
+
+### **分类**
+
+**RDB(默认)**：将**数据**保存到磁盘上面(定期的将redis的数据dump到磁盘上)
+
+**AOF(主流)**：将每次执行的写命令保存到磁盘上(原理是将Redis的操作日志以追加的方式写入文件，类似于mysql的binlog)
+
+
+
+两种持久化方式一般都是同时开启，既能保证数据的完整性和一致性，也能保证大量数据恢复的时候，时间比较快。
+
+
+
+
+
+
+
+## Redis事务※
+
+Redis事务可以一次执行多个命令，本质是一组命令的集合。
+
+一个事务的所有命令都会被序列化，按顺序的串行执行，不会被加塞。
+
+
+
+一个事务从开始到执行会经历以下三个阶段：
+
+- 开始事务
+- 命令入队
+- 执行事务
+
+
+
+### 事务的基本操作
+
+```sql
+#开启事务
+multi
+#执行事务
+exec
+
+#事务的基本操作
+127.0.0.1:6379[1]> keys *
+(empty array)
+127.0.0.1:6379[1]> set k1 200
+OK
+127.0.0.1:6379[1]> set k2 hello
+OK
+127.0.0.1:6379[1]> multi			#开启事务
+OK
+127.0.0.1:6379[1](TX)> get k1		#执行第一条命令
+QUEUED
+127.0.0.1:6379[1](TX)> get k2		#执行第二条命令
+QUEUED
+127.0.0.1:6379[1](TX)> set k3 300	#执行第三条命令
+QUEUED
+127.0.0.1:6379[1](TX)> exec			#执行事务
+1) "200"
+2) "hello"
+3) OK
+127.0.0.1:6379[1]> 
+```
+
+
+
+**总结：**
+
+redis的每条命令是原子的
+
+redis的事务是不保证原子性的
+
+<img src="./assets/image-20231225143346600.png" alt="image-20231225143346600" style="zoom:67%;" />
+
+
+
+```sql
+#取消事务，放弃执行事务块内的所有命令
+DISCARD
+#监视n个key，如果在事务执行前这个key被其他命令所改动，那么事务将被打断
+WATCH key1
+#取消watch命令对所有key的监视
+UNWATCH
+```
+
+
+
+
+
+### 事务的锁机制
+
+
+
+**悲观锁：**
+
+每次拿数据的时候都认为别人会修改，所以在每次拿数据的时候会上锁。
+
+
+
+**乐观锁：**
+
+每次去拿数据的时候都不会上锁。(使用版本号或CAS机制)
 
 
 
@@ -4459,6 +4666,148 @@ list是支持下标的。
 
 
 
+## Redis主从复制
+
+持久化侧重解决的是Redis**数据的单机备份问题**(内存-硬盘)
+
+主从复制侧重解决数据的**多机热备**。此外，还可以实现负载均衡和故障恢复
+
+
+
+**主从复制：**是指将一台Redis服务器的数据，复制到其他的Redis服务器。前者为master，后者为slave。
+
+
+
+
+
+## Redis哨兵模式
+
+Redis Sentinel是一个分布式系统。
+
+你可以在一个架构中运行多个Sentinel进程，这些进程使用流言协议(gossip protocols)来接收关于主服务器是否下线的信息，并使用投票协议(agreement protocols)来决定是否执行自动故障迁移以及选择新的主服务器。
+
+
+
+**哨兵的配置**
+
+1.配置文件
+
+```sql
+sentinel monitor master6379 127.0.0.1 6379 1#监视的主机6379
+```
+
+2.启动哨兵的配置文件
+
+`sudo redis-server /etc/redis/sentinel.conf`
+
+3.将主机6379 shutdown
+
+4.哨兵就会进行投票，选出新的主机
+
+
+
+
+
+## **Redis常见问题**※
+
+
+
+### **1.缓存雪崩**
+
+缓存中大量的数据在同一时间失效，此时相当于没有缓存，所有对数据的请求直接走到数据库，会带来很大压力。
+
+
+
+**解决方法：**
+
+1.分散失效时间，让数据不在同一时间失效。
+
+2.不设置过期时间	
+
+
+
+
+
+### **2.缓存击穿**
+
+当**热点数据key从缓存内失效**时，大量访问同时请求这个数据，就会将查询下沉到数据库层，导致数据库负载骤增，这种现象称为缓存击穿。
+
+
+
+**解决方法：**
+
+1.延长热点数据的过期时间/永不过期
+
+
+
+
+
+### **3.缓存穿透**
+
+**要查询的数据不存在**，每次查找都必须到底层数据库，数据库压力大。
+
+
+
+**解决方法：**
+
+设置一个key以及对应的value为空，并放入缓存中。
+
+map<key,null>
+
+
+
+
+
+
+
+## Hiredis的使用
+
+
+
+### 安装Hiredis
+
+
+
+**1.下载**
+
+软件包： https://github.com/redis/hiredis.git
+
+git下载：`git clone https://github.com/redis/hiredis.git` 
+
+
+
+**2.解压安装**
+
+```shell
+tar -xzvf hiredis.tar.gz
+cd hiredis
+make
+sudo make install
+
+#更新缓存
+sudo ldconfig
+
+#相应的头文件
+/usr/local/include
+
+#相应的库文件
+/usr/local/lib
+```
+
+
+**3.使用**
+
+```cpp
+#include <hiredis/hiredis.h>
+```
+
+
+
+**4.编译**
+
+```cpp
+g++ *.cpp -lhiredis
+```
 
 
 
@@ -4468,17 +4817,228 @@ list是支持下标的。
 
 
 
+### Hiredis重要API
+
+
+
+#### **1.连接redis数据库**
+
+```cpp
+redisContext* redisConnect(const char *ip, int port)
+```
+
+```cpp
+//redisContext不是线程安全的
+typedef struct redisContext{
+    int err;			//错误标志，正确为0，出错时为非0
+    char errstr[128];	//存放错误信息的字符串
+    int fd;
+    int flags;
+    char *obuf;			//write buffer
+    redisReader *reader;//protocol reader
+} redisContext;
+```
+
+
+
+#### **2.发送请求命令**
+
+第一个参数为连接数据库返回的值，剩余的是可变参数。
+
+但是一般会强转为redisReply类型，便于进一步处理。
+
+```cpp
+void *redisCommand(redisContext *c, const char *format...)
+```
+
+
+
+```cpp
+typedef struct redisReply
+{
+int type; /* 测试收到什么样的回返回 REDIS_REPLY_* */
+long long integer; /* type是REDIS_REPLY_INTEGER类型，integer保存返回的值*/
+int len; /* 保存str类型的长度 */
+char *str; /* type是REDIS_REPLY_ERROR和REDIS_REPLY_STRING，str保存返回的值
+*/
+size_t elements; /* type是REDIS_REPLY_ARRAY，保存返回多个元素的数量 */
+struct redisReply **element; /* 返回多个元素以redisReply对象的形式存放 */
+} redisReply;
+//type还可以是REDIS_REPLY_NIL，表示返回了一个零对象，没有数据可以访问。
+```
+
+
+
+通过redisReply结构体中的type变量可以确定命令执行的情况.
+
+```cpp
+#define REDIS_REPLY_STRING 1 //字符串
+#define REDIS_REPLY_ARRAY 2 //数组，例如mget返回值
+#define REDIS_REPLY_INTEGER 3 //数字类型
+#define REDIS_REPLY_NIL 4 //空
+#define REDIS_REPLY_STATUS 5 //状态，例如set成功返回的‘OK’
+#define REDIS_REPLY_ERROR 6 //执行失败
+```
+
+
+
+- **REDIS_REPLY_STATUS：**
+
+返回执行结果为状态的命令。比如set命令的返回值的类型REDIS_REPLY_STATUS，然后只有当返回信息是"OK"时，才表示该命令执行成功。可以通过reply->str得到文字信息，通过reply->len得到信息长度。
+
+
+
+- **REDIS_REPLY_ERROR：**
+
+返回错误。错误信息可以通过reply->str得到文字信息，通过reply->len得到信息长度。
+
+
+
+- **REDIS_REPLY_INTEGER：**
+
+返回整型标识。可以通过reply->integer变量得到类型为long long的值。
+
+
+
+- **REDIS_REPLY_NIL:**
+
+返回nil对象，说明不存在要访问的数据。
+
+
+
+- **REDIS_REPLY_STRING:**
+
+返回字符串标识。可以通过reply->str得到具体值，通过reply->len得到信息长度。
+
+
+
+- **REDIS_REPLY_ARRAY:**
+
+返回数据集标识。数据集中元素的数目可以通过reply->elements获得，每个元素是个redisReply对象，元素值可以通过reply->element[..index..].*形式获得，用在获取多个数据结果的操作。
 
 
 
 
 
+#### 3.释放资源
+
+释放redisCommand执行后返回的的redisReply所占用的内存。
+
+```cpp
+void freeReplyObject(1 void *reply)
+```
+
+释放redisConnect()所产生的连接
+
+```cpp
+void redisFree(redisContext *c)
+```
 
 
 
 
 
+### redis代码示例
 
+MyRedis.h
+
+```cpp
+#pragma once
+
+#include <hiredis/hiredis.h>
+#include <iostream>
+#include <string>
+
+using std::cout;
+using std::endl;
+using std::string;
+
+class MyRedis{
+public:
+    MyRedis();
+    ~MyRedis();
+    bool connect(const string &host, int port);
+    string get(string key);
+    void set(string key, string value);
+
+private:
+    redisContext* _pConnect;
+    redisReply* _pReply;
+};
+```
+
+
+
+MyRedis.cpp
+
+```cpp
+#include "MyRedis.h"
+
+MyRedis::MyRedis(){
+    cout << "MyRedis()" << endl;
+}
+
+MyRedis::~MyRedis(){
+    cout << "~MyRedis()" << endl;
+
+    if(_pConnect){
+        redisFree(_pConnect);
+        _pConnect = nullptr;
+    }
+    if(_pReply){
+        freeReplyObject(_pReply);
+        _pReply = nullptr;
+    }
+}
+
+bool MyRedis::connect(const string& host, int port){
+        _pConnect = redisConnect(host.c_str(),port);
+        if(_pConnect != nullptr && _pConnect->err){
+            std::cerr << "connect error : " << _pConnect->errstr << endl;
+            return false;
+        }
+        return true;
+    }    
+
+string MyRedis::get(string key){
+    _pReply = (redisReply*)redisCommand(_pConnect,"GET %s",key.c_str());
+    string str = _pReply->str;
+    
+    freeReplyObject(_pReply);
+    _pReply = nullptr;
+    return str;
+}
+
+void MyRedis::set(string key, string value){
+    _pReply = (redisReply*)redisCommand(_pConnect, "SET %s %s", key.c_str(), value.c_str());
+    freeReplyObject(_pReply);
+    _pReply = nullptr;
+}
+```
+
+
+
+testRedis.cpp
+
+```cpp
+#include "MyRedis.h"
+#include <memory>
+
+using std::unique_ptr;
+
+
+int main(){
+    unique_ptr<MyRedis> pRedis(new MyRedis());
+
+    if(!pRedis->connect("127.0.0.1",6379)){
+        std::cerr << "connect error!" << endl;
+        return 0;
+    }
+
+    pRedis->set("name","Andy");
+    cout << "Get the name is " << pRedis->get("name") << endl;
+}
+```
 
 
 
