@@ -1277,9 +1277,9 @@ void FD_ZERO(fd_set *set);			//清空集合
 
 ## 进程
 
-在**某一个时刻**，多个进行同时运行，称为**并行**。
+在**某一个时刻**，多个进程同时运行，称为**并行**。
 
-在**某一段时间**，多个进行同时运行，称为**并发**。
+在**某一段时间**，多个进程同时运行，称为**并发**。
 
 
 
@@ -1295,7 +1295,7 @@ void FD_ZERO(fd_set *set);			//清空集合
 
 ### 进程的命令
 
-#### ps -elf
+**ps -elf**
 
 ![image-20230927160948398](./assets/image-20230927160948398.png)
 
@@ -1333,7 +1333,7 @@ Z	僵尸进程(进程已终止，资源未回收)
 
 
 
-#### ps -aux
+**ps -aux**
 
 ![image-20230927162333694](./assets/image-20230927162333694.png)
 
@@ -1345,7 +1345,7 @@ Z	僵尸进程(进程已终止，资源未回收)
 
 
 
-#### top
+**top**
 
 查看进程的实时状态
 
@@ -1353,7 +1353,7 @@ Z	僵尸进程(进程已终止，资源未回收)
 
 
 
-#### 前台和后台
+**前台和后台**
 
 **前台：**可以响应键盘中断的进程
 
@@ -1375,11 +1375,13 @@ kill -9 pid 杀死后台进程
 
 
 
-#### crontab
+**crontab**
 
 单用户定时任务	`crontab -e`
 
 全局定时任务	    `vim /etc/crontab`
+
+
 
 
 
@@ -1672,196 +1674,177 @@ struct sigaction{
 
 
 
+### 4.进程间通信
 
+进程拥有完全独立的内存结构，因此，进程间通信只能通过其他特殊方法完成。
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### **进程间通信**
-
-Inter Process Comminication→IPC
-
-打破进程之间的隔离，从而进程可以共享数据。
-
-
-
-**IPC方式**
-
-管道
-
-信号
-
-共享内存
-
-信号量
-
-消息队列
 
 
 
 #### 管道
 
-**有名管道：**在文件系统中存在一个管道文件
+管道并非属于进程的资源，而是和套接字一样，属于**操作系统**。
 
-**匿名管道：**在文件系统中不存在，只用于父子进程间
+```cpp
+#include <unistd.h>
 
+int pipe(int filedes[2]);	//成功返回0，失败返回-1
+```
 
+filedes[0] 通过管道**接收数据**时使用的文件描述符，即管道出口
 
-popen, pclose - pipe stream to or from a process
+filedes[1] 通过管道**传输数据**时使用的文件描述符，即管道入口
 
-```c
+父进程调用该函数时将创建管道，同时获取对应出入口的文件描述符，此时父进程可以读写同一管道。
+
+父进程需要将入口或者出口的1个**文件描述符**传递给子进程，通过**fork**函数：
+
+```cpp
 #include <stdio.h>
-
-FILE *popen(const char *command, const char *type);//"w""r"
-
-int pclose(FILE *stream);
-```
-
-"w"：父进程可写入FILE内，子进程把自己的stdin重定向为管道
-
-"r"：父进程可读取FILE，子进程把自己的stdout重定向为管道
-
-
-
-
-
-#### 信号
-
-一种**软件层面**的异步事件机制。
-
-![image-20231006051300606](./assets/image-20231006051300606.png)
-
-
-
-**信号的默认行为**
-
-![image-20231006052429108](./assets/image-20231006052429108.png)
-
-
-
-**当信号产生时**
-
-信号产生会修改目标进程的**task_struct**(目标认为所有的信号都来自内核)
-
-```c
-//回调函数
-void sigFunc(int num){
-    printf("num = %d\n",num);
-}
-int main(){
-    void (*ret)(int);
-    ret = signal(SIGINT,sigFunc);
-    while(1){
-        
-    }
-}
-```
-
-
-
-**阻塞：**让产生的信号不能马上递送，而是处于未决状态。
-
-**未决：**已产生但未递送的信号。
-
-
-
-**低速系统调用：**可能陷入永久等待的系统调用
-
-
-
-
-
-
-
-### 守护进程
-
-daemon
-
-即使是会话关闭了，进程依然能够持续运行。
-
-**以d结尾：**sshd→守护进程
-
-
-
-**守护进程的特点：**
-
-1.创建新会话
-
-2.重置掉cwd和umask
-
-3.关闭所有的文件描述符
-
-```c
-void Daemon(){
-    //1.创建新会话
-    if(fork()!=0){
-        exit(0);
-    }
-    setsid();
-    //2.关闭所有的文件描述符
-    for(int i = 0; i < 2; ++i){
-        close(i);
-    }
-    //3.重置掉cwd和umask
-    chdir("/");
-    umask(0);
-}
+#include <unistd.h>
+#define BUF_SIZE 30
 
 int main(){
-    Daemon();
+    int fds[2];
+    char str[] = "Who are you?";
+    char buf[BUF_SIZE];
+    pid_t pid;
+
+    pipe(fds);		//创建管道，fds数组中保存用于I/O的文件描述符
+
+    pid = fork();	//调用fork，子进程将同时拥有获取的2个文件描述符。(复制的并非管道，而是文件描述符)
+    if(pid == 0){
+        write(fds[1],str,sizeof(str));	//通过管道传递字符串
+    }
+    else{
+        read(fds[0],buf,BUF_SIZE);		//通过管道读取字符串
+        puts(buf);
+    }
+    return 0;
 }
 ```
+
+
+
+通过一个管道可以进行**双向通信**，但是采用这种模式时必须额外小心：
+
+```cpp
+#include <stdio.h>
+#include <unistd.h>
+#define BUF_SIZE 30
+
+int main(){
+    int fds[2];
+    char str1[] = "Who are you?";
+    char str2[] = "Thank you for your message";
+    char buf[BUF_SIZE];
+
+    pid_t pid;
+
+    pipe(fds);
+    pid = fork();
+    if(pid == 0){
+        write(fds[1],str1,sizeof(str1));
+        sleep(2);						//这里如果没有sleep，会发生错误
+        read(fds[0],buf,BUF_SIZE);
+        printf("Child proc output: %s \n",buf);
+    }
+    else{
+        read(fds[0],buf,BUF_SIZE);
+        printf("Parent proc output: %s \n",buf);
+        write(fds[1],str2,sizeof(str2));
+        sleep(3);
+    }
+    return 0;
+}
+```
+
+"向管道传递数据时，先读的进程会把数据取走"，如果不sleep，write之后马上调用read会把自己**刚写入管道的数据又读走**
+
+
+
+只用一个管道通信十分困难，可以说是不可能完成，因此需要创建**2个管道**：
+
+```cpp
+#include <stdio.h>
+#include <unistd.h>
+#define BUF_SIZE 30
+
+int main(){
+    int fds1[2], fds2[2];
+    char str1[] = "Who are you?";
+    char str2[] = "Thank you for your message.";
+    char buf[BUF_SIZE];
+    pid_t pid;
+
+    pipe(fds1);
+    pipe(fds2);
+    pid = fork();
+    if(pid == 0){
+        write(fds1[1],str1,sizeof(str1));   //子进程可以通过fds1向父进程传输数据
+        read(fds2[0],buf,BUF_SIZE);
+        printf("Child proc output: %s \n",buf);
+    }
+    else{
+        read(fds1[0],buf,BUF_SIZE);
+        printf("Parent proc output: %s \n",buf);
+        write(fds2[1],str2,sizeof(str2));   //父进程可以通过fds2向子进程传输数据
+        sleep(3);         //没什么意义，只是为了延迟父进程终止
+    }
+    return 0;
+}
+```
+
+
+
+
+
+#### 运用进程间通信
+
+保存消息的回声服务器端，将回声客户端传输的字符串按序保存到文件中。
+
+代码示例：https://github.com/100568265/code_repo_C/blob/main/echo_storeserv.c
+
+
+
+
+
+### 5.I/O复用
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
