@@ -1385,7 +1385,9 @@ kill -9 pid 杀死后台进程
 
 
 
-### system
+### 1.进程的系统调用
+
+**system**
 
 system - execute a shell command
 
@@ -1398,7 +1400,7 @@ int system(const char *command);
 
 
 
-### fork
+**fork**
 
 fork - create a child process
 
@@ -1431,7 +1433,7 @@ int main(){
 
 
 
-### wait
+### 2.僵尸进程
 
 进程的退出，资源由其父进程回收。
 
@@ -1441,79 +1443,284 @@ int main(){
 
 
 
+**摧毁僵尸进程1：wait()函数**
 
+为了摧毁子进程，父进程应主动请求获取子进程的返回值。
 
-### 日志系统
-
-closelog, openlog, syslog, vsyslog - send messages to the system logger
-
-**注意：**syslog和printf的使用方式是一样的，除了多了一个优先级。
-
-```c
-#include <syslog.h>
-
-void openlog(const char *ident, int option, int facility);
-void syslog(int priority, const char *format, ...);
-void closelog(void);
-
-void vsyslog(int priority, const char *format, va_list ap);
+```c++
+#include <sys/wait.h>
+pid_t wait(int * statloc);	//成功时返回终止的子进程ID,失败时返回-1
 ```
 
-**日志系统的优先级：**
+调用此函数时如果已有子进程终止，那么**子进程终止时传递的返回值**(exit函数的参数值，main函数的返回值)将保存到该函数的参数所指内存空间。
 
-| 变量名      | 描述                               |
-| ----------- | ---------------------------------- |
-| LOG_EMERG   | system is unusable                 |
-| LOG_ALERT   | action must be taken immediately   |
-| LOG_CRIT    | critical conditions                |
-| LOG_ERR     | error conditions                   |
-| LOG_WARNING | warning conditions                 |
-| LOG_NOTICE  | normal, but significant, condition |
-| LOG_INFO    | informational message              |
-| LOG_DEBUG   | debug-level message                |
+但函数参数指向的单元中还包括其他信息，因此需要通过下列宏进行分离。
 
+`WIFEXITED`子进程正常终止时返回"真"true
 
+`WEXITSTATUS`返回子进程的返回值
 
-
-
-### 守护进程
-
-daemon
-
-即使是会话关闭了，进程依然能够持续运行。
-
-**以d结尾：**sshd→守护进程
+```cpp
+if(WIFEXITED(status)){
+    puts("Normal termination!");
+    printf("Child pass num: %d", WEXITSTATUS(status));	//那么返回值是多少？
+}
+```
 
 
 
-**守护进程的特点：**
+**销毁僵尸进程2：waitpid()函数**
 
-1.创建新会话
+wait函数会引起程序阻塞，还可以考虑调用waitpid函数。这是防止僵尸进程的第二种方法，也是防止阻塞的方法。
 
-2.重置掉cwd和umask
+```cpp
+#include <sys/wait.h>
 
-3.关闭所有的文件描述符
+pid_t waitpid(pid_t pid, int * statloc, int options);	//成功时返回终止的子进程ID,失败时返回-1
+//pid: 等待终止的目标子进程的ID,若传递-1,则与wait函数相同,可以等待任意子进程终止。
+//statloc: 与wait函数的statloc参数具有相同含义。
+//options: 传递头文件sys/wait.h中声明的常量WNOHANG,即使没有终止的子进程也不会进入阻塞状态,而是返回0并退出函数。
+```
 
-```c
-void Daemon(){
-    //1.创建新会话
-    if(fork()!=0){
-        exit(0);
+
+
+### 3.信号处理
+
+问题：子进程究竟何时终止？调用waitpid函数后要无休无止的等待吗？
+
+父进程往往像子进程一样繁忙，因此不能只调用waitpid函数以等待子进程终止。接下来讨论解决方案：
+
+**子进程终止的识别主体是操作系统。**因此，若操作系统能把如下信息告诉正在忙于工作的父进程，将有助于构建高效的程序。
+
+此时的父进程暂时放下工作，处理子进程终止相关事宜。由此，引入**信号**的概念。
+
+
+
+#### **signal函数**
+
+进程发现自己的子进程结束时，请求操作系统调用特定函数。
+
+```cpp
+#include <signal.h>
+
+void (*signal(int signo, void (*func)(int)))(int);	//为了在产生信号时调用,返回之前注册的函数指针。
+//函数名：signal
+//参数：int signo, void(*func)(int)
+//返回类型：参数为int型，返回void型函数指针
+```
+
+调用上述函数时，第一个参数为特殊情况信息，第二个参数为特殊情况下将要调用的函数的指针。
+
+发生第一个参数代表的情况时，调用第二个参数所指的函数。
+
+`SIGALRM`：已到通过调用alarm函数注册的时间。
+
+`SIGINT`：输入CTRL+C。
+
+`SIGCHLD`：子进程终止。
+
+
+
+**例：**
+
+子进程终止则调用mychild函数
+
+此时mychild函数的参数应为int，返回值类型为void。只有这样才能成为signal函数的第二个参数。
+
+另外，常数SIGCHLD定义了子进程终止的情况，应成为signal函数的第一个参数。如下：
+
+```c++
+signal(SIGCHLD, mychild);
+```
+
+
+
+先介绍alarm函数：
+
+```cpp
+#include <unistd.h>
+unsigned int alarm(unsigned int seconds);	//返回0或以秒为单位的距SIGALRM信号发生所剩时间
+```
+
+如果调用该函数的同时向它传递一个正整数参数，响应时间(秒)后将产生SIGALRM信号。
+
+如果传递0，则之前对SIGALRM信号的预约将取消。
+
+```cpp
+#include <stdio.h>
+#include <unistd.h>
+#include <signal.h>
+
+void timeout(int sig){
+    if(sig == SIGALRM){
+        puts("Time Out!");
     }
-    setsid();
-    //2.关闭所有的文件描述符
-    for(int i = 0; i < 2; ++i){
-        close(i);
-    }
-    //3.重置掉cwd和umask
-    chdir("/");
-    umask(0);
+    alarm(2);
+}
+
+void keycontrol(int sig){
+    if(sig == SIGINT)
+        puts("CTRL+C pressed");
 }
 
 int main(){
-    Daemon();
+    int i;
+    signal(SIGALRM,timeout);
+    signal(SIGINT, keycontrol);
+    alarm(2);
+
+    for(i=0;i<3;i++){
+        puts("wait...");
+        sleep(100);
+    }
+    return 0;
 }
 ```
+
+运行结果：
+
+```shell
+root@my_linux:/tcpip# gcc signal.c -0 signal
+root@my_linux:/tcpip# ./signal
+wait. . .
+Time outl
+wai t. . .
+Time out!
+wait. . .
+Time out!
+```
+
+调用函数的主体的确是操作系统，但进程处于睡眠状态时无法调用函数。
+
+
+
+#### sigaction函数
+
+前面所学的内容足以用来编写防止僵尸进程生成的代码。
+
+**sigaction**函数，它类似于**signal**函数，而且完全可以代替后者，也更稳定。
+
+之所以稳定，是因为：signal 函数在UNIX 系列的不同操作系统中可能存在区别，但sigaction函数完全相同。
+
+```cpp
+#include <signal.h>
+int sigaction(int signo, const struct sigaction * act, struct sigaction * oldact);	//返回0时成功，返回1失败
+//signo: 传递信号信息
+//act: 对应于第一个参数的信号处理函数信息
+//oldact: 通过此参数获取之前注册的信号处理函数指针，若不需要则传递0
+```
+
+声明并初始化sigaction结构体变量以调用上述函数，该结构体定义如下：
+
+```cpp
+struct sigaction{
+    void (*sa_handler)(int);
+    sigset_t sa_mask;
+    int sa_flags;
+}
+```
+
+
+
+**通过sigaction函数来防止僵尸进程：**
+
+每次有进程被创建时，操作系统都会调用read_childproc函数来等到子进程关闭，并回收资源。
+
+代码示例：https://github.com/100568265/code_repo_C/blob/main/sigaction.c
+
+
+
+
+
+### 基于进程的并发服务器
+
+第一阶段：回声服务器端(父进程)通过调用accept函数受理连接请求
+
+第二阶段：此时获取的套接字文件描述符创建并传递给子进程
+
+第三阶段：子进程利用传递来的文件描述符提供服务
+
+
+
+代码示例：https://github.com/100568265/code_repo_C/blob/main/echo_mpserv.c
+
+调用**fork()**函数时复制父进程的所有资源，但套接字并非进程所有，从严格意义上说，套接字属于操作系统。只是进程拥有代表相应套接字的**文件描述符**。
+
+示例echo_mpserv.c中的fork函数调用过程：调用fork函数后， 2个文件描述符指向同一套接字。
+
+如图所示，一个套接字中存在2个文件描述符时，只有2个文件描述符都摧毁后，才能销毁套接字。
+
+<img src="./assets/image-20240109171656910.png" alt="image-20240109171656910" style="zoom:67%;" />
+
+
+
+**分割IO**
+
+我们已经实现的回声客户端的数据回声方式如下：
+
+向服务端传输数据，并等待服务器端回复。无条件等待，知道接收完服务器端的回声数据后，才能传输下一批数据。
+
+
+
+但现在可以创建多个进程，因此可以分割数据收发过程。客户端的**父进程负责收数据，子进程负责发数据**。
+
+这样，无论是否从服务端接收完数据都可以进行传输。可以提高频繁交换数据的程序性能。
+
+代码示例：https://github.com/100568265/code_repo_C/blob/main/echo_mpclient.c
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1610,6 +1817,53 @@ int main(){
 
 
 **低速系统调用：**可能陷入永久等待的系统调用
+
+
+
+
+
+
+
+### 守护进程
+
+daemon
+
+即使是会话关闭了，进程依然能够持续运行。
+
+**以d结尾：**sshd→守护进程
+
+
+
+**守护进程的特点：**
+
+1.创建新会话
+
+2.重置掉cwd和umask
+
+3.关闭所有的文件描述符
+
+```c
+void Daemon(){
+    //1.创建新会话
+    if(fork()!=0){
+        exit(0);
+    }
+    setsid();
+    //2.关闭所有的文件描述符
+    for(int i = 0; i < 2; ++i){
+        close(i);
+    }
+    //3.重置掉cwd和umask
+    chdir("/");
+    umask(0);
+}
+
+int main(){
+    Daemon();
+}
+```
+
+
 
 
 
@@ -6467,7 +6721,7 @@ static成员不属于任何类对象或类实例，所以即使给此函数加�
 
 2.sprintf的操作对象可以是多种数据类型，目的操作对象是字符串
 
-3.mempcy的两个对象就是两个任意可操作性的内存地址，并不限于何种数据类型
+3.memcpy的两个对象就是两个任意可操作性的内存地址，并不限于何种数据类型
 
 
 
