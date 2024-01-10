@@ -1,4 +1,4 @@
-# 0.Makefile
+# Makefile
 
 
 
@@ -254,6 +254,153 @@ clean:
 ```
 
 
+
+
+
+
+
+# GDB
+
+
+
+## 0.调试前的准备
+
+gcc编译源码时，编译后的可执行文件不会包含源程序代码。
+
+如果打算编译后的程序可以调试，编译的时候需要加`-g`的参数：
+
+```shell
+gcc -g test.cpp -o test
+```
+
+
+
+
+
+## 1.基本调试命令
+
+| 命令     | 命令缩写 | 命令说明                         |
+| -------- | -------- | -------------------------------- |
+| list     | list     | 查看源代码                       |
+| break    | b        | 在某行设置断点                   |
+| run      | r        | 运行程序，遇到断点会停下来       |
+| next     | n        | 执行当前行的语句                 |
+| print    | p        | 显示变量值                       |
+| continue | c        | 继续运行程序，直到遇到下一个断点 |
+| step     | s        | 进入某一个具体的函数调试         |
+| bt       | bt       | 查看函数的调用栈                 |
+
+
+
+**watchpoint**
+
+观察变量是否变化
+
+```shell
+# 设置watchpoint
+# 先找到要观察的变量的地址
+(gdb) p &i
+# 然后观察这个地址
+(gdb) watch *0x7fffffffdfcc
+```
+
+这样每次变量变的时候，gdb都会打印信息
+
+info watchpoints 查看当前的watchpoint有哪些
+
+
+
+
+
+## 2.调试core文件
+
+Linux设置的默认的权限：core-file-size = 0，所以默认不会生成core文件
+
+`ulimit -a`：显示目前资源限制的设定
+
+`ulimit -c unlimited`：解除当前资源的限制
+
+
+
+使用core文件步骤：
+
+1.解开资源的权限
+
+2.运行程序，发生崩溃
+
+3.gdb运行 + 当前程序 + core文件，比如：`gdb ./test core.19761`
+
+
+
+
+
+## 3.调试正在运行的程序
+
+1.后台运行该程序：./test &
+
+2.gdb调试程序：    gdb -p pid
+
+
+
+
+
+## 4.调试多进程程序
+
+调试父进程：`set follow-fork-mode parent`	（默认）
+
+调试子进程：`set follow-fork-mode child`
+
+
+
+设置调试模式：`set detach-on-fork [on/off]` 	默认是on
+
+on表示调试当前进程时，其他的进程继续运行
+
+off表示调试调试当前进程时，其他的进程被gdb挂起
+
+
+
+查看调试的进程：`info inferiors`
+
+切换当前调试的进程：`inferior pid`
+
+
+
+
+
+## 5.调试多线程程序
+
+在shell中执行：
+
+查看当前运行的轻量级进程：`ps -aL|grep xxx`
+
+查看主线程和新线程的关系：`pstree -p 主线程id`
+
+
+
+进入gdb调试：
+
+查看当前线程的信息：`info threads`
+
+切换到某个线程：`thread 线程id`
+
+只运行当前线程：`set scheduler-locking on`
+
+运行所有的线程：`set scheduler-locking off`
+
+指定线程执行某gdb命令：`thread apply 线程id 某个命令`
+
+全部线程执行某gdb命令：`thread apply all 某个命令`
+
+
+
+
+
+## 6.服务程序运行日志
+
+设置断点和单步跟踪可能会严重干扰**多线(进)程**之间的竞争状态，导致看到的是一个假象。
+
+既然调试者的调试行为干扰了程序的运行，怎么办？还得用log日志！
 
 
 
