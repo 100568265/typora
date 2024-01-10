@@ -1277,9 +1277,9 @@ void FD_ZERO(fd_set *set);			//清空集合
 
 ## 进程
 
-在**某一个时刻**，多个进行同时运行，称为**并行**。
+在**某一个时刻**，多个进程同时运行，称为**并行**。
 
-在**某一段时间**，多个进行同时运行，称为**并发**。
+在**某一段时间**，多个进程同时运行，称为**并发**。
 
 
 
@@ -1295,7 +1295,7 @@ void FD_ZERO(fd_set *set);			//清空集合
 
 ### 进程的命令
 
-#### ps -elf
+**ps -elf**
 
 ![image-20230927160948398](./assets/image-20230927160948398.png)
 
@@ -1333,7 +1333,7 @@ Z	僵尸进程(进程已终止，资源未回收)
 
 
 
-#### ps -aux
+**ps -aux**
 
 ![image-20230927162333694](./assets/image-20230927162333694.png)
 
@@ -1345,7 +1345,7 @@ Z	僵尸进程(进程已终止，资源未回收)
 
 
 
-#### top
+**top**
 
 查看进程的实时状态
 
@@ -1353,7 +1353,7 @@ Z	僵尸进程(进程已终止，资源未回收)
 
 
 
-#### 前台和后台
+**前台和后台**
 
 **前台：**可以响应键盘中断的进程
 
@@ -1375,11 +1375,13 @@ kill -9 pid 杀死后台进程
 
 
 
-#### crontab
+**crontab**
 
 单用户定时任务	`crontab -e`
 
 全局定时任务	    `vim /etc/crontab`
+
+
 
 
 
@@ -1574,6 +1576,52 @@ int main(){
         sleep(100);
     }
     return 0;
+<<<<<<< HEAD
+=======
+}
+```
+
+运行结果：
+
+```shell
+root@my_linux:/tcpip# gcc signal.c -0 signal
+root@my_linux:/tcpip# ./signal
+wait. . .
+Time outl
+wai t. . .
+Time out!
+wait. . .
+Time out!
+```
+
+调用函数的主体的确是操作系统，但进程处于睡眠状态时无法调用函数。
+
+
+
+#### sigaction函数
+
+前面所学的内容足以用来编写防止僵尸进程生成的代码。
+
+**sigaction**函数，它类似于**signal**函数，而且完全可以代替后者，也更稳定。
+
+之所以稳定，是因为：signal 函数在UNIX 系列的不同操作系统中可能存在区别，但sigaction函数完全相同。
+
+```cpp
+#include <signal.h>
+int sigaction(int signo, const struct sigaction * act, struct sigaction * oldact);	//返回0时成功，返回1失败
+//signo: 传递信号信息
+//act: 对应于第一个参数的信号处理函数信息
+//oldact: 通过此参数获取之前注册的信号处理函数指针，若不需要则传递0
+```
+
+声明并初始化sigaction结构体变量以调用上述函数，该结构体定义如下：
+
+```cpp
+struct sigaction{
+    void (*sa_handler)(int);
+    sigset_t sa_mask;
+    int sa_flags;
+>>>>>>> 4dac9deff763e2a483997f9d1cc3652040c366ef
 }
 ```
 
@@ -1724,146 +1772,187 @@ struct sigaction{
 
 
 
+**通过sigaction函数来防止僵尸进程：**
+
+每次有进程被创建时，操作系统都会调用read_childproc函数来等到子进程关闭，并回收资源。
+
+代码示例：https://github.com/100568265/code_repo_C/blob/main/sigaction.c
 
 
 
 
-### **进程间通信**
 
-Inter Process Comminication→IPC
+### 基于进程的并发服务器
 
-打破进程之间的隔离，从而进程可以共享数据。
+第一阶段：回声服务器端(父进程)通过调用accept函数受理连接请求
+
+第二阶段：此时获取的套接字文件描述符创建并传递给子进程
+
+第三阶段：子进程利用传递来的文件描述符提供服务
 
 
 
-**IPC方式**
+代码示例：https://github.com/100568265/code_repo_C/blob/main/echo_mpserv.c
 
-管道
+调用**fork()**函数时复制父进程的所有资源，但套接字并非进程所有，从严格意义上说，套接字属于操作系统。只是进程拥有代表相应套接字的**文件描述符**。
 
-信号
+示例echo_mpserv.c中的fork函数调用过程：调用fork函数后， 2个文件描述符指向同一套接字。
 
-共享内存
+如图所示，一个套接字中存在2个文件描述符时，只有2个文件描述符都摧毁后，才能销毁套接字。
 
-信号量
+<img src="./assets/image-20240109171656910.png" alt="image-20240109171656910" style="zoom:67%;" />
 
-消息队列
+
+
+**分割IO**
+
+我们已经实现的回声客户端的数据回声方式如下：
+
+向服务端传输数据，并等待服务器端回复。无条件等待，知道接收完服务器端的回声数据后，才能传输下一批数据。
+
+
+
+但现在可以创建多个进程，因此可以分割数据收发过程。客户端的**父进程负责收数据，子进程负责发数据**。
+
+这样，无论是否从服务端接收完数据都可以进行传输。可以提高频繁交换数据的程序性能。
+
+代码示例：https://github.com/100568265/code_repo_C/blob/main/echo_mpclient.c
+
+
+
+
+
+### 4.进程间通信
+
+进程拥有完全独立的内存结构，因此，进程间通信只能通过其他特殊方法完成。
+
+
 
 
 
 #### 管道
 
-**有名管道：**在文件系统中存在一个管道文件
+管道并非属于进程的资源，而是和套接字一样，属于**操作系统**。
 
-**匿名管道：**在文件系统中不存在，只用于父子进程间
+```cpp
+#include <unistd.h>
 
+int pipe(int filedes[2]);	//成功返回0，失败返回-1
+```
 
+filedes[0] 通过管道**接收数据**时使用的文件描述符，即管道出口
 
-popen, pclose - pipe stream to or from a process
+filedes[1] 通过管道**传输数据**时使用的文件描述符，即管道入口
 
-```c
+父进程调用该函数时将创建管道，同时获取对应出入口的文件描述符，此时父进程可以读写同一管道。
+
+父进程需要将入口或者出口的1个**文件描述符**传递给子进程，通过**fork**函数：
+
+```cpp
 #include <stdio.h>
-
-FILE *popen(const char *command, const char *type);//"w""r"
-
-int pclose(FILE *stream);
-```
-
-"w"：父进程可写入FILE内，子进程把自己的stdin重定向为管道
-
-"r"：父进程可读取FILE，子进程把自己的stdout重定向为管道
-
-
-
-
-
-#### 信号
-
-一种**软件层面**的异步事件机制。
-
-![image-20231006051300606](./assets/image-20231006051300606.png)
-
-
-
-**信号的默认行为**
-
-![image-20231006052429108](./assets/image-20231006052429108.png)
-
-
-
-**当信号产生时**
-
-信号产生会修改目标进程的**task_struct**(目标认为所有的信号都来自内核)
-
-```c
-//回调函数
-void sigFunc(int num){
-    printf("num = %d\n",num);
-}
-int main(){
-    void (*ret)(int);
-    ret = signal(SIGINT,sigFunc);
-    while(1){
-        
-    }
-}
-```
-
-
-
-**阻塞：**让产生的信号不能马上递送，而是处于未决状态。
-
-**未决：**已产生但未递送的信号。
-
-
-
-**低速系统调用：**可能陷入永久等待的系统调用
-
-
-
-
-
-
-
-### 守护进程
-
-daemon
-
-即使是会话关闭了，进程依然能够持续运行。
-
-**以d结尾：**sshd→守护进程
-
-
-
-**守护进程的特点：**
-
-1.创建新会话
-
-2.重置掉cwd和umask
-
-3.关闭所有的文件描述符
-
-```c
-void Daemon(){
-    //1.创建新会话
-    if(fork()!=0){
-        exit(0);
-    }
-    setsid();
-    //2.关闭所有的文件描述符
-    for(int i = 0; i < 2; ++i){
-        close(i);
-    }
-    //3.重置掉cwd和umask
-    chdir("/");
-    umask(0);
-}
+#include <unistd.h>
+#define BUF_SIZE 30
 
 int main(){
-    Daemon();
+    int fds[2];
+    char str[] = "Who are you?";
+    char buf[BUF_SIZE];
+    pid_t pid;
+
+    pipe(fds);		//创建管道，fds数组中保存用于I/O的文件描述符
+
+    pid = fork();	//调用fork，子进程将同时拥有获取的2个文件描述符。(复制的并非管道，而是文件描述符)
+    if(pid == 0){
+        write(fds[1],str,sizeof(str));	//通过管道传递字符串
+    }
+    else{
+        read(fds[0],buf,BUF_SIZE);		//通过管道读取字符串
+        puts(buf);
+    }
+    return 0;
 }
 ```
 
 
+
+通过一个管道可以进行**双向通信**，但是采用这种模式时必须额外小心：
+
+```cpp
+#include <stdio.h>
+#include <unistd.h>
+#define BUF_SIZE 30
+
+int main(){
+    int fds[2];
+    char str1[] = "Who are you?";
+    char str2[] = "Thank you for your message";
+    char buf[BUF_SIZE];
+
+    pid_t pid;
+
+    pipe(fds);
+    pid = fork();
+    if(pid == 0){
+        write(fds[1],str1,sizeof(str1));
+        sleep(2);						//这里如果没有sleep，会发生错误
+        read(fds[0],buf,BUF_SIZE);
+        printf("Child proc output: %s \n",buf);
+    }
+    else{
+        read(fds[0],buf,BUF_SIZE);
+        printf("Parent proc output: %s \n",buf);
+        write(fds[1],str2,sizeof(str2));
+        sleep(3);
+    }
+    return 0;
+}
+```
+
+"向管道传递数据时，先读的进程会把数据取走"，如果不sleep，write之后马上调用read会把自己**刚写入管道的数据又读走**
+
+
+
+只用一个管道通信十分困难，可以说是不可能完成，因此需要创建**2个管道**：
+
+```cpp
+#include <stdio.h>
+#include <unistd.h>
+#define BUF_SIZE 30
+
+int main(){
+    int fds1[2], fds2[2];
+    char str1[] = "Who are you?";
+    char str2[] = "Thank you for your message.";
+    char buf[BUF_SIZE];
+    pid_t pid;
+
+    pipe(fds1);
+    pipe(fds2);
+    pid = fork();
+    if(pid == 0){
+        write(fds1[1],str1,sizeof(str1));   //子进程可以通过fds1向父进程传输数据
+        read(fds2[0],buf,BUF_SIZE);
+        printf("Child proc output: %s \n",buf);
+    }
+    else{
+        read(fds1[0],buf,BUF_SIZE);
+        printf("Parent proc output: %s \n",buf);
+        write(fds2[1],str2,sizeof(str2));   //父进程可以通过fds2向子进程传输数据
+        sleep(3);         //没什么意义，只是为了延迟父进程终止
+    }
+    return 0;
+}
+```
+
+
+
+
+
+#### 运用进程间通信
+
+保存消息的回声服务器端，将回声客户端传输的字符串按序保存到文件中。
+
+代码示例：https://github.com/100568265/code_repo_C/blob/main/echo_storeserv.c
 
 
 
@@ -2542,6 +2631,146 @@ ssize_t recv(int sockfd, void *buf, size_t len, int flags);
 
 
 TCP协议是一种字节流协议，消息之间没有边界。
+
+
+
+
+
+### I/O复用(select)
+
+I/O复用服务器端的进程需要确认举手(收到数据)的套接字，并通过举手的套接字接收数据。
+
+
+
+**select函数的功能和调用顺序**
+
+select函数可以将多个文件描述符集中到一起统一监视，监视项目如下：
+
+- 是否存在套接字接收数据？
+- 无需阻塞传输数据的套接字有哪些？
+- 哪些套接字发生了异常？
+
+![image-20240110090847722](./assets/image-20240110090847722.png)
+
+**设置文件描述符**
+
+使用fd_set数组变量执行此操作，fd_set变量中注册和更改值的操作都由下列宏完成。
+
+```cpp
+FD_ZERO(fd_set *fdset);				//将fd_set变量的所有位初始化为0
+FD_SET(int fd, fd_set *fdset);		//在参数fdset指向的变量中注册文件描述符fd的信息
+FD_CLR(int fd, fd_set *fdset);		//从参数fdset指向的变量中清除文件描述符fd的信息
+FD_ISSET(int fd, fd_Set *fdset);	//若参数fdset指向的变量中包含文件描述符fd的信息,则返回真
+```
+
+
+
+```cpp
+#include <sys/select.h>
+#include <sys/time.h>
+
+int select(
+	int maxfd,						//监视对象文件描述符数量
+    fd_set *readset,				//将所有关注"是否存在待读取数据"的文件描述符注册到fd_set变量,并传递其地址值
+    fd_set *writeset,				//将所有关注"是否可传输无阻塞数据"的文件描述符注册到fd_set变量,并传递其地址值
+    fd_set *exceptset,				//将所有关注"是否发生异常"的文件描述符注册到fd_set变量,并传递其地址值
+    const struct timeval *timeout	//调用select后,为防止陷入无限阻塞的状态,传递超时信息
+);	//成功时返回大于0的值,失败时返回-1
+```
+
+如上，select函数用来**验证3种监视项**的变化情况。
+
+根据监视项声明3个fd_set型变量，分别向其注册文件描述符信息，并把变量的地址值传递到上述函数的第二到第四个参数。
+
+但在此之前，需要决定下面2件事：
+
+- 文件描述符的监视范围
+- 如何设定select函数的超时时间
+
+
+
+代码示例：https://github.com/100568265/code_repo_C/blob/main/echo_selectserv.c
+
+
+
+
+
+
+
+### 多种I/O函数
+
+#### send/recv
+
+```c++
+#include <sys/socket.h>
+
+ssize_t send(int sockfd,		//与数据传输对象的连接的套接字文件描述符
+             const void *buf,	//保存待传输数据的缓冲地址值
+             size_t nbytes,		//待传输的字节数
+             int flags			//传输数据时指定的可选项信息
+            );	//成功时返回发送的字节数，失败时返回-1
+```
+
+```cpp
+#include <sys/socket.h>
+
+ssize_t recv(int sockfd,
+             void *buf,			//保存接收数据的缓冲地址值。
+             size_t nbytes,		//可接收的最大字节数
+             int flags
+			);
+```
+
+**send&recv函数的可选项及含义：**
+
+|    可选项     |                        含义                        | send | recv |
+| :-----------: | :------------------------------------------------: | :--: | :--: |
+|    MSG_OOB    |         用于传输带外数据(Out-of-band data)         |  √   |  √   |
+|   MSG_PEEK    |          验证输入缓冲中是否存在接收的数据          |      |  √   |
+| MSG_DONTROUTE | 数据传输过程中不参照路由表，在本地网络中寻找目的地 |  √   |      |
+| MSG_DONTWAIT  |       调用I/O函数时不阻塞，用于使用非阻塞I/O       |  √   |  √   |
+|  MSG_WAITALL  |       防止函数返回，直到接收全部请求的字节数       |      |  √   |
+
+
+
+
+
+#### **标准I/O**
+
+标准I/O的优点：
+
+- 标准I/O函数具有良好的移植性( Portability )。
+
+- 标准I/O函数可以利用**缓冲提高性能**。
+
+  ![image-20240110140701512](./assets/image-20240110140701512.png)
+
+使用标准I/O 函数传输数据时，经过2个缓冲。
+
+标准I/O的缺点：
+
+- 不容易进行双向通信
+- 有时可能频繁调用fflush函数
+- 需要以FILE结构体指针的形式返回文件描述符
+
+
+
+如前所示，创建套接字时返回文件描述符，而为了使用标准I/O函数，只能将其转换为FILE结构体指针。先介绍转换方法
+
+```cpp
+#include <stdio.h>
+FILE *fdopen(int fildes, const char *mode);
+```
+
+
+
+
+
+
+
+
+
+
 
 
 
