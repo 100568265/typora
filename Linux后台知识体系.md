@@ -2927,102 +2927,76 @@ FILE *fdopen(int fildes, const char *mode);
 
 
 
-**select的缺陷**
+#### **为什么select慢**
 
-1.fd_set的本质是一个位图，容量固定1024。(可以扩容，要重新编译内核)
+调用select函数后常见的针对所有文件描述符的循环语句。
 
-2.监听和就绪用的是同一个数据结构(使用困难)
+每次调用select函数时都需要向该函数传递**监视对象信息**。
 
-3.存在多次大量从用户态到内核态的拷贝
+调用select函数后，并不是把发生变化的文件描述符单独集中在一起，而是通过观察作为监视对象的fd_set变量的变化，找出发生变化的文件描述符。
 
-4.采用轮询找到就绪的FD→在海量连接，少量就绪的情况下有极大的性能损耗
+而且，作为监视对象的fd_set变量会发生变化，所以调用select函数前应复制并保存原有信息，并在每次调用select函数时传递新的监视对象信息。
 
-
-
-**IO多路复用 高性能**
-
-1.**所有监听数据放内核态**，看成一个文件对象(避免了拷贝问题)
-
-2.监听和就绪分离
-
-![image-20231009154917689](./assets/image-20231009154917689.png)
+最致命的一点，是**应用程序向操作系统传递数据**将对程序造成很大负担。select是监视套接字变化的函数，而套接字是操作系统管理的，所以select需要借助操作系统才能完成工作。
 
 
 
+**补救方法：**
+
+仅向操作系统传递1次监视对象，监视范围或内容发生变化时只通知发生变化的事项。
+
+Linux的支持方式是epoll：
 
 
-**epoll函数**-创建文件描述符
 
-epoll_create, epoll_create1 - open an epoll file descriptor
+#### epoll的必要函数
+
+
+
+`epoll_create`：创建一个 epoll 实例。
 
 ```c
 #include <sys/epoll.h>
 
-int epoll_create(int size);
+int epoll_create(int size);	//成功时返回epoll文件描述符，失败时返回-1
 ```
 
 
 
 
 
-**设置监听**
-
-epoll_ctl - control interface for an epoll file descriptor
+`epoll_ctl`：用于控制某个文件描述符上的事件，可以注册事件，修改事件，删除事件。
 
 ```c
 #include <sys/epoll.h>
 
-int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
+int epoll_ctl(int epfd,						//用于注册监视对象的epoll例程的文件描述符
+              int op,						//用于指定监视对象的添加，删除或更改等操作
+              int fd,						//需要注册的监视对象文件描述符
+              struct epoll_event *event		//监视对象的事件类型
+             );
 ```
 
 
 
 
 
-**陷入阻塞**
-
-epoll_wait - wait for an I/O event on an epoll file descriptor
+`epoll_wait`：等待事件的产生，返回就绪的文件描述符。
 
 ```c
 #include <sys/epoll.h>
 
-int epoll_wait(int epfd, struct epoll_event *events,int maxevents, int timeout);
+int epoll_wait(int epfd, 
+               struct epoll_event *events,	//保存发生事件的文件描述符集合的结构体地址值
+               int maxevents, 				//上面参数可以保存的最大事件数
+               int timeout					//等待时间，-1为一直等待到发生事件
+              );
 //epoll_wait的返回值是就绪事件的个数
 ```
 
+epoll简单的回声服务器端示例：https://github.com/100568265/code_repo_C/blob/main/echo_epollserv.c
 
 
-
-
-给已经打开的fd加上非阻塞属性
-
-```c
-#include <unistd.h>
-#include <fcntl.h>
-
-int fcntl(int fd, int cmd, ... /* arg */ );
-```
-
-
-
-
-
-**epoll的触发方式**
-
-![image-20231010120651373](./assets/image-20231010120651373.png)
-
-
-
-**设置socket的属性**
-
-```c
-#include <sys/types.h>          
-#include <sys/socket.h>
-
-int getsockopt(int sockfd, int level, int optname, void *optval, socklen_t *optlen);
-
-int setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen);
-```
 
 
 
