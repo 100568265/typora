@@ -241,6 +241,209 @@ $$
 
 
 
+# Chapter 2 Co-ordinate
+
+
+
+## 直线的斜率
+
+The slope of a line is measured by its gradient.
+
+一个直线的斜率是通过它的梯度来衡量的。
+
+斜率 = y轴上的增长 ÷ x轴上的增长
+$$
+m = \frac{y_2-y_1}{x_2-x_1}
+$$
+
+
+
+
+## 平行和垂直
+
+两条直线平行：它们的斜率相等，m1 = m2
+
+两条直线垂直：它们的斜率积为-1，m1*m2 = -1
+
+
+
+
+
+## 两点间距离
+
+The length of the line AB is
+$$
+\sqrt{(x_2-x_1)^2+(y2-y_1)^2}
+$$
+
+
+## 连接两点线段的中点
+
+如果有两个点A(x1,y1)和B(x2,y2)在二维空间中，这两个点之间的线段的之点M的坐标将是这**两个点的坐标的算数平均值**。
+$$
+M(\frac{x_1+x_2}{2},\frac{y_1+y_2}{2})
+$$
+
+
+
+
+## 直线的等式
+
+The word *straight* means going in a constant direction, that is with fixed gradient.
+
+直线，它的斜率不变，只要有一个点的坐标，就能找到这条直线的方程。
+
+
+
+Ex.Find the equation of the straight line with gradient 2 through the point (0, −5).
+
+
+
+**平行于坐标轴的直线**
+
+y=constant x=constant的情况
+
+
+
+**y=mx+c形式的方程**
+
+m是斜率，如果c=0，那么这条直线穿过原点。
+
+这种情况只需要一个点的坐标就能算出直线的方程。
+
+
+
+
+
+## 两条线的相交点
+
+对于两条直线，只有两种情况：
+
+它们是平行的
+
+它们相交在某个点上
+
+
+
+*x* + 2*y* = 1 and 2*x* + 3*y* = 4 在同一坐标系中，找到它们相交点的坐标。
+
+解题思路：把这两个方程作为方程组求解。
+
+
+
+## 画曲线图像
+
+You can always plot a curve, point by point, if you know its equation. Often, however, all you need is a general idea of its shape and a sketch is quite sufficient.
+
+给出一个方程，是可以通过描点画出它的图像的。
+
+但通常知道它大概的图像就够了。
+
+<img src="./assets/image-20240222144254180.png" alt="image-20240222144254180" style="zoom:50%;" />
+
+
+
+
+
+### **驻点Stationary points**
+
+A turning point is a place where a curve changes from increasing (curve going up) to decreasing (curve going down), or vice versa. 
+
+A *turning point* may be described as a *maximum* (change from increasing to decreasing) or a *minimum* (change from decreasing to increasing). 
+
+Turning points are examples of *stationary points*, where the gradient is zero. 
+
+In general, the curve of a polynomial of order *n* has up to *n* − 1 turning points.
+
+<img src="./assets/image-20240222144224303.png" alt="image-20240222144224303" style="zoom: 50%;" />
+
+
+
+### **与x轴或y轴相交**
+
+The constant term in the polynomial gives the value of *y* where the curve intersects the *y* axis.
+
+多项式的常数项代表y轴与函数的相交点
+$$
+y = x^8+5x^6+17x^3+23
+$$
+当x=0时，y=23，因此该函数与y轴在(0,23)处相交。
+
+
+
+相似的，如果常数项不存在，那么该函数必然经过原点。
+$$
+y = x^3+x
+$$
+一个函数如果是因式分解的形式，很容易看出它与x轴的交点：
+$$
+y=(x-2)(x-8)(x-9)
+$$
+
+
+
+
+### **反比例函数**
+
+<img src="./assets/image-20240222144033885.png" alt="image-20240222144033885" style="zoom:50%;" />
+
+An important feature of these curves is that they approach both the *x* and the *y* axes ever more closely but never actually reach them. These lines are described as *asymptotes*(渐近线) to the curves.
+
+
+
+### 圆
+
+根据"从圆心到圆上任意一点的距离都相等"，
+$$
+length=\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}
+$$
+这个公式用来推导圆的方程：
+
+对于一个圆心在(0,0)上，半径为3的圆来说，
+$$
+\sqrt{(x-0)^2+(y-0)^2}=3
+$$
+化简后可得，
+$$
+x^2+y^2=9
+$$
+
+$$
+x^2+y^2=r^2
+$$
+
+
+
+
+
+## 直线与曲线相交
+
+当一个直线和一个曲线在同一个平面时，有三种可能性：
+
+**1.*All points of intersection are distinct***
+
+<img src="./assets/image-20240222154633686.png" alt="image-20240222154633686" style="zoom:50%;" />
+
+
+
+**2.*The line is a tangent to the curve at one (or more) point(s)*** 
+
+In this case, each point of contact corresponds to two (or more) co-incident points of intersection. It is possible that the tangent will also intersect the curve somewhere else.
+
+<img src="./assets/image-20240222160227754.png" alt="image-20240222160227754" style="zoom:50%;" />
+
+
+
+**3.*The line and the curve do not meet***
+
+The co-ordinates of the point of intersection can be found by solving the two equations simultaneously. If you obtain an equation with no real roots, the conclusion is that there is no point of intersection.
+
+通过解方程组，可以找到相交的点。如果方程没有实数根，说明这两条线没有交点。
+
+<img src="./assets/image-20240222160526515.png" alt="image-20240222160526515" style="zoom:50%;" />
+
+
+
 
 
 
