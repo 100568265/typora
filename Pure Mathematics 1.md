@@ -450,6 +450,200 @@ The co-ordinates of the point of intersection can be found by solving the two eq
 
 
 
+# Chapter 3 Sequence and series
+
+
+
+## 定义和符号
+
+A *sequence* is a set of numbers in a given order, like
+$$
+\frac{1}{2},\frac{1}{4},\frac{1}{8},\frac{1}{16},...
+$$
+
+
+Each of these numbers is called a *term* of the sequence. 
+
+When the terms of a sequence are added together, like
+$$
+\frac{1}{2}+\frac{1}{4}+\frac{1}{8}+\frac{1}{16}+...
+$$
+the resulting sum is called a ***series***. 
+
+The process of adding the terms together is called *summation* and indicated by the symbol ∑，with the position of the first and last terms involved given as *limits*.
+$$
+u_1+u_2+u_3+u_4+u_5\space is \space written \space \sum^{5}_{k=1}u_k
+$$
+
+
+
+
+## 等差数列
+
+**Arithmetric Progression**等差数列
+
+
+
+**公差 common difference**
+
+When the terms of an arithmetic sequence are added together, the sum is called an arithmetic progression, often abbreviated to A.P. An alternative name is an arithmetic series.
+
+当一个等差数列的各项相加时，这个和被称为等差数列的求和arithmetic progression，或者叫等差级数Arithmetic Series。
+
+
+
+**Notations**
+
+a：第一项
+
+d：公差
+
+l：最后一项
+
+
+
+等差数列的第k项：
+$$
+u_k=a+(k-1)d
+$$
+等差数列的n项和：
+$$
+S_n=\frac{1}{2}n(a+l)
+$$
+
+
+
+
+## 等比数列
+
+**Geometric Progression**
+
+首项：a
+
+公比：r
+
+项数：n
+
+
+
+**第n项公式：**
+$$
+u_n=ar^{n-1}
+$$
+**等比数列的n项和：**
+$$
+S_n=\frac{a(r^n-1)}{r-1}
+$$
+或者
+$$
+S_n=\frac{a(1-r^n)}{1-r}
+$$
+
+
+**无穷等比数列**
+
+Infinite geometric progressions.
+$$
+1+\frac{1}{2}+\frac{1}{4}+\frac{1}{8}+\frac{1}{16}+...
+$$
+上面的数列是等比数列，公比是0.5.
+
+求这个数列的n项和：将参数套入公式21，会发现最后的结果是2。
+
+当n趋近于无穷时，n项和趋近于2
+
+
+
+一般的等比数列，
+
+当**公比(common ratio)**r在-1和1之间的时候，每项的值会变得越来越小，这种情况，称这个等比数列是**收敛的(convergent)**。
+
+当公比r大于1或小于-1的时候，数列的项会变得越来越大，那么称这个数列是**发散的(divergent)**。
+
+
+
+
+
+## 二项式展开
+
+A special type of series is produced when a binomial (i.e. two-part) expression 3 like (*x* + 1) is raised to a power. The resulting expression is often called a *binomial expansion*.
+
+ 帕斯卡三角/杨辉三角
+
+
+
+# Chapter 4 Functions
+
+
+
+**Mappings**
+
+1对1，1对多，多对1，多对多
+
+
+
+**Functions**
+
+Mappings which are one-to-one or many-to-one are of particular importance, since in these cases there is only one possible image for any object.
+
+ Mappings of these types are called *functions*. 
+
+1对1或多对1的叫作**方程**。
+
+
+
+
+
+## Composite Functions
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
