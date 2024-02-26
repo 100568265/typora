@@ -594,7 +594,63 @@ Mappings which are one-to-one or many-to-one are of particular importance, since
 
 
 
-## Composite Functions
+
+
+## 复合函数
+
+Composite functions
+$$
+f(x)=x^2 \\ g(x)=x+1
+$$
+so,
+$$
+g(f(x))=x^2+1 \\ f(g(x))=(x+1)^2
+$$
+Figure below illustrate the relationship between the domains and ranges of the functions f and g, and the range of the composite function gf.
+
+<img src="./assets/image-20240226091141529.png" alt="image-20240226091141529" style="zoom:67%;" />
+
+Notice the range of f must be completely contained within the domian of g.(f的值域必须完全包含在g的定义域内)
+
+If this wasn't the case you woulnd't be able to form the composite function of gf because you would be trying to input values into g that weren't in its domain.
+
+如果内层函数的值域大于外层函数的定义域，那么当内层函数的值取到外层函数定义域之外时，该复合函数是无效的。
+
+
+
+
+
+
+
+## 反函数
+
+Inverse functions
+
+
+
+For a mapping to be a function which also has an inverse function, every object in the domain must have one and only one image in the range, and vice versa.(一个函数如果想有反函数，必须是一一对应的，如果原函数是一对多，那么反函数就成了多对一了，不成立)
+
+
+
+**通过图像判断一个函数有没有反函数**
+
+The curve or line representing a one-to-one function does not double back on itself and has **no turning points.**
+
+<img src="./assets/image-20240226094055637.png" alt="image-20240226094055637" style="zoom:50%;" />
+
+It is often helpful to define a function with a restricted domain so that its inverse is also a function.
+
+
+
+
+
+**反函数的图像**
+
+反函数的图像是原函数的图像关于y=x轴反射的。
+
+To see why this is so, think of a function f(*x*) mapping *a* on to *b*; (*a*, *b*) is clearly a point on the graph of f(*x*). The inverse function maps *b* on to *a* and so (*b*, *a*) is a point on the graph of f −1(*x*).
+
+原函数与反函数的定义域和值域是互换的。
 
 
 
@@ -604,6 +660,220 @@ Mappings which are one-to-one or many-to-one are of particular importance, since
 
 
 
+# Chapter 5 Differentiation
+
+
+
+## 曲线的斜率
+
+ If you draw the straight line *y* = *mx* + *c* passing along the bottom of the log, then this line is a tangent to the curve at the point of contact.The gradient *m* of the tangent is the gradient of the curve **at the point of contact.**
+
+
+
+Figure below shows the part of the graph *y* = *x*^2 which lies between *x* = −1 and *x* = 3. What is the value of the gradient at the point P(3, 9)?
+
+<img src="./assets/image-20240226104327119.png" alt="image-20240226104327119" style="zoom:50%;" />
+$$
+chord (0,0)\space to \space (3,9):m = \frac{9-0}{3-0}=3\\
+chord (1,1)\space to \space (3,9):m = \frac{9-1}{3-1}=4\\
+chord (2,4)\space to \space (3,9):m = \frac{9-4}{3-2}=5\\
+$$
+Clearly none of these three answers is exact, but which of them is the most accurate?
+
+明显这三个点全都不准备，那么哪个才是最准确的？
+
+Of the three chords, the one closest to being a tangent is that joining (2, 4) to (3, 9), the two points that are closest together.
+
+这三条弦中，最接近切线的一条是(2,4)到(3,9)这条，因为(2,4)这个点离点P最近。
+
+
+
+类似的，可以再取离点P更近的点：
+
+<img src="./assets/image-20240226105055348.png" alt="image-20240226105055348" style="zoom: 33%;" />
+$$
+chord (2.7,2.79)\space to \space (3,9):m = \frac{9-2.79}{3-2.7}=5.7\\
+chord (2.8,7.84)\space to \space (3,9):m = \frac{9-7.84}{3-2.8}=5.8\\
+chord (2.9,8.41)\space to \space (3,9):m = \frac{9-9.41}{3-2.9}=5.9\\
+$$
+如果再取近一点，比如(2.99,8.9401)和(2.999,8.994001)呢？
+
+从这些点到(3.9)的弦的斜率分别是5.99和5.999。
+
+
+
+通过这种方法，你可能会尝试计算点(3,9)到点(3,9)之间的弦的斜率，但这个方程是未定义的因为分母为0。
+
+所以，尽管你可以找一个尽可能接近点P的点来求斜率，但它永远不可能完全等于切线的斜率。
+
+
+
+**你现在需要一个从弦到切线的最终办法。**
+
+
+
+as point Q tends to point P(3, 9), the chord QP tends to the tangent of the curve at P, and the gradient of QP tends to 6
+
+极限的概念能使我们做到这一点，在点Q趋向于点P(3,9)的时候，弦QP趋向于曲线在P点的斜率，弦QP的斜率趋向于6。
+
+<img src="./assets/image-20240226110449388.png" alt="image-20240226110449388" style="zoom:33%;" />
+
+
+
+
+
+## 求导的定义法
+
+尽管上一节的求斜率方法比画图法(画一个正切来测量斜率)更加准确，但它仍然有些实验性质。
+
+在这一节中，该方法被正式化并进行了扩展。
+
+
+
+在y=x^2的曲线上，取一个点P(3,9)和一个接近于(3,9)的点Q。
+
+令Q在X轴上的坐标为**3+h**，h是一个很小的值。根据函数，可得Y轴上的坐标为**(3+h)^2**。
+
+<img src="./assets/image-20240226111631252.png" alt="image-20240226111631252" style="zoom:50%;" />
+$$
+gradient \space of \space PQ \space is \space \frac{(3+h)^2-9}{3+h-3} \\
+=\frac{h^2+6h+9-9}{h}\\
+=\frac{h(h+6)}{h}\\
+=6+h
+$$
+如果h取0.001，那么PQ的斜率就是6.001，如果h取-0.001，那么斜率就是5.999。
+
+相似的，切线的斜率就在6-h到h+h之间，对于所有接近于0但不等于0的小数值h。
+
+
+
+
+
+**导数**
+
+目前的研究包括了找到函数y=x^2在一个特定的点(3,9)的斜率，但这并不是通常用来找到某点处斜率的方法。
+
+你可以考虑一个普遍的点(x,y)，然后再把特定的要研究的点对应的值带入。
+
+
+
+**例：找到曲线y=x^3在点(x,y)上的斜率。**
+
+<img src="./assets/image-20240226113333834.png" alt="image-20240226113333834" style="zoom:50%;" />
+
+**解：**
+
+令P在x轴上取一个普遍的值x，那么在y轴上的值就是x^3。
+
+令x轴上Q的坐标为x+h，那么y轴上的坐标就是(x+h)^3。
+$$
+弦PQ的斜率=\frac{(x+h)^3-x^3}{x+h-x}\\
+=\frac{x^3+3x^2h+3xh^2+h^3-x^3}{h}\\
+=\frac{h(3x^2+3xh+h^2)}{h}\\
+=3x^2+3xh+h^2
+$$
+当Q的取值接近于P时，h的值越来越小，并且斜率逼近于在点P的切线斜率：3x^2。
+
+因此，曲线y=x^3在点(x,y)的斜率等于3x^2。
+
+
+
+
+
+**An alternative notation**
+
+h sometimes replaced by δx, the Greek letter δ is shorthand for 'a small change in' and so δx represents a small change in x, and δy a corresponding small change in y.
+
+In figure below, the gradient of the chord PQ is **δy/δx**。
+
+In the limit as δx→0, δx and δy become infinitesimally small and the value obtained for δy/δx approaches the gradient of the tangent at P.
+
+<img src="./assets/image-20240226115401812.png" alt="image-20240226115401812" style="zoom:50%;" />
+$$
+\lim_{δx→0}\frac{δy}{δx} \space is \space written \space as \space \frac{dy}{dx}\\
+$$
+In this notation, Wallis's rule becomes
+$$
+y=x^n⇒\frac{dy}{dx}=nx^n-1
+$$
+The gradient function, dy/dx or f'(x) is sometimes called the derivative of y with respect to x, and when you find it you have differentiated y with respect to x.
+
+
+
+
+
+## 利用导数规则求导
+
+定义法求导在实践中是几乎用不到的，它的价值在于给微积分建立一个正式的基础，而不是一个实用工具。
+
+
+
+**规则：**
+$$
+y=c→\frac{dy}{dx}=0
+$$
+
+$$
+y=f(x)+g(x)→\frac{dy}{dx}=f'(x)+g'(x)
+$$
+
+
+
+
+## 切线和法线
+
+现在你知道了怎么找到一个曲线在某一个点上的斜率，你可以利用它来找到在任意点上的切线方程。
+
+
+
+### **切线方程**
+
+**例：找到曲线y=x^2+3x+2在点(2,12)的切线方程？**
+
+要找到切线的方程，第一步应该先给原函数求导。
+$$
+y'=2x+3
+$$
+由于**一阶导数其实是原函数的斜率**，因此把x=2带入y'可以求出在该点上的斜率。
+
+求解得到斜率m=7，把该点(2,12)以及其斜率导入到切线方程的公式：
+$$
+y-y_1=m(x-x_1)
+$$
+得到：
+$$
+y-12=7(x-2)\\
+化简得：\space y=7x-2
+$$
+<img src="./assets/image-20240226143550329.png" alt="image-20240226143550329" style="zoom:50%;" />
+
+
+
+### 法线
+
+曲线上的某个点的法线是垂直于这个点上的切线的，根据公式
+$$
+m_1m_2=-1
+$$
+可以得到，如果m1是切线的斜率，那么法线的斜率就是**m2=-1/m1**
+
+
+
+例：
+$$
+一个曲线的方程是 \space y=\frac{16}{x}-4\sqrt{x}.该曲线在点(4,-4)的法线与y轴相交于P点，找到P点的坐标？
+$$
+解题思路：
+
+1.先找到方程的导数。
+
+2.找到在点(4,-4)切线的斜率为-2
+
+3.用m1m2=-1公式，求出在点(4,-4)法线的斜率为1/2
+
+4.将点(4,-4)带入到斜率公式中找到该法线的方程
+
+5.由于该法线和y轴相交，把x=0带入到法线的方程，得到y值，求出该点的坐标。
 
 
 
@@ -611,29 +881,142 @@ Mappings which are one-to-one or many-to-one are of particular importance, since
 
 
 
+## 极大值点和极小值点
+
+最大值和最小值点的切线的斜率应该为0.
+
+<img src="./assets/image-20240226154258172.png" alt="image-20240226154258172" style="zoom:50%;" />
+
+极大值点和极小值点也被叫作**驻点(stationary points)**，驻点的斜率为0，既没有上升也没有下降。
+
+
+
+找到驻点的方法：求导，然后解出m=0时，x的值。然后将x的值代入原函数，找到y轴上的值，就找到了极大值或极小值。
 
 
 
 
 
+## 增函数和减函数
+
+When the gradient is positive, the function is described as an increasing function. 
+
+When the gradient is negative, it is a decreasing function.
+
+**These terms are often used for functions that are increasing or decreasing for all values of *x*.**
 
 
 
 
 
+## 拐点
+
+Points of inflection.
+
+It is possible for the value of y' to be zero at a point on a curve without it being a maximum or minimum.(导数为0的点也不一定是极大值或极小值).
+
+This is the case with the curve y=x^3, at the point (0,0).
+$$
+y=x^3→y'=3x^2 \space and \space when \space x=0,\frac{dy}{dx}=0
+$$
+<img src="./assets/image-20240226162517208.png" alt="image-20240226162517208" style="zoom:50%;" />
+
+
+
+下面是一个拐点的示例。总的来说，当一个曲线的**切线穿过了这个曲线**时，拐点就出现了。就算y'不等于0这种情况也有可能会发生。
+
+<img src="./assets/image-20240226162739778.png" alt="image-20240226162739778" style="zoom:50%;" />
+
+One way of thinking about a point of inflection is to view the curve from one side and see it as the point where the curve changes from being **concave to convex.**
 
 
 
 
 
+## 二阶导数
+
+上面是原函数y=f(x)，下面的图像是对应的导函数图像f'(x)。
+
+<img src="./assets/image-20240226163059097.png" alt="image-20240226163059097" style="zoom: 33%;" />
+
+
+
+二阶导数：就是对原函数求导两次。
+
+Notation:
+$$
+\frac{d}{dx}(\frac{dy}{dx})→\frac{d^2y}{dx^2} \space or \space f''(x)
+$$
+
+
+**二阶导数的作用**
+
+可以利用二阶导数来确定驻点的性质，而不是仅仅检查该点两侧导数的符号变化来判断。
+
+
+
+**驻点：**
+
+At P,
+$$
+\frac{dy}{dx}=0,\frac{d^2y}{dx^2}<0
+$$
+This tells you that the gradient is 0 and decreasing. It must be going from positive to negative, so P is a maximum point.
+
+At Q,
+$$
+\frac{dy}{dx}=0,\frac{d^2y}{dx^2}>0
+$$
+This tells you that the gradient is 0 and increasing. It must be going from negative to positive, so P is a minimum point.
+
+<img src="./assets/image-20240226164840017.png" alt="image-20240226164840017" style="zoom:50%;" />
 
 
 
 
 
+## 链式法则
+
+The Chain Rule.
+
+链式法则用来给复合函数求导。
 
 
 
+To find dy/dx for a function of a function, you consider the effect of a small change in x on the two variables, y and u, as follows .
+
+A small change δx in x leads to a small change δu in u and a corresponding change δy in y, and by simple algebra,
+$$
+\frac{δy}{δx}=\frac{δy}{δu}*\frac{δu}{δx}
+$$
+In the limit, as δx→0, 
+$$
+\frac{δy}{δx}→\frac{dy}{dx},\frac{δy}{δu}→\frac{dy}{du}\space and \space \frac{δu}{δx}→\frac{du}{dx}
+$$
+and so the relationship above becomes 
+$$
+\frac{dy}{dx}=\frac{dy}{du}*\frac{du}{dx}
+$$
+This is known as the Chain Rule.
+
+
+
+例：
+$$
+Differentiate \space y=(x^2+1)^{\frac{1}{2}}
+$$
+解：
+$$
+y=u^\frac{1}{2},u=x^2+1 \\
+\frac{dy}{du}=\frac{1}{2}u^{-\frac{1}{2}}=\frac{1}{2\sqrt{x^2+1}} \\
+and \space \frac{du}{dx}=2x.
+$$
+By the Chain rule, 
+$$
+\frac{dy}{dx}=\frac{dy}{du}*\frac{du}{dx}\\
+=\frac{1}{2\sqrt{x^2+1}}*2x\\
+=\frac{x}{\sqrt{x^2+1}}
+$$
 
 
 
