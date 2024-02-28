@@ -1024,6 +1024,128 @@ $$
 
 
 
+# Chapter 6 Integration
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Chapter 7 Trignometry
+
+
+
+## 三角函数
+
+三角函数最简单的定义：直角三角形的边之间的比值，角θ在0-90度之间。
+
+<img src="./assets/image-20240227160717477.png" alt="image-20240227160717477" style="zoom:50%;" />
+$$
+sin\theta=cos(90^\degree-\theta) \\
+cos\theta=sin(90^\degree-\theta)
+$$
+
+
+
+
+**30度和60度**
+
+<img src="./assets/image-20240227161807080.png" alt="image-20240227161807080" style="zoom:50%;" />
+
+
+
+**45度**
+
+<img src="./assets/image-20240227161911827.png" alt="image-20240227161911827" style="zoom:50%;" />
+
+
+
+**0度和90度**
+
+<img src="./assets/image-20240227162501163.png" alt="image-20240227162501163" style="zoom:50%;" />
+
+当Z=90度时，tanZ是未定义的。
+
+
+
+
+
+## 任意角度的三角函数
+
+三角函数的角度是可以大于90度的，需要改变sin, cos, tan的定义，使他们不必非得是直角三角形。
+
+<img src="./assets/image-20240228153601337.png" alt="image-20240228153601337" style="zoom: 33%;" />
+$$
+sin^2\theta+cos^2\theta=1
+$$
+
+
+## sin和cos的图像
+
+<img src="./assets/image-20240228155339557.png" alt="image-20240228155339557" style="zoom:50%;" />
+$$
+cos\theta=sin(\theta+90\degree)
+$$
+
+
+## tan的图像
+
+<img src="./assets/image-20240228160008673.png" alt="image-20240228160008673" style="zoom:50%;" />
+
+当角度为±90,270,450...度时，tanθ是未定义的。
+
+其实很好理解，因为圆上的点每次移动到y轴上时，cosθ=x=0，分母为0，因此是未定义的。
+
+
+
+
+
+<img src="./assets/image-20240228160751244.png" alt="image-20240228160751244" style="zoom:50%;" />
+
+
+
+## 弧度和弧长
+
+$$
+360^\degree=2\pi \space radians
+$$
+
+
+
+弧长=半径 * 角度
+
+<img src="./assets/image-20240228163959974.png" alt="image-20240228163959974" style="zoom:50%;" />
+
+## 扇形圆的面积
+
+
+
+<img src="./assets/image-20240228164141271.png" alt="image-20240228164141271" style="zoom:50%;" />
+
+**对于任意一个三角形ABC：**
+
+The sine rule：
+$$
+\frac{a}{sinA}=\frac{b}{sinB}=\frac{c}{sinC}
+$$
+
+
+
+
+
+
+
+
+
 
 
 
