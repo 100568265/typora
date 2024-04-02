@@ -438,11 +438,125 @@ ls -li	#通过该命令来查看文件的inode
 
 
 
-### 查找文件
+### 查找文件(find)
 
 **locate**	-	locate file by name
 
-**which**	-	locate a command(可执行程序)
+**which**	-	locate a command(可执行程序)	**which命令只能查找用户的PATH环境变量指定的目录中搜索**
+
+
+
+**find**
+
+```shell
+#基本语法
+find [路径] [选项] [表达式]
+
+#按名称指定目录查找文件
+find /home/usr/ -name "sample.txt"
+
+#搜索特定大小以上的文件
+find / -type f -size +50M
+
+#根据用户和组查找
+find / -user username "sample.txt"
+```
+
+
+
+
+
+### 权限
+
+chmod	-	change file mode bits
+
+1.文字设定法
+
+```shell
+# 文字设定法 u代表user g代表group o代表others a代表all
+chmod [ugoa][+=-][rwx] filename/dir
+
+chmod u+x hello.py	#给当前用户添加执行权限
+chmod a+x	hello.py	#给所有用户添加执行权限
+chmod a=x hello.py  #所有用户都只有执行权限
+```
+
+
+
+2.数字设定法
+
+```shell
+chmod 664 hello.py
+```
+
+
+
+
+
+### 查看文件(cat)
+
+**文件描述符**(非负整数)
+
+| 名称   | 解释         | 关联设备 | 文件描述符值 |
+| ------ | ------------ | -------- | ------------ |
+| stdin  | 标准输入     | 键盘     | 0            |
+| stdout | 标准输出     | 显示器   | 1            |
+| stderr | 标准错误输出 | 显示器   | 2            |
+
+
+
+**重定向**
+
+| 符号 | 描述                 |
+| ---- | -------------------- |
+| >    | 标准输出重定向       |
+| <    | 标准输入重定向       |
+| 2>   | 标准错误重定向       |
+| >>   | 标准输出重定向(追加) |
+
+
+
+
+
+### **正则表达式与grep**
+
+**基本单位：**普通字符，转义字符，任意字符，集合，()
+
+**基本操作：**
+
+| 操作 | 符号 | 描述           |
+| ---- | ---- | -------------- |
+| 连接 |      | ab连接         |
+| 重复 | ?    | 重复零次或1次  |
+|      | +    | 重复一次或多次 |
+|      | *    | 重复任意次数   |
+
+
+
+grep - print lines that match patterns
+
+```shell
+#找到a.txt中包含r或者o的行号并打印
+grep -nE "[ro]+" a.txt
+#找到a.txt中包含ro的行号并打印
+grep -nE "(ro)+" a.txt
+```
+
+
+
+### xargs
+
+`xargs` 是一个非常实用的命令行工具，它可以将标准输入（stdin）数据转换成命令行参数。`xargs` 能够读取来自管道（|）或者标准输入的数据，并将这些数据作为参数提供给其他命令执行。
+
+`xargs` 的基本作用是接受输入数据，并将其分割成合理的片段，然后将这些片段作为参数传递给其他命令。它通常与 `find`、`grep` 等命令结合使用，用于处理那些生成大量输出的命令。
+
+语法：
+
+```shell
+xargs [选项] [命令 [初始参数]]
+#与 find 命令结合删除文件:
+find /path/to/dir -type f -name "*.bak" -print | xargs rm
+```
 
 
 
