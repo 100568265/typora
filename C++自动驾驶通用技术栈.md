@@ -138,223 +138,297 @@ Cyber
 
 # CMake
 
+**toolchain：**
+
+1.预处理器
+
+2.编译器
+
+3.汇编器
+
+4.链接器
 
 
 
 
-## 最简单demo
+
+## 初识cmake
 
 ```cmake
-# cmake 最低版本需求
-cmake_minimum_required(VERSION 3.22)
+#最低版本要求
+cmake_minimum_required(3.22)
 
-# 工程名称
-project(cmake_study)
+#定义工程名字
+project(工程名)
 
-# 设置
+#定义工程会生成一个可执行程序
+add_executable(可执行程序名 源文件名称)
+```
+
+这里的可执行程序名和工程名没有任何关系
+
+
+
+执行`CMake`命令
+
+```shell
+cmake 当前CMakeLists所在路径
+```
+
+
+
+
+
+## set的使用
+
+
+
+### 定义变量
+
+```cmake
+#定义变量
+SET(VAR [VALUE])
+#对变量取值
+${var_name}
+```
+
+`VAR`：变量名
+
+`VALUE`：变量值
+
+
+
+例：
+
+```cmake
+set(SRC_LIST add.c div.c mult.c sub.c main.c)
+add_executable(app ${SRC_LIST})
+```
+
+
+
+
+
+### 指定使用的C++标准
+
+```cmake
+#指定C++11标准
 set(CMAKE_CXX_STANDARD 11)
-
-# 编译源码生成目标
-add_executable(cmake_study main.cpp)
 ```
 
 
 
 
 
-## CMakeLists 变量篇
-
-我们可以使用 `SET(set)` 来定义变量
-
-**语法** ：`SET(VAR [VALUE] [CACHE TYPE DOCSTRING [FORCE]]) `
-
-**指令功能** : 用来显式的定义变量 
-
-**例子** : `SET (SRC_LST main.c other.c)` 
-
-**说明**: 用变量代替值，例子中定义 `SRC_LST` 代替后面的字符串。
-
-
-
-我们可以使用 `${NAME}` 来获取变量的名称。
-
-
-
-### **cmake常用变量**
-
-| 环境变量名                                                   | 描述                                                         |
-| :----------------------------------------------------------- | ------------------------------------------------------------ |
-| `CMAKE_SOURCE_DIR`, `PROJECT_SOURCE_DIR`, `<projectname>_SOURCE_DIR` | 工程顶层目录。                                               |
-| `CMAKE_CURRENT_SOURCE_DIR`                                   | 当前处理的 CMakeLists.txt 所在的路径                         |
-| `CMAKE_CURRRENT_BINARY_DIR`                                  | 如果是 `in-source` 编译,它跟 CMAKE_CURRENT_SOURCE_DIR 一致,如果是 `out-of-source` 编译,他指的是 target 编译目录。 |
-| `EXECUTABLE_OUTPUT_PATH` , `LIBRARY_OUTPUT_PATH`             | 最终目标文件存放的路径。                                     |
-| `PROJECT_NAME`                                               | 通过 PROJECT 指令定义的项目名称。                            |
-|                                                              |                                                              |
-
-
-
-
-
-### **cmake 编译选项**
-
-| **编译控制开关名**  | **描述**                                                |
-| ------------------- | ------------------------------------------------------- |
-| `BUILD_SHARED_LIBS` | 使用 `ADD_LIBRARY` 时生成动态库                         |
-| `BUILD_STATIC_LIBS` | 使用 `ADD_LIBRARY` 时生成静态库                         |
-| `CMAKE_C_FLAGS`     | 设置 C 编译选项,也可以通过指令 ADD_DEFINITIONS()添加。  |
-| `CMAKE_CXX_FLAGS`   | 设置 C++编译选项,也可以通过指令 ADD_DEFINITIONS()添加。 |
-
-
-
-
-
-### cmake常用指令
-
-
-
-- **ADD_DEFINITIONS**
-
-语法 : `ADD_DEFINITIONS(-DENABLE_DEBUG -DABC)`
-
-向 C/C++编译器添加 `-D` 定义. 如果你的代码中定义了`#ifdef ENABLE_DEBUG #endif`,这个代码块就会生效。
-
-
-
-- **ADD_DEPENDENCIES**
-
-语法: `ADD_DEPENDENCIES(target-name depend-target1 depend-target2 ...)`
-
-定义 target 依赖的其他 target, 确保在编译本 target 之前,其他的 target 已经被构建。
-
-
-
-- **AUX_SOURCE_DIRECTORY**
-
-语法 : `AUX_SOURCE_DIRECTORY(dir VARIABLE)`
-
-作用是发现一个目录下所有的源代码文件并将列表存储在一个变量中,这个指令临时被用来自动构建源文件列表。因为目前 cmake 还不能自动发现新添加的源文件。
-
-比如 :
+### 指定输出的路径
 
 ```cmake
-AUX_SOURCE_DIRECTORY(. SRC_LIST)
-ADD_EXECUTABLE(main ${SRC_LIST})
+set(EXECUTABLE_OUTPUT_PATH ${HOME}/bin)
 ```
 
-
-
-
-
-- **ADD_SUBDIRECTORY**
-
-语法 : `ADD_SUBDIRECTORY(NAME)` 添加一个文件夹进行编译，该文件夹下的 CMakeLists.txt 负责编译该文件夹下的源码. NAME是想对于调用add_subdirectory的CMakeListst.txt的相对路径．
+如果这个路径的子目录不存在，会自动
 
 
 
 
 
-- **include_directories**
-
-语法 : `include_directories([AFTER|BEFORE] [SYSTEM] dir1 [dir2 ...])`
-
-将给定目录添加到编译器用来搜索包含文件的目录中。相对路径被解释为相对于当前源目录。
-
-包含目录添加到 `INCLUDE_DIRECTORIES` 当前`CMakeLists`文件的目录属性。它们也被添加到`INCLUDE_DIRECTORIES`当前`CMakeLists`文件中每个目标的target属性。目标属性值是生成器使用的属性值。
+## 搜索文件
 
 
 
+### 方式1
 
-
-- **ink_libraries**
-
-语法 : `link_libraries([item1 [item2 [...]]] [[debug|optimized|general] <item>] ...)`
-
-将库链接到以后添加的所有目标。
-
-
-
-
-
-- **ADD_EXECUTABLE**
-
-语法 : `ADD_EXECUTABLE(<name> [source1] [source2 ...])`
-
-利用源码文件生成目标可执行程序。
-
-
-
-
-
-- **ADD_LIBRARY**
-
-语法 : `ADD_LIBRARY(<name> [STATIC | SHARED | MODULE] [source1] [source2 ...])`
-
-根据源码文件生成目标库。
-
-`STATIC`,`SHARED` 或者 `MODULE` 可以指定要创建的库的类型。 STATIC库是链接其他目标时使用的目标文件的存档。 SHARED库是动态链接的，并在运行时加载
-
-
-
-
-
-### cmake控制指令
-
-- **IF 指令**
+在CMake中使用aux_source_directory命令可以查找某个路径下的**所有源文件**，命令格式为：
 
 ```cmake
-if(<condition>)
-  <commands>
-elseif(<condition>) # optional block, can be repeated
-  <commands>
-else()              # optional block
-  <commands>
-endif()
-
-#####
-
-IF(var),如果变量不是:空,0,N, NO, OFF, FALSE, NOTFOUND 或<var>_NOTFOUND 时,表达式为真。
-IF(NOT var ),与上述条件相反。
-IF(var1 AND var2),当两个变量都为真是为真。
-IF(var1 OR var2),当两个变量其中一个为真时为真。
-IF(COMMAND cmd),当给定的 cmd 确实是命令并可以调用是为真。
-IF(EXISTS dir)或者 IF(EXISTS file),当目录名或者文件名存在时为真。
-IF(file1 IS_NEWER_THAN file2),当 file1 比 file2 新,或者 file1/file2 其中有一个不存在时为真,文件名请使用完整路径。
-IF(IS_DIRECTORY dirname),当 dirname 是目录时,为真。
-IF(variable MATCHES regex)
-IF(string MATCHES regex)
+aux_source_directory(dir variable)
+#dir: 要搜索的目录
+#variable:将从dir目录下搜索到的源文件列表存储到该变量中
 ```
 
 
 
-
-
-- **FOREACH 指令**
-
-语法:
+例：
 
 ```cmake
-foreach(<loop_var> <items>)
-  <commands>
-endforeach()
+cmake_minimum_required(VERSION 3.0)
+project(calc)
+include_directories(${PROJECT_SOURCE_DIR}/include)
+#搜索src目录下的源文件
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src SRC_LIST)
+add_executable(app ${SRC_LIST})
 ```
 
-其中`<items>`是以分号或空格分隔的项目列表。记录foreach匹配和匹配之间的所有命令endforeach而不调用。 一旦endforeach评估，命令的记录列表中的每个项目调用一次`<items>`。在每次迭代开始时，变量loop_var将设置为当前项的值。
+`CMAKE_CURRENT_SOURCE_DIR`：代表当前`CMakeLists.txt`文件所在的路径
+
+`PROJECT_SOURCE_DIR`：和上面的路径一样
 
 
 
 
 
-- **WHILE 指令**
-
-语法:
+### 方式2
 
 ```cmake
-while(<condition>)
-  <commands>
-endwhile()
+file(GLOB/GLOB_RECURSE 变量名 要搜索的文件路径和文件类型)
 ```
 
-while和匹配之间的所有命令 endwhile()被记录而不被调用。 一旦endwhile()如果被评估，则只要为`<condition>`真，就会调用记录的命令列表。
+
+
+例：
+
+```cmake
+file(GLOB SRC ${PROJECT_SRC_DIR}/*.cpp)
+```
+
+
+
+
+
+## 指定头文件路径
+
+指定头文件所在的目录
+
+```cmake
+include_directories(${PROJECT_SOURCE_DIR}/include)
+```
+
+
+
+
+
+## 制作库文件
+
+
+
+指定库生成的路径
+
+```cmake
+set(LIBRARY_OUTPUT_PATH /to/your/path)
+```
+
+
+
+生成静态库或动态库
+
+```cmake
+add_library(库名称 STATIC/SHARED 源文件1 [源文件2] ...)
+```
+
+
+
+
+
+## 链接静态库
+
+链接一个或多个静态库
+
+```cmake
+link_libraries(静态库名字)
+```
+
+参数：可以是静态库全名libxxx.a，也可以是掐头去尾xxx
+
+
+
+如果该静态库不是系统提供的，那么可能会出现找不到静态库的情况，此时将静态库的路径也指定出来：
+
+```cmake
+link_directories(静态库路径)
+```
+
+
+
+**完整脚本：**
+
+```cmake
+cmake_minimum_required(VERSION 3.22)
+project(calc)
+#搜索指定目录下源文件
+file(GLOB SRC_LIST ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+#包含头文件路径
+include_directories(${PROJECT_SOURCE_DIR}/include)
+#包含静态库路径
+link_directories(${PROJECT_SOURCE_DIR}/lib)
+#链接静态库
+link_libraries(calc)
+#生成可执行程序
+add_executable(app ${SRC_LIST})
+```
+
+如果是静态库，那么它会被打包到可执行程序里面。(应用程序启动，静态库已经被加载到内存里面了)
+
+动态库就不是这样了。(应用程序启动，动态库不一定被加载到内存里面)
+
+
+
+
+
+
+
+## 链接动态库
+
+在cmake中链接动态库的命令如下：
+
+```cmake
+target_link_libraries(
+	<target>
+	<PRIVATE|PUBLIC|INTERFACE> <item>...
+)
+```
+
+`target`：指定要加载动态库的文件的名字
+
+该文件可能是一个源文件
+
+该文件可能是一个动态库文件
+
+该文件可能是一个可执行文件
+
+`PRIVATE|PUBLIC|INTERFACE`：动态库的访问权限，默认为public
+
+如果各个动态库之间没有依赖关系，无需做任何设置，三者没有区别，一般无需指定，public即可。
+
+
+
+**动态库具有传递性：**
+
+如果动态库A链接了动态库B,C，动态库D链接了动态度A，此时动态库D相当于也链接了动态库B,C，并可以使用BC中定义的函数。
+
+```cmake
+target_link_libraries(A B C)
+target_link_libraries(D A)
+```
+
+
+
+`PUBLIC`：在PUBLIC后面的库会被Link到前面的target中，并且里面的符号也会被导出，提供给第三方使用。
+
+`PRIVATE`：在private后面的库仅被Link到前面的target中，并且终结掉，第三方不知道调用了什么库。
+
+`INTERFACE`：在interface后面引入的库不会被链接到前面的target中，只会导出符号。
+
+
+
+在cmake中指定要链接的动态库的时候，应该将命令写到生成了可执行文件之后：
+
+```cmake
+cmake_minimum_required(VERSION 3.22)
+project(TEST)
+file(GLOB SRC_LIST ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+#添加并制定最终生成的可执行程序名
+add_executable(app ${SRC_LIST})
+#指定可执行程序要链接的动态库名字
+target_link_libraries(app pthread)
+```
+
+
+
+
+
+
+
+
 
 
 
