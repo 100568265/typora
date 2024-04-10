@@ -426,17 +426,123 @@ target_link_libraries(app pthread)
 
 
 
+## 变量操作
+
+
+
+**字符串移除**
+
+通过`file`搜索某个目录就得到了目录下的所有文件，但是其中有些源文件不想它参加编译，此时需要把它从搜索到的数据中移除掉。
+
+想实现这个功能，可以使用`list`。
+
+```cmake
+list(REMOVE_ITEM 变量名 删除的内容)
+list(REMOVE_ITEM SRC ${project_source_dir}/src/main.cpp)
+```
 
 
 
 
 
+## 宏定义
+
+可以在cmake里控制是否打印调试输出，不需要修改源代码
+
+语法：
+
+```cmake
+add_definitions(-D宏定义名称)
+```
+
+
+
+`main.cpp`：
+
+```cpp
+#include <iostream>
+
+int main(){
+#ifdef DEBUG
+    std::cout << "Hello CMake!" << std::endl;
+#endif
+
+}
+```
+
+`CMakeLists.txt`：
+
+```cmake
+# cmake 最低版本需求
+cmake_minimum_required(VERSION 3.22)
+
+#定义工程名字
+project(test_project)
+
+#添加宏定义
+add_definitions(-DDEBUG)
+#定义工程会生成一个可执行程序(这里的可执行程序名和工程名没有任何关系)
+add_executable(test main.cpp)
+```
 
 
 
 
 
+## 嵌套的CMake
 
+
+
+**文件变量作用域**
+
+根节点`CMakeLists.txt`中的变量全局有效
+
+父节点`CMakeLists.txt`中的变量在子节点中使用
+
+子节点`CMakeLists.txt`中的变量只能在当前节点中使用
+
+
+
+**添加子目录**
+
+```cmake
+add_subdirectory(source_dir [binary_dir] [EXCLUDE_FROM_ALL])
+```
+
+`source_dir`：指定了`CMakeLists.txt`源文件和代码文件的位置，其实就是指定子目录
+
+`binary_dir`：指定了输出文件的路径，一般不需要指定，忽略即可
+
+`EXCLUDE_FROM_ALL`：在子路径下的目标默认不会被包含到父路径的ALL目标里，并且也会排除在IDE工程文件之外，用户必须显式构建在子路径下的目标
+
+
+
+思路：
+
+可以在顶层`CMakeLists.txt`定义出需要的变量，在各个子目录中使用这些变量来构建程序即可
+
+```cmake
+cmake_minimum_required(VERSION 3.22)
+project(test)
+# 静态库生成的路径
+set(LIBPATH ${PROJECT_SOURCE_DIR}/lib)
+# 可执行程序存储目录
+set(EXEPATH ${PROJECT_SOURCE_DIR}/bin)
+# 头文件路径
+set(HEADPATH ${PROJECT_SOURCE_DIR}/include)
+# 库文件的名字
+set(CALCLIB calc)
+set(SORTLIB sort)
+# 可执行程序的名字
+set(APPNAME1 app1)
+set(APPNAME2 app2)
+
+# 给当前节点添加子目录
+add_subdirectory(calc)
+add_subdirectory(sort)
+add_subdirectory(test1)
+add_subdirectory(test2)
+```
 
 
 
