@@ -40,6 +40,10 @@ cancel top and bottoms(上下消元)
 
 
 
+分子：numerator	分母：denominator
+
+
+
 
 
 ## 线性方程
@@ -1217,7 +1221,6 @@ $$
 $$
 a.b=0
 $$
-
 
 
 
