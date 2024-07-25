@@ -158,6 +158,19 @@ FOREIGN KEY (channel_number) REFERENCES channels(channel_number)
 
 
 
+## Variables表
+
+| 中文名     | 字段名         | 数据类型     | 描述      | 备注 |
+| ---------- | -------------- | ------------ | --------- | ---- |
+| 变量id     | var_id         | INTEGER      | 主键,自增 |      |
+| 点号       | point_number   | INT          |           |      |
+| 变量名     | var_name       | VARCHAR(100) |           |      |
+| 变量全名   | var_fullname   | VARCHAR(100) |           |      |
+| 数据类型   | data_type      | INT          |           |      |
+| 转换系数   | coefficient    | float        |           |      |
+| 当前值     | value          | float        |           |      |
+| 所属通道号 | channel_number | INT          |           |      |
+| 所属设备号 | device_number  | INT          |           |      |
 
 
 
@@ -165,10 +178,76 @@ FOREIGN KEY (channel_number) REFERENCES channels(channel_number)
 
 
 
+## Template表
+
+
+
+### device_group表
+
+| 中文名     | 字段名            | 数据类型     | 描述      | 备注 |
+| ---------- | ----------------- | ------------ | --------- | ---- |
+| 设备组id   | id                | INT          | 主键,自增 |      |
+| 设备组名字 | device_group_name | VARCHAR(100) |           |      |
+|            |                   |              |           |      |
+
+
+
+### device_template表
+
+| 中文名       | 字段名               | 数据类型     | 描述      | 备注 |
+| ------------ | -------------------- | ------------ | --------- | ---- |
+| 模板id       | id                   | INT          | 主键,自增 |      |
+| 设备模板名称 | device_template_name | VARCHAR(100) |           |      |
+| 设备组id     | device_group_id      | INT          | 外键      |      |
+|              |                      |              |           |      |
+
+
+
+### device_serial_type表
+
+| 中文名         | 字段名             | 数据类型     | 描述       | 备注 |
+| -------------- | ------------------ | ------------ | ---------- | ---- |
+| 设备子系列id   | id                 | INT          | 主键，自增 |      |
+| 设备子系列名称 | serial_name        | VARCHAR(100) |            |      |
+| 设备子系列类型 | serial_type        | INT          |            |      |
+| 设备模板id     | device_template_id | INT          | 外键       |      |
+
+
+
+### modbus_area表
+
+| 中文名             | 字段名           | 数据类型    | 描述 | 备注 |
+| ------------------ | ---------------- | ----------- | ---- | ---- |
+| 数据区id           | id               | INT         |      |      |
+| 当前数据区名称     | data_area_name   | VARCHAR(30) |      |      |
+| 当前数据区地址     | data_area_addr   | INT         |      |      |
+| 当前数据区读功能码 | read_code        | INT         |      |      |
+| 当前数据区写功能码 | write_code       | INT         |      |      |
+| 当前数据区长度     | data_area_len    | INT         |      |      |
+| 数据单位块长度     | data_block_len   | INT         |      |      |
+| 数据ID偏移量       | data_id_offset   | INT         |      |      |
+| 设备子系列ID       | device_serial_id | INT         |      |      |
 
 
 
 
+
+
+
+### modbus_item表
+
+| 中文名     | 字段名      | 数据类型    | 描述       | 备注 |
+| ---------- | ----------- | ----------- | ---------- | ---- |
+| 数据id     | id          | INT         | 主键，自增 |      |
+| 序号       | data_number | INT         |            |      |
+| 数据项名称 | data_name   | VARCHAR(30) |            |      |
+| 采集类型   | datatype    | INT         |            |      |
+| 采集系数   | coefficient | float       |            |      |
+| 区内地址   | area_addr   | INT         |            |      |
+| 数据长度   | data_len    | INT         |            |      |
+| 开始位     | start_bit   | INT         |            |      |
+| 结束位     | end_bit     | INT         |            |      |
+| 数据编码   | codify_type | INT         |            |      |
 
 
 
@@ -223,6 +302,42 @@ json格式：
   	"stop_bits": 1
 }
 ```
+
+TCP服务端通道：
+
+```json
+{
+    "channel_name": "TCP服务端通道",
+    "channel_number": 4,
+    "channel_type": 2,
+    "channel_protocol": "MODBUSTCP",
+    "channel_interval": 30,
+    "port_type": 2,
+    "auto_open": 1,
+    "device_count": 10,
+  	"local_port": 9001,
+    "local_address": "192.168.1.177"
+}
+```
+
+TCP客户端通道：
+
+```json
+{
+    "channel_name": "TCP服务端通道",
+    "channel_number": 4,
+    "channel_type": 3,
+    "channel_protocol": "MODBUSTCP",
+    "channel_interval": 30,
+    "port_type": 2,
+    "auto_open": 1,
+    "device_count": 10,
+  	"remote_port": 9001,
+    "remote_address": "192.168.1.177"
+}
+```
+
+
 
 
 
@@ -320,6 +435,23 @@ json格式：
 ```
 
 
+
+
+
+
+
+## Device页面
+
+### 添加一个设备
+
+路由：/device_config/add_device
+
+方法：POST
+
+json格式：
+
+```json
+```
 
 
 
