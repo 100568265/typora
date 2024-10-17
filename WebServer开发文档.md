@@ -288,14 +288,14 @@ json格式：
 ```json
 {
     "channel_name": "串口通道1",
-    "channel_number": 1,
-    "channel_type": 1,
+    "channel_number": 20,    
+    "channel_type": 2,
     "channel_protocol": "COM",
     "channel_interval": 30,
     "port_type": 1,
     "auto_open": 1,
-    "device_count": 10,
-  	"serial_number": 2,
+    "is_transfer":0,
+  	"serial_number": 1,
   	"baud_rate": 9600,
   	"parity": "none",
   	"data_bits": 8,
@@ -308,13 +308,13 @@ TCP服务端通道：
 ```json
 {
     "channel_name": "TCP服务端通道",
-    "channel_number": 4,
+    "channel_number": 9,
     "channel_type": 2,
     "channel_protocol": "MODBUSTCP",
     "channel_interval": 30,
     "port_type": 2,
     "auto_open": 1,
-    "device_count": 10,
+    "is_transfer":0,
   	"local_port": 9001,
     "local_address": "192.168.1.177"
 }
@@ -452,6 +452,258 @@ json格式：
 
 ```json
 ```
+
+
+
+
+
+
+
+## template页面
+
+
+
+### 添加一个设备组
+
+路由：/device_template/add_group
+
+方法：POST
+
+请求json格式：
+
+```json
+{
+    "device_group_name":"modbus测试设备模板2"
+}
+```
+
+
+
+### 添加一个设备模板
+
+路由：/device_template/add_template
+
+方法：POST
+
+请求json格式：
+
+```json
+{
+    "device_template_name":"modbus测试设备模板2",
+    "device_group_id":1
+}
+```
+
+
+
+### 添加一个设备子系列
+
+路由：/device_template/add_serial_type
+
+方法：POST
+
+请求json格式：
+
+```json
+{
+    "serial_name":"modbus子系列",
+    "serial_type":1,
+    "device_template_id":1
+}
+```
+
+
+
+### 添加一个modbus数据区
+
+路由：/device_template/add_modbus_area
+
+方法：POST
+
+请求json格式：
+
+```json
+{
+    "data_area_name":"YC",
+    "data_area_addr":0,
+    "read_code":3,
+    "write_code":0,
+    "data_area_len":10,
+    "data_block_len":2,
+    "data_id_offset":0,
+    "device_serial_id":1
+}
+```
+
+
+
+### 新增一个modbus变量点
+
+路由：/device_template/add_modbus_item
+
+方法：POST
+
+请求json格式：
+
+```json
+{
+    "data_number":1,
+    "data_name":"A相电压",
+    "datatype":1,
+    "coefficient":0,
+    "area_addr":1,
+    "data_len":1,
+    "start_bit":1,
+    "end_bit":1,
+    "codify_type":1,
+    "modbus_area_id":1
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+### 查询所有设备组
+
+路由：/device_template/group_query
+
+方法：GET
+
+返回json数据格式：
+
+```json
+[
+    {
+        "device_group_name": "modbus测试设备模板",
+        "id": 1
+    },
+    {
+        "device_group_name": "modbus测试设备模板2",
+        "id": 2
+    },
+    {
+        "device_group_name": "modbus测试设备模板2",
+        "id": 3
+    }
+]
+```
+
+
+
+
+
+### 查询所有设备模板
+
+路由：/device_template/template_query
+
+方法：POST
+
+浏览器请求json数据格式：
+
+```json
+{"id":1}
+```
+
+
+
+服务器返回json数据格式：
+
+```json
+[
+    {
+        "device_group_id": 1,
+        "device_template_name": "modbus测试设备模板2",
+        "id": 1
+    }
+]
+```
+
+
+
+
+
+### 查询所有设备子系列
+
+路由：/device_template/serial_query
+
+方法：POST
+
+浏览器请求json数据格式：
+
+```json
+{
+  "device_template_id":1
+}
+```
+
+服务器响应json数据格式：
+
+```json
+[
+    {
+        "device_template_id": 1,
+        "id": 1,
+        "serial_name": "modbus子系列",
+        "serial_type": 1
+    }
+]
+```
+
+
+
+
+
+### 查询某系列所有数据区
+
+路由：/device_template/area_query
+
+方法：POST
+
+浏览器请求JSON数据格式：
+
+```json
+{
+  "id":1,
+  "serial_type":1
+}
+```
+
+
+
+
+
+
+
+
+
+**设备信息：**
+
+从设备内目录读文件
+
+**通道配置：**
+
+1.增加超时时间配置
+
+![image-20240802111743975](./assets/image-20240802111743975.png)
+
+2.协议选择
+
+3.添加UDP通道
+
+4.TCP服务端添加白名单(ip用逗号分隔)
+
+<img src="./assets/image-20240802114011046.png" alt="image-20240802114011046" style="zoom:50%;" />
+
+
+
+
 
 
 
